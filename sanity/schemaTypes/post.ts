@@ -1,77 +1,76 @@
-import { defineField, defineType } from 'sanity'
+import { defineType, defineField } from "sanity";
 
 export default defineType({
-  name: 'post',
-  title: 'Post',
-  type: 'document',
+  name: "post",
+  title: "Blog Post",
+  type: "document",
   fields: [
     defineField({
-      name: 'title',
-      title: 'Title',
-      type: 'string',
+      name: "title",
+      title: "Title",
+      type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      options: { source: "title", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: { type: 'author' },
+      name: "author",
+      title: "Author",
+      type: "reference",
+      to: { type: "author" },
     }),
     defineField({
-      name: 'mainImage',
-      title: 'Main image',
-      type: 'image',
-      options: {
-        hotspot: true,
-      },
+      name: "publishedAt",
+      title: "Published At",
+      type: "datetime",
+      initialValue: () => new Date().toISOString(),
     }),
     defineField({
-      name: 'categories',
-      title: 'Categories',
-      type: 'array',
-      of: [{ type: 'reference', to: { type: 'category' } }],
+      name: "excerpt",
+      title: "Short Excerpt",
+      type: "text",
+      rows: 2,
     }),
     defineField({
-      name: 'publishedAt',
-      title: 'Published at',
-      type: 'datetime',
+      name: "mainImage",
+      title: "Cover Image",
+      type: "image",
+      options: { hotspot: true },
     }),
     defineField({
-      name: 'excerpt',
-      title: 'Excerpt',
-      type: 'text',
-      rows: 4,
+      name: "categories",
+      title: "Categories",
+      type: "array",
+      of: [{ type: "reference", to: { type: "category" } }],
     }),
     defineField({
-      name: 'body',
-      title: 'Body',
-      type: 'array',
-      of: [
-        {
-          type: 'block',
-        },
-      ],
+      name: "body",
+      title: "Body",
+      type: "array",
+      of: [{ type: "block" }],
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "SEO Title",
+      type: "string",
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "SEO Description",
+      type: "text",
+      rows: 3,
     }),
   ],
   preview: {
     select: {
-      title: 'title',
-      author: 'author.name',
-      media: 'mainImage',
-    },
-    prepare(selection) {
-      const { author } = selection
-      return { ...selection, subtitle: author && `by ${author}` }
+      title: "title",
+      subtitle: "publishedAt",
+      media: "mainImage",
     },
   },
-})
+});
