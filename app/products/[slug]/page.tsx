@@ -5,6 +5,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 type TechSpec = { label: string; value: string }
+type Download = {
+    asset: { url: string }
+    description?: string
+}
 
 type Product = {
     title: string
@@ -19,6 +23,7 @@ type Product = {
     primaryCtaUrl?: string
     featureBullets?: string[]
     techSpecs?: TechSpec[]
+    downloads?: Download[]
     body?: any
     seoTitle?: string
     seoDescription?: string
@@ -81,6 +86,10 @@ export default async function ProductPage({ params }: { params: { slug: string }
       primaryCtaUrl,
       featureBullets,
       techSpecs,
+      "downloads": downloads[]{
+        "asset": asset->{url},
+        description
+      },
       seoTitle,
       seoDescription
     }`,
@@ -224,6 +233,35 @@ export default async function ProductPage({ params }: { params: { slug: string }
                                 </div>
                             ))}
                         </dl>
+                    </div>
+                )}
+
+                {product.downloads && product.downloads.length > 0 && (
+                    <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 mt-6">
+                        <h3 className="text-sm font-semibold mb-3">Downloads & Resources</h3>
+                        <div className="space-y-2">
+                            {product.downloads.map((download, index) => (
+                                <a
+                                    key={index}
+                                    href={download.asset.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors group"
+                                >
+                                    <svg className="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-slate-200 group-hover:text-sky-400 transition-colors">
+                                            {download.description || 'Download PDF'}
+                                        </p>
+                                    </div>
+                                    <svg className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 )}
             </section>
