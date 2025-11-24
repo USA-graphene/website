@@ -33,5 +33,10 @@
     "eslint": "^8.51.0",
     "eslint-config-next": "^14.0.0",
     "typescript": "^5.2.0"
+  },
+  "overrides": {
+    "next-sanity": {
+      "sanity": "$sanity"
+    }
   }
 }
