@@ -6,5 +6,5 @@ import product from './product'
 import application from './application'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [post, author, category, product, application],
+  types: [product, application, post, author, category],
 }
