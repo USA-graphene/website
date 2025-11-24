@@ -42,6 +42,24 @@ export default defineType({
             of: [{ type: 'block' }],
         }),
         defineField({
+            name: 'downloads',
+            title: 'Downloads & Resources',
+            type: 'array',
+            of: [
+                {
+                    type: 'file',
+                    options: { accept: '.pdf' },
+                    fields: [
+                        {
+                            name: 'description',
+                            type: 'string',
+                            title: 'Description',
+                        },
+                    ],
+                },
+            ],
+        }),
+        defineField({
             name: 'relatedProducts',
             title: 'Related Products',
             type: 'array',

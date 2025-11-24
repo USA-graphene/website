@@ -48,6 +48,30 @@ export default defineType({
             of: [{ type: 'string' }],
         }),
         defineField({
+            name: 'price',
+            title: 'Price',
+            type: 'number',
+            description: 'Optional price for the product.',
+        }),
+        defineField({
+            name: 'downloads',
+            title: 'Downloads & Test Results',
+            type: 'array',
+            of: [
+                {
+                    type: 'file',
+                    options: { accept: '.pdf' },
+                    fields: [
+                        {
+                            name: 'description',
+                            type: 'string',
+                            title: 'Description',
+                        },
+                    ],
+                },
+            ],
+        }),
+        defineField({
             name: 'specifications',
             title: 'Specifications',
             type: 'array',
