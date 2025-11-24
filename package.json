@@ -36,7 +36,11 @@
   },
   "overrides": {
     "next-sanity": {
-      "sanity": "$sanity"
+      "sanity": "$sanity",
+      "@sanity/ui": "2.16.22"
+    },
+    "@sanity/vision": {
+      "@sanity/ui": "2.16.22"
     }
   }
 }
