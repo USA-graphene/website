@@ -15,18 +15,38 @@ export default function Footer() {
     social: [
       {
         name: 'Facebook',
-        href: '#',
+        href: 'https://www.facebook.com/groups/415750762731948',
         icon: Facebook,
       },
       {
         name: 'Twitter',
-        href: '#',
+        href: 'https://x.com/USA_Graphene',
         icon: Twitter,
       },
       {
         name: 'Instagram',
-        href: '#',
+        href: 'https://www.instagram.com/usa_graphene/',
         icon: Instagram,
+      },
+      {
+        name: 'TikTok',
+        href: 'https://www.tiktok.com/@usa.graphene',
+        icon: (props: any) => (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+          >
+            <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+          </svg>
+        ),
       },
       {
         name: 'LinkedIn',
