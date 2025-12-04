@@ -13,17 +13,29 @@ export const metadata: Metadata = {
     template: '%s | USA Graphene',
   },
   description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery. Scalable, high-purity turbostratic graphene solutions for concrete, plastics, and energy storage.',
-  keywords: ['Graphene', 'Industrial Graphene', 'Graphene Manufacturer', 'Graphene Machinery', 'Turbostratic Graphene', 'USA Graphene', 'Carbon Materials'],
+  keywords: [
+    'Graphene',
+    'Turbostratic Graphene',
+    'Graphene Manufacturer USA',
+    'Bulk Graphene Powder',
+    'Graphene Production Machinery',
+    'Flash Joule Heating',
+    'Industrial Graphene Applications',
+    'Conductive Additives',
+    'Graphene Concrete',
+    'Graphene Plastics',
+    'Carbon Nanomaterials'
+  ],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://usa-graphene.com',
     siteName: 'USA Graphene',
     title: 'USA Graphene | Industrial Graphene Materials & Machinery',
-    description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery.',
+    description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery. Scalable, high-purity turbostratic graphene solutions.',
     images: [
       {
-        url: '/og-image.jpg', // We should ensure this image exists or use a generic one
+        url: '/hero-graphene.jpg',
         width: 1200,
         height: 630,
         alt: 'USA Graphene Industrial Solutions',

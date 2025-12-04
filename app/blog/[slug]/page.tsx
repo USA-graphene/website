@@ -20,8 +20,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const { slug } = await params
     const post = await getPost(slug)
     if (!post) return { title: 'Post Not Found' }
+
+    const title = `${post.title} - USA Graphene Blog`
+    const description = post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog' // Ideally fetch a snippet or description field
+    const imageUrl = post.mainImage ? urlFor(post.mainImage).url() : '/hero-graphene.jpg'
+
     return {
-        title: `${post.title} - USA Graphene`,
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            type: 'article',
+            publishedTime: post.publishedAt,
+            authors: [post.author],
+            images: [
+                {
+                    url: imageUrl,
+                    width: 1200,
+                    height: 630,
+                    alt: post.title,
+                }
+            ]
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [imageUrl],
+        }
     }
 }
 
@@ -33,8 +60,34 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         notFound()
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        image: post.mainImage ? urlFor(post.mainImage).url() : 'https://usa-graphene.com/hero-graphene.jpg',
+        datePublished: post.publishedAt,
+        dateModified: post.publishedAt, // Should ideally be _updatedAt
+        author: {
+            '@type': 'Person',
+            name: post.author || 'USA Graphene Team',
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'USA Graphene',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://usa-graphene.com/logo.png'
+            }
+        },
+        description: post.title // Should be a summary
+    }
+
     return (
         <div className="bg-white px-6 py-32 lg:px-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="mx-auto max-w-3xl text-base leading-7 text-gray-700">
                 <p className="text-base font-semibold leading-7 text-primary-600">
                     {post.categories && post.categories.join(', ')}
