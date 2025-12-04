@@ -4,7 +4,42 @@ import { FadeIn } from '@/components/FadeIn'
 
 export const metadata: Metadata = {
     title: 'About Us - USA Graphene',
-    description: 'Learn about our mission to revolutionize industries with graphene.',
+    description: 'Learn about our mission to revolutionize industries with graphene. We are a team of makers and engineers building the future of carbon materials.',
+    alternates: {
+        canonical: 'https://usa-graphene.com/about',
+    },
+    openGraph: {
+        title: 'About Us - USA Graphene',
+        description: 'Learn about our mission to revolutionize industries with graphene.',
+        url: 'https://usa-graphene.com/about',
+        images: [
+            {
+                url: '/about-background.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'USA Graphene Team',
+            },
+        ],
+    },
+}
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+        {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://usa-graphene.com',
+        },
+        {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'About Us',
+            item: 'https://usa-graphene.com/about',
+        },
+    ],
 }
 
 const stats = [
@@ -17,6 +52,10 @@ const stats = [
 export default function About() {
     return (
         <div className="relative isolate overflow-hidden bg-white px-6 py-32 lg:px-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="absolute inset-0 -z-10 h-full w-full">
                 <Image
                     src="/about-background.jpg"

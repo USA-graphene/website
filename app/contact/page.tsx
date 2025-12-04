@@ -1,13 +1,42 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-    title: 'Contact Us - USA Graphene',
-    description: 'Get in touch with USA Graphene for inquiries and partnerships.',
+    title: 'Contact USA Graphene - Get in Touch for Graphene Solutions',
+    description: 'Contact USA Graphene for inquiries about graphene materials, production machinery, partnerships, and custom solutions. Email us at info@usa-graphene.com.',
+    alternates: {
+        canonical: 'https://usa-graphene.com/contact',
+    },
+    openGraph: {
+        title: 'Contact Us - USA Graphene',
+        description: 'Get in touch with USA Graphene for inquiries and partnerships.',
+        url: 'https://usa-graphene.com/contact',
+    },
+}
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'USA Graphene',
+    url: 'https://usa-graphene.com',
+    email: 'info@usa-graphene.com',
+    address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'US',
+    },
+    contactPoint: {
+        '@type': 'ContactPoint',
+        email: 'info@usa-graphene.com',
+        contactType: 'customer service',
+    },
 }
 
 export default function Contact() {
     return (
         <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div
                 className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
                 aria-hidden="true"

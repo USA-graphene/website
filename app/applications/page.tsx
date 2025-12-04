@@ -5,8 +5,55 @@ import Image from 'next/image'
 import { FadeIn } from '@/components/FadeIn'
 
 export const metadata: Metadata = {
-    title: 'Applications - USA Graphene',
-    description: 'Discover the versatile applications of graphene in various industries.',
+    title: 'Graphene Applications - Electronics, Energy Storage, Composites | USA Graphene',
+    description: 'Discover how graphene is revolutionizing electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Industrial graphene solutions from USA Graphene.',
+    alternates: {
+        canonical: 'https://usa-graphene.com/applications',
+    },
+    openGraph: {
+        title: 'Graphene Applications - USA Graphene',
+        description: 'Discover the versatile applications of graphene in various industries.',
+        url: 'https://usa-graphene.com/applications',
+        images: [
+            {
+                url: '/applications-background.jpg',
+                width: 1200,
+                height: 630,
+                alt: 'Graphene Applications',
+            },
+        ],
+    },
+}
+
+const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+        {
+            '@type': 'Question',
+            name: 'What are the main applications of graphene?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Graphene is used in electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Its exceptional conductivity, strength, and versatility make it ideal for next-generation technologies.',
+            },
+        },
+        {
+            '@type': 'Question',
+            name: 'How does graphene improve battery performance?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Graphene-based electrodes enable faster charging times, higher capacity, and longer lifespans for batteries and supercapacitors due to its high electrical conductivity and surface area.',
+            },
+        },
+        {
+            '@type': 'Question',
+            name: 'Can graphene be used in construction materials?',
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes, graphene can reinforce materials to create lighter, stronger, and more durable composites for automotive, aerospace, and construction applications.',
+            },
+        },
+    ],
 }
 
 const applications = [
@@ -51,6 +98,10 @@ const applications = [
 export default function Applications() {
     return (
         <div className="bg-white relative isolate">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="absolute inset-0 -z-10 h-full w-full">
                 <Image
                     src="/applications-background.jpg"

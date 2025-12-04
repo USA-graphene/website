@@ -26,7 +26,7 @@ export default function Hero() {
           >
             <div className="mb-6">
               <div className="text-2xl font-bold text-primary-600">USA Graphene</div>
-              <div className="text-sm font-medium text-gray-500">Industrial Graphene Machines & Materials</div>
+              <p className="text-sm font-medium text-gray-500">Industrial Graphene Machines & Materials</p>
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
               Industrial Graphene, <span className="text-primary-600">Delivered on Your Terms.</span>
@@ -71,7 +71,7 @@ export default function Hero() {
             >
               <Image
                 src="/hero-graphene.jpg"
-                alt="Graphene Structure"
+                alt="Industrial graphene production machinery and turbostratic graphene materials from USA Graphene"
                 width={1200}
                 height={800}
                 className="w-[76rem] rounded-2xl mix-blend-multiply"

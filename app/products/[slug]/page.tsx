@@ -51,6 +51,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       seoTitle,
       seoDescription,
       shortDescription,
+      productType,
+      price,
       "heroImage": heroImage{asset->{url}}
     }`,
         { slug }
@@ -60,10 +62,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         return {}
     }
 
+    const title = product.seoTitle || `${product.title} - USA Graphene`
+    const description = product.seoDescription || product.shortDescription || `High-quality ${product.title} from USA Graphene. Industrial-grade graphene solutions.`
+
     return {
-        title: product.seoTitle || product.title,
-        description: product.seoDescription || product.shortDescription,
+        title,
+        description,
+        alternates: {
+            canonical: `https://usa-graphene.com/products/${slug}`,
+        },
         openGraph: {
+            title,
+            description,
+            type: 'website',
+            url: `https://usa-graphene.com/products/${slug}`,
+            images: product.heroImage?.asset?.url ? [
+                {
+                    url: product.heroImage.asset.url,
+                    width: 1200,
+                    height: 630,
+                    alt: product.title,
+                }
+            ] : [],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
             images: product.heroImage?.asset?.url ? [product.heroImage.asset.url] : [],
         },
     }
