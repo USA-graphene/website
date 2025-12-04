@@ -43,8 +43,8 @@ export async function generateStaticParams() {
     }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const { slug } = params
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params
     const product = await client.fetch(
         `*[_type == "product" && slug.current == $slug][0]{
       title,
@@ -69,8 +69,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
-    const { slug } = params
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params
 
     const product: Product | null = await client.fetch(
         `*[_type == "product" && slug.current == $slug][0]{
