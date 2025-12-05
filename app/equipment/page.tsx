@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { Microscope, Settings, Layers, Activity } from 'lucide-react'
+import { Microscope, Settings, Layers, Activity, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
     title: 'Graphene Equipment - USA Graphene',
@@ -26,6 +26,11 @@ const equipment = [
         name: 'Transfer Systems',
         description: 'Automated systems for clean and damage-free transfer of graphene to target substrates.',
         icon: Activity,
+    },
+    {
+        name: 'Flash Graphene Production',
+        description: 'Automated Flash Joule Heating systems for rapid, bulk production of turbostratic graphene.',
+        icon: Zap,
     },
 ]
 
@@ -69,6 +74,36 @@ export default function Equipment() {
                                 </div>
                             ))}
                         </dl>
+                    </div>
+
+                    {/* Flash Graphene Machine Section */}
+                    <div className="mt-32 overflow-hidden bg-gray-900 rounded-3xl shadow-2xl lg:grid lg:grid-cols-2 lg:gap-4">
+                        <div className="px-6 pb-12 pt-10 sm:px-16 sm:pt-16 lg:py-16 lg:pr-0 xl:py-20 lg:pl-20">
+                            <div className="lg:self-center">
+                                <div className="flex items-center gap-x-3 mb-4">
+                                    <Zap className="h-6 w-6 text-yellow-400" />
+                                    <h2 className="text-base font-semibold leading-7 text-yellow-400">Flash Joule Heating</h2>
+                                </div>
+                                <h3 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                                    Automated Flash Graphene Production
+                                </h3>
+                                <p className="mt-6 text-lg leading-8 text-gray-300">
+                                    Fully automated machine to produce 20 gr of turbostratic graphene in 20sec.
+                                </p>
+                                <p className="mt-4 text-base leading-7 text-gray-400">
+                                    Experience the future of material synthesis. Engineered for unprecedented speed and precision, this powerhouse transforms raw carbon into high-quality turbostratic graphene in the blink of an eye. Capable of producing 20 grams in just 20 seconds, it redefines scalability, making industrial-grade graphene accessible on demand. No harsh chemicals, no long wait times—just pure, high-performance graphene at the push of a button.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="aspect-h-9 aspect-w-16 mask-gradient lg:aspect-none lg:h-full">
+                            <Image
+                                className="w-full h-full object-cover bg-gray-800 lg:h-full"
+                                src="/flash-graphene-machine.jpg"
+                                alt="Flash Graphene Machine"
+                                width={1024}
+                                height={1024}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
