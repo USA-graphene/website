@@ -6,6 +6,25 @@ import Link from 'next/link'
 export const metadata: Metadata = {
     title: 'Products - USA Graphene',
     description: 'High-quality turbostratic graphene materials and production equipment.',
+    openGraph: {
+        title: 'Graphene Materials & Machinery | USA Graphene Products',
+        description: 'Browse our catalog of turbostratic graphene powder, conductive inks, and industrial production machinery.',
+        url: 'https://usa-graphene.com/products',
+        siteName: 'USA Graphene',
+        images: [
+            {
+                url: '/hero-graphene.jpg', // Using hero image as fallback for listing page
+                width: 1200,
+                height: 800,
+                alt: 'USA Graphene Products Catalog',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
+    },
+    alternates: {
+        canonical: '/products',
+    },
 }
 
 export const revalidate = 60
