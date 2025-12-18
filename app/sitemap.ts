@@ -6,15 +6,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fetch all blog posts
   const posts = await client.fetch(`
-    *[_type == "post"] {
+    *[_type == "post" && defined(slug.current)] {
       "slug": slug.current,
+      _updatedAt,
       publishedAt
     }
   `)
 
   // Fetch all products
   const products = await client.fetch(`
-    *[_type == "product"] {
+    *[_type == "product" && defined(slug.current)] {
       "slug": slug.current,
       _updatedAt
     }
@@ -22,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogUrls = posts.map((post: any) => ({
     url: `${baseUrl}/blog/${post.slug}`,
-    lastModified: post.publishedAt ? new Date(post.publishedAt) : new Date(),
+    lastModified: post._updatedAt ? new Date(post._updatedAt) : (post.publishedAt ? new Date(post.publishedAt) : new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
@@ -42,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/equipment',
     '/blog',
     '/contact',
+    '/privacy',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

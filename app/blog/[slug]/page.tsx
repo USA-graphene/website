@@ -9,6 +9,7 @@ async function getPost(slug: string) {
     title,
     mainImage,
     publishedAt,
+    excerpt,
     body,
     "author": author->name,
     "categories": categories[]->title
@@ -22,12 +23,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!post) return { title: 'Post Not Found' }
 
     const title = `${post.title} - USA Graphene Blog`
-    const description = post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog' // Ideally fetch a snippet or description field
+    const description = post.excerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
     const imageUrl = post.mainImage ? urlFor(post.mainImage).url() : '/hero-graphene.jpg'
 
     return {
         title,
         description,
+        alternates: {
+            canonical: `https://usa-graphene.com/blog/${slug}`,
+        },
         openGraph: {
             title,
             description,

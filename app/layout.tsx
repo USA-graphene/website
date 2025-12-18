@@ -48,6 +48,9 @@ export const metadata: Metadata = {
     description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery.',
     creator: '@USA_Graphene',
   },
+  alternates: {
+    canonical: 'https://usa-graphene.com',
+  },
   robots: {
     index: true,
     follow: true,
