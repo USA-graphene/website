@@ -62,6 +62,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: 'YOUR_GOOGLE_VERIFICATION_CODE_HERE', // TODO: Add your verification code from GSC
+  },
 }
 
 export default function RootLayout({
