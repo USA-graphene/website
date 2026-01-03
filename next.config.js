@@ -63,6 +63,40 @@ const nextConfig = {
       { source: '/author/:path*', destination: '/blog', permanent: true },
       { source: '/feed/:path*', destination: '/sitemap.xml', permanent: true },
       { source: '/comments/feed/:path*', destination: '/blog', permanent: true },
+
+      // WordPress Date-based Permalinks (e.g., /2025/08/07/post-slug)
+      {
+        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug',
+        destination: '/blog/:slug',
+        permanent: true
+      },
+      {
+        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug/',
+        destination: '/blog/:slug',
+        permanent: true
+      },
+
+      // Additional WordPress paths found in GSC
+      { source: '/contact-us', destination: '/contact', permanent: true },
+      { source: '/contact-us/', destination: '/contact', permanent: true },
+      { source: '/learning', destination: '/blog', permanent: true },
+      { source: '/learning/', destination: '/blog', permanent: true },
+      { source: '/graphene-blog', destination: '/blog', permanent: true },
+      { source: '/graphene-blog/', destination: '/blog', permanent: true },
+      { source: '/:year(\\d{4})', destination: '/blog', permanent: true },
+      { source: '/:year(\\d{4})/', destination: '/blog', permanent: true },
+      { source: '/:year(\\d{4})/:month(\\d{2})', destination: '/blog', permanent: true },
+      { source: '/:year(\\d{4})/:month(\\d{2})/', destination: '/blog', permanent: true },
+      { source: '/:year(\\d{4})/page/:path*', destination: '/blog', permanent: true },
+      { source: '/page/:path*', destination: '/', permanent: true },
+
+      // WordPress Sitemap Patterns
+      { source: '/sitemap_index.xml', destination: '/sitemap.xml', permanent: true },
+      { source: '/post-sitemap.xml', destination: '/sitemap.xml', permanent: true },
+      { source: '/page-sitemap.xml', destination: '/sitemap.xml', permanent: true },
+
+      // index.php pattern
+      { source: '/index.php/:path*', destination: '/:path*', permanent: true },
     ]
   },
 }
