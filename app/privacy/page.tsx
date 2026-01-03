@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
     title: 'Privacy Policy | USA Graphene',
     description: 'Privacy Policy for USA Graphene website.',
+    alternates: {
+        canonical: '/privacy',
+    },
 }
 
 export default function PrivacyPolicy() {

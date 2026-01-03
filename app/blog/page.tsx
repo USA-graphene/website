@@ -6,6 +6,9 @@ import Image from 'next/image'
 export const metadata: Metadata = {
     title: 'Blog - USA Graphene',
     description: 'Latest news and updates from USA Graphene.',
+    alternates: {
+        canonical: '/blog',
+    },
 }
 
 export const revalidate = 0
