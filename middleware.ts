@@ -2,41 +2,43 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-    const hostname = request.headers.get('host')
-    const url = request.nextUrl.clone()
+    const hostname = request.headers.get('host') || ''
+    const pathname = request.nextUrl.pathname
+    const searchParams = request.nextUrl.search
 
-    // 1. Redirect graphene2026.com (and www.graphene2026.com) to usa-graphene.com
-    if (hostname && (hostname.includes('graphene2026.com'))) {
-        url.host = 'usa-graphene.com'
-        url.protocol = 'https'
-        return NextResponse.redirect(url, 301)
+    // Source and Target domains
+    const oldDomain = 'graphene2026.com'
+    const canonicalDomain = 'usa-graphene.com'
+
+    // 1. Cross-domain redirect (Old Domain -> New Domain)
+    if (hostname.includes(oldDomain)) {
+        return NextResponse.redirect(
+            `https://${canonicalDomain}${pathname}${searchParams}`,
+            301
+        )
     }
 
-    // 2. Enforce non-www (Normalize www.usa-graphene.com to usa-graphene.com)
-    if (hostname === 'www.usa-graphene.com') {
-        url.host = 'usa-graphene.com'
-        url.protocol = 'https'
-        return NextResponse.redirect(url, 301)
-    }
-
-    // 3. Enforce HTTPS (Especially if not handled by provider)
-    const xForwardedProto = request.headers.get('x-forwarded-proto')
-    if (xForwardedProto === 'http') {
-        url.protocol = 'https'
-        return NextResponse.redirect(url, 301)
-    }
-
-    // 4. Handle trailing slashes (Next.js default is to redirect to non-trailing slash)
-    // If the path ends with / and is not just the root, redirect
-    if (url.pathname !== '/' && url.pathname.endsWith('/')) {
-        url.pathname = url.pathname.slice(0, -1)
-        return NextResponse.redirect(url, 301)
+    // 2. Canonical Domain Normalization (www -> non-www)
+    if (hostname === `www.${canonicalDomain}`) {
+        return NextResponse.redirect(
+            `https://${canonicalDomain}${pathname}${searchParams}`,
+            301
+        )
     }
 
     return NextResponse.next()
 }
 
-// Only run middleware on pages and blog posts, ignore static assets
+// Only run on page routes, avoid static assets and internal Next.js paths
 export const config = {
-    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - api (API routes)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         */
+        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    ],
 }
