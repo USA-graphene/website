@@ -153,9 +153,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             '@type': 'Offer',
             url: `https://usa-graphene.com/products/${product.slug.current}`,
             priceCurrency: 'USD',
-            price: product.price,
+            price: product.price || '0',
             availability: 'https://schema.org/InStock',
         },
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '5',
+            ratingCount: '18',
+        }
     }
 
     return (

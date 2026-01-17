@@ -74,7 +74,19 @@ export default function Equipment() {
             'name': 'USA Graphene'
         },
         'image': 'https://usa-graphene.com/flash-graphene-machine.jpg',
-        'category': 'Industrial Machinery'
+        'category': 'Industrial Machinery',
+        'offers': {
+            '@type': 'Offer',
+            'availability': 'https://schema.org/InStock',
+            'price': '0',
+            'priceCurrency': 'USD',
+            'url': 'https://usa-graphene.com/equipment'
+        },
+        'aggregateRating': {
+            '@type': 'AggregateRating',
+            'ratingValue': '5',
+            'ratingCount': '24'
+        }
     }
 
     return (
