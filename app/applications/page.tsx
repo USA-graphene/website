@@ -25,36 +25,72 @@ export const metadata: Metadata = {
     },
 }
 
-const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-        {
-            '@type': 'Question',
-            name: 'What are the main applications of graphene?',
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Graphene is used in electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Its exceptional conductivity, strength, and versatility make it ideal for next-generation technologies.',
+const jsonLd = [
+    {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+            {
+                '@type': 'Question',
+                name: 'What are the main applications of graphene?',
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Graphene is used in electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Its exceptional conductivity, strength, and versatility make it ideal for next-generation technologies.',
+                },
             },
-        },
-        {
-            '@type': 'Question',
-            name: 'How does graphene improve battery performance?',
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Graphene-based electrodes enable faster charging times, higher capacity, and longer lifespans for batteries and supercapacitors due to its high electrical conductivity and surface area.',
+            {
+                '@type': 'Question',
+                name: 'How does graphene improve battery performance?',
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Graphene-based electrodes enable faster charging times, higher capacity, and longer lifespans for batteries and supercapacitors due to its high electrical conductivity and surface area.',
+                },
             },
-        },
-        {
-            '@type': 'Question',
-            name: 'Can graphene be used in construction materials?',
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: 'Yes, graphene significantly enhances concrete performance. Real-world customer testing demonstrated compressive strength of 24.3 MPa at 28 days with less than 0.1% graphene dosage. Graphene-enhanced concrete shows improved durability, reduced cracking, and better overall structural performance for construction applications.',
+            {
+                '@type': 'Question',
+                name: 'Can graphene be used in construction materials?',
+                acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: 'Yes, graphene significantly enhances concrete performance. Real-world customer testing demonstrated compressive strength of 24.3 MPa at 28 days with less than 0.1% graphene dosage. Graphene-enhanced concrete shows improved durability, reduced cracking, and better overall structural performance for construction applications.',
+                },
             },
-        },
-    ],
-}
+        ],
+    },
+    {
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        name: 'Graphene-Enhanced Concrete Sample Testing',
+        description: 'Real-world customer testing reaching 24.3 MPa compressive strength at 28 days with graphene-enhanced concrete.',
+        thumbnailUrl: [
+            'https://usa-graphene.com/graphene_1.jpg'
+        ],
+        uploadDate: '2025-12-03T09:41:52-05:00',
+        contentUrl: 'https://usa-graphene.com/VIDEO-2025-12-03-09-41-52.mp4',
+        embedUrl: 'https://usa-graphene.com/applications',
+        potentialAction: {
+            '@type': 'SeekAction',
+            'target': 'https://usa-graphene.com/applications?t={seek_to_second_number}',
+            'startOffset-input': 'required name=seek_to_second_number'
+        }
+    },
+    {
+        '@context': 'https://schema.org',
+        '@type': 'VideoObject',
+        name: 'Graphene Material Preparation Process',
+        description: 'Step-by-step process showing how graphene is integrated into concrete mixtures for enhanced performance.',
+        thumbnailUrl: [
+            'https://usa-graphene.com/hero-graphene.jpg'
+        ],
+        uploadDate: '2025-12-03T09:41:56-05:00',
+        contentUrl: 'https://usa-graphene.com/VIDEO-2025-12-03-09-41-56.mp4',
+        embedUrl: 'https://usa-graphene.com/applications',
+        potentialAction: {
+            '@type': 'SeekAction',
+            'target': 'https://usa-graphene.com/applications?t={seek_to_second_number}',
+            'startOffset-input': 'required name=seek_to_second_number'
+        }
+    }
+]
 
 const applications = [
     {
