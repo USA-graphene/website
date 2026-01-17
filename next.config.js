@@ -79,6 +79,9 @@ const nextConfig = {
       // Additional WordPress paths found in GSC
       { source: '/contact-us', destination: '/contact', permanent: true },
       { source: '/contact-us/', destination: '/contact', permanent: true },
+      { source: '/about-us', destination: '/about', permanent: true },
+      { source: '/about-us-2', destination: '/about', permanent: true },
+      { source: '/about-us-2/', destination: '/about', permanent: true },
       { source: '/learning', destination: '/blog', permanent: true },
       { source: '/learning/', destination: '/blog', permanent: true },
       { source: '/graphene-blog', destination: '/blog', permanent: true },
