@@ -5,7 +5,10 @@ export default function robots(): MetadataRoute.Robots {
         rules: {
             userAgent: '*',
             allow: '/',
-            disallow: '/studio/',
+            disallow: [
+                '/studio/',
+                '/_next/',
+            ],
         },
         sitemap: 'https://usa-graphene.com/sitemap.xml',
     }
