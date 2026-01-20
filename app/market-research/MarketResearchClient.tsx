@@ -260,9 +260,9 @@ export default function MarketResearchClient() {
                                     The market is moving faster than ever. Contact our experts to discuss how graphene can power your next innovation or explore our latest insights.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                    <a href="/market-research-2026.webarchive" download className="px-8 py-4 bg-white text-primary-700 rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl shadow-black/20 scale-100 hover:scale-105 flex items-center justify-center gap-2">
+                                    <a href="/market-research-2026.pdf" download className="px-8 py-4 bg-white text-primary-700 rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl shadow-black/20 scale-100 hover:scale-105 flex items-center justify-center gap-2">
                                         <Database className="w-5 h-5" />
-                                        Download Full Archive (.webarchive)
+                                        Download Full Report (PDF)
                                     </a>
                                     <a href="/contact" className="px-8 py-4 bg-primary-500/20 border border-white/30 text-white rounded-2xl font-bold hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
                                         Contact Our Experts
