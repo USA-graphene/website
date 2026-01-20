@@ -10,6 +10,7 @@ export default function Footer() {
       { name: 'Products', href: '/products' },
       { name: 'Applications', href: '/applications' },
       { name: 'Equipment', href: '/equipment' },
+      { name: 'Market Research', href: '/market-research' },
       { name: 'Blog', href: '/blog' },
       { name: 'Contact', href: '/contact' },
     ],
