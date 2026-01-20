@@ -87,7 +87,7 @@ export default async function Blog() {
                                 </div>
                                 <div className="group relative">
                                     <h3 className="text-xl font-bold leading-snug text-gray-900 group-hover:text-primary-600 transition-colors">
-                                        <Link href={`/blog/${post.slug.current}`}>
+                                        <Link href={`/blog/${encodeURIComponent(post.slug.current)}`}>
                                             <span className="absolute inset-0" />
                                             {post.title}
                                         </Link>

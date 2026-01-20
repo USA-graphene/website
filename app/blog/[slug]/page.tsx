@@ -3,6 +3,8 @@ import { PortableText } from '@portabletext/react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
+export const revalidate = 0
+
 async function getPost(slug: string) {
     const query = `*[_type == "post" && slug.current == $slug][0] {
     _id,

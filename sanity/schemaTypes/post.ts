@@ -16,7 +16,12 @@ export default defineType({
       title: "Slug",
       type: "slug",
       options: { source: "title", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().custom((slug) => {
+        if (slug?.current && /\s/.test(slug.current)) {
+          return "Slug cannot contain spaces. Please use the 'Generate' button to create a URL-friendly slug.";
+        }
+        return true;
+      }),
     }),
     defineField({
       name: "author",
