@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Graphene Materials & Machinery | USA Graphene Products',
         description: 'Browse our catalog of turbostratic graphene powder, conductive inks, and industrial production machinery.',
-        url: 'https://usa-graphene.com/products',
+        url: 'https://www.usa-graphene.com/products',
         siteName: 'USA Graphene',
         images: [
             {

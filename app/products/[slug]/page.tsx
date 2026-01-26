@@ -69,13 +69,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         title,
         description,
         alternates: {
-            canonical: `https://usa-graphene.com/products/${slug}`,
+            canonical: `https://www.usa-graphene.com/products/${slug}`,
         },
         openGraph: {
             title,
             description,
             type: 'website',
-            url: `https://usa-graphene.com/products/${slug}`,
+            url: `https://www.usa-graphene.com/products/${slug}`,
             images: product.heroImage?.asset?.url ? [
                 {
                     url: product.heroImage.asset.url,
@@ -151,7 +151,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         },
         offers: {
             '@type': 'Offer',
-            url: `https://usa-graphene.com/products/${product.slug.current}`,
+            url: `https://www.usa-graphene.com/products/${product.slug.current}`,
             priceCurrency: 'USD',
             price: product.price || '0',
             availability: 'https://schema.org/InStock',

@@ -7,7 +7,7 @@ import Footer from '@/components/Footer'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://usa-graphene.com'),
+  metadataBase: new URL('https://www.usa-graphene.com'),
   title: {
     default: 'USA Graphene | Industrial Graphene Materials & Machinery',
     template: '%s | USA Graphene',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://usa-graphene.com',
+    url: 'https://www.usa-graphene.com',
     siteName: 'USA Graphene',
     title: 'USA Graphene | Industrial Graphene Materials & Machinery',
     description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery. Scalable, high-purity turbostratic graphene solutions.',
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'YOUR_GOOGLE_VERIFICATION_CODE_HERE', // TODO: Add your verification code from GSC
+    // google: 'add-your-code-here',
   },
 }
 

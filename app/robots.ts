@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
                 '/_next/',
             ],
         },
-        sitemap: 'https://usa-graphene.com/sitemap.xml',
+        sitemap: 'https://www.usa-graphene.com/sitemap.xml',
     }
 }

@@ -6,12 +6,12 @@ export const metadata: Metadata = {
     title: 'About Us - USA Graphene',
     description: 'Learn about our mission to revolutionize industries with graphene. We are a team of makers and engineers building the future of carbon materials.',
     alternates: {
-        canonical: 'https://usa-graphene.com/about',
+        canonical: 'https://www.usa-graphene.com/about',
     },
     openGraph: {
         title: 'About Us - USA Graphene',
         description: 'Learn about our mission to revolutionize industries with graphene.',
-        url: 'https://usa-graphene.com/about',
+        url: 'https://www.usa-graphene.com/about',
         images: [
             {
                 url: '/about-background.jpg',
@@ -31,13 +31,13 @@ const jsonLd = {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://usa-graphene.com',
+            item: 'https://www.usa-graphene.com',
         },
         {
             '@type': 'ListItem',
             position: 2,
             name: 'About Us',
-            item: 'https://usa-graphene.com/about',
+            item: 'https://www.usa-graphene.com/about',
         },
     ],
 }

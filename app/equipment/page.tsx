@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Industrial Graphene Production Equipment | USA Graphene',
         description: 'Automated Flash Joule Heating systems and CVD reactors for scalable graphene production.',
-        url: 'https://usa-graphene.com/equipment',
+        url: 'https://www.usa-graphene.com/equipment',
         siteName: 'USA Graphene',
         images: [
             {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         type: 'website',
     },
     alternates: {
-        canonical: '/equipment',
+        canonical: 'https://www.usa-graphene.com/equipment',
     },
 }
 
@@ -73,14 +73,14 @@ export default function Equipment() {
             '@type': 'Brand',
             'name': 'USA Graphene'
         },
-        'image': 'https://usa-graphene.com/flash-graphene-machine.jpg',
+        'image': 'https://www.usa-graphene.com/flash-graphene-machine.jpg',
         'category': 'Industrial Machinery',
         'offers': {
             '@type': 'Offer',
             'availability': 'https://schema.org/InStock',
             'price': '0',
             'priceCurrency': 'USD',
-            'url': 'https://usa-graphene.com/equipment'
+            'url': 'https://www.usa-graphene.com/equipment'
         },
         'aggregateRating': {
             '@type': 'AggregateRating',

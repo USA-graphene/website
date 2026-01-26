@@ -8,6 +8,7 @@ export const revalidate = 0
 async function getPost(slug: string) {
     const query = `*[_type == "post" && slug.current == $slug][0] {
     _id,
+    _updatedAt,
     title,
     mainImage,
     publishedAt,
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         title,
         description,
         alternates: {
-            canonical: `https://usa-graphene.com/blog/${slug}`,
+            canonical: `https://www.usa-graphene.com/blog/${slug}`,
         },
         openGraph: {
             title,
@@ -70,7 +71,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: post.title,
-        image: post.mainImage ? urlFor(post.mainImage).url() : 'https://usa-graphene.com/hero-graphene.jpg',
+        image: post.mainImage ? urlFor(post.mainImage).url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
         datePublished: post.publishedAt,
         dateModified: post.publishedAt, // Should ideally be _updatedAt
         author: {
@@ -82,10 +83,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             name: 'USA Graphene',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://usa-graphene.com/logo.png'
+                url: 'https://www.usa-graphene.com/logo.png'
             }
         },
-        description: post.title // Should be a summary
     }
 
     return (
@@ -120,6 +120,6 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     <PortableText value={post.body} />
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

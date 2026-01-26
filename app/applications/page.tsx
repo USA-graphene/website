@@ -8,12 +8,12 @@ export const metadata: Metadata = {
     title: 'Graphene Applications - Electronics, Energy Storage, Composites | USA Graphene',
     description: 'Discover how graphene is revolutionizing electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Industrial graphene solutions from USA Graphene.',
     alternates: {
-        canonical: 'https://usa-graphene.com/applications',
+        canonical: 'https://www.usa-graphene.com/applications',
     },
     openGraph: {
         title: 'Graphene Applications - USA Graphene',
         description: 'Discover the versatile applications of graphene in various industries.',
-        url: 'https://usa-graphene.com/applications',
+        url: 'https://www.usa-graphene.com/applications',
         images: [
             {
                 url: '/applications-background.jpg',
@@ -62,14 +62,14 @@ const jsonLd = [
         name: 'Graphene-Enhanced Concrete Sample Testing',
         description: 'Real-world customer testing reaching 24.3 MPa compressive strength at 28 days with graphene-enhanced concrete.',
         thumbnailUrl: [
-            'https://usa-graphene.com/graphene_1.jpg'
+            'https://www.usa-graphene.com/graphene_1.jpg'
         ],
         uploadDate: '2025-12-03T09:41:52-05:00',
-        contentUrl: 'https://usa-graphene.com/VIDEO-2025-12-03-09-41-52.mp4',
-        embedUrl: 'https://usa-graphene.com/applications',
+        contentUrl: 'https://www.usa-graphene.com/VIDEO-2025-12-03-09-41-52.mp4',
+        embedUrl: 'https://www.usa-graphene.com/applications',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://usa-graphene.com/applications?t={seek_to_second_number}',
+            'target': 'https://www.usa-graphene.com/applications?t={seek_to_second_number}',
             'startOffset-input': 'required name=seek_to_second_number'
         }
     },
@@ -79,14 +79,14 @@ const jsonLd = [
         name: 'Graphene Material Preparation Process',
         description: 'Step-by-step process showing how graphene is integrated into concrete mixtures for enhanced performance.',
         thumbnailUrl: [
-            'https://usa-graphene.com/hero-graphene.jpg'
+            'https://www.usa-graphene.com/hero-graphene.jpg'
         ],
         uploadDate: '2025-12-03T09:41:56-05:00',
-        contentUrl: 'https://usa-graphene.com/VIDEO-2025-12-03-09-41-56.mp4',
-        embedUrl: 'https://usa-graphene.com/applications',
+        contentUrl: 'https://www.usa-graphene.com/VIDEO-2025-12-03-09-41-56.mp4',
+        embedUrl: 'https://www.usa-graphene.com/applications',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://usa-graphene.com/applications?t={seek_to_second_number}',
+            'target': 'https://www.usa-graphene.com/applications?t={seek_to_second_number}',
             'startOffset-input': 'required name=seek_to_second_number'
         }
     }
