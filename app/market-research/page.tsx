@@ -6,6 +6,9 @@ export const metadata: Metadata = {
     title: "Graphene Market Outlook 2026: Global Growth & USA Strategy | USA Graphene",
     description: "Explore the comprehensive Graphene Market Outlook for 2026. Discover global growth projections ($2.9B by 2026), USA's strategic role, and key drivers in energy, electronics, and aerospace.",
     keywords: ["Graphene Market Outlook 2026", "Graphene Market Size", "USA Graphene Strategy", "Graphene Industry Growth", "Graphene Applications 2026", "Materials Science Research"],
+    alternates: {
+        canonical: '/market-research',
+    },
     openGraph: {
         title: "Graphene Market Outlook 2026: Global Growth Report",
         description: "Official market research on the future of graphene. Projections, investment surge, and USA's tactical leadership in advanced materials.",

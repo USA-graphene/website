@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     title: 'Graphene Production News & Industry Insights | USA Graphene Blog',
     description: 'Explore the latest breakthroughs in graphene technology, industrial applications in concrete and plastics, and graphene price trends for 2025 and beyond.',
     alternates: {
-        canonical: 'https://www.usa-graphene.com/blog',
+        canonical: '/blog',
     },
 }
 

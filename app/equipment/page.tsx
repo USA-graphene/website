@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         type: 'website',
     },
     alternates: {
-        canonical: 'https://www.usa-graphene.com/equipment',
+        canonical: '/equipment',
     },
 }
 

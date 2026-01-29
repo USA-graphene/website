@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         title,
         description,
         alternates: {
-            canonical: `https://www.usa-graphene.com/blog/${slug}`,
+            canonical: `/blog/${slug}`,
         },
         openGraph: {
             title,

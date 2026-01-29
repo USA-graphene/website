@@ -4,7 +4,7 @@ export const metadata: Metadata = {
     title: 'Contact USA Graphene - Get in Touch for Graphene Solutions',
     description: 'Contact USA Graphene for inquiries about graphene materials, production machinery, partnerships, and custom solutions. Email us at info@usa-graphene.com.',
     alternates: {
-        canonical: 'https://www.usa-graphene.com/contact',
+        canonical: '/contact',
     },
     openGraph: {
         title: 'Contact Us - USA Graphene',

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'USA Graphene | Industrial Graphene Powder & Production Machinery',
   description: 'USA Graphene produces high-quality turbostratic graphene using flash joule heating. We supply bulk graphene powder and industrial production machinery.',
   alternates: {
-    canonical: 'https://www.usa-graphene.com',
+    canonical: '/',
   },
 }
 

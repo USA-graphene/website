@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     title: 'About Us - USA Graphene',
     description: 'Learn about our mission to revolutionize industries with graphene. We are a team of makers and engineers building the future of carbon materials.',
     alternates: {
-        canonical: 'https://www.usa-graphene.com/about',
+        canonical: '/about',
     },
     openGraph: {
         title: 'About Us - USA Graphene',

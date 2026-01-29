@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Graphene Applications - Electronics, Energy Storage, Composites | USA Graphene',
     description: 'Discover how graphene is revolutionizing electronics, energy storage, composites, coatings, biomedical devices, and water filtration. Industrial graphene solutions from USA Graphene.',
     alternates: {
-        canonical: 'https://www.usa-graphene.com/applications',
+        canonical: '/applications',
     },
     openGraph: {
         title: 'Graphene Applications - USA Graphene',
