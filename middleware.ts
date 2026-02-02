@@ -5,9 +5,9 @@ export function middleware(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const url = request.nextUrl.clone()
 
-    // 1. Handle the old domain redirect (graphene2026.com)
-    // 2. Handle non-www to www redirect for the main domain
-    if (host.includes('graphene2026.com') || host === 'usa-graphene.com') {
+    // Only redirect the old domain (graphene2026.com) to the new domain
+    // Canonical tags will handle www vs non-www preference
+    if (host.includes('graphene2026.com')) {
         url.host = 'www.usa-graphene.com'
         url.protocol = 'https'
         return NextResponse.redirect(url.toString(), 301)
