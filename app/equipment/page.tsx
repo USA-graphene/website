@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Industrial Graphene Production Equipment | USA Graphene',
         description: 'Automated Flash Joule Heating systems and CVD reactors for scalable graphene production.',
-        url: 'https://www.usa-graphene.com/equipment',
+        url: 'https://www.usa-graphene.com/equipment/',
         siteName: 'USA Graphene',
         images: [
             {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         type: 'website',
     },
     alternates: {
-        canonical: '/equipment',
+        canonical: '/equipment/',
     },
 }
 

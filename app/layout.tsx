@@ -4,6 +4,8 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
+import AIChatWidget from '@/components/AIChatWidget'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -75,6 +77,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <AIChatWidget />
       </body>
     </html>
   )

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     title: 'Graphene Production News & Industry Insights | USA Graphene Blog',
     description: 'Explore the latest breakthroughs in graphene technology, industrial applications in concrete and plastics, and graphene price trends for 2025 and beyond.',
     alternates: {
-        canonical: '/blog',
+        canonical: '/blog/',
     },
 }
 
@@ -87,7 +87,7 @@ export default async function Blog() {
                                 </div>
                                 <div className="group relative">
                                     <h3 className="text-xl font-bold leading-snug text-gray-900 group-hover:text-primary-600 transition-colors">
-                                        <Link href={`/blog/${encodeURIComponent(post.slug.current)}`}>
+                                        <Link href={`/blog/${encodeURIComponent(post.slug.current)}/`}>
                                             <span className="absolute inset-0" />
                                             {post.title}
                                         </Link>

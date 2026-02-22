@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'Graphene Materials & Machinery | USA Graphene Products',
         description: 'Browse our catalog of turbostratic graphene powder, conductive inks, and industrial production machinery.',
-        url: 'https://www.usa-graphene.com/products',
+        url: 'https://www.usa-graphene.com/products/',
         siteName: 'USA Graphene',
         images: [
             {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
         type: 'website',
     },
     alternates: {
-        canonical: '/products',
+        canonical: '/products/',
     },
 }
 
@@ -61,7 +61,7 @@ export default async function ProductsPage() {
                     {products.map((product: any) => (
                         <Link
                             key={product._id}
-                            href={`/products/${product.slug.current}`}
+                            href={`/products/${product.slug.current}/`}
                             className="group relative flex flex-col overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition-colors duration-300"
                         >
                             <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-800">
