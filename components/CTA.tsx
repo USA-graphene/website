@@ -35,14 +35,14 @@ export default function CTA() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Link
-              href="/contact"
+              href="/contact/"
               className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-primary-600 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-all flex items-center gap-2"
             >
               Contact Us
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/about"
+              href="/about/"
               className="text-sm font-semibold leading-6 text-white hover:text-primary-100 transition-colors"
             >
               Learn more <span aria-hidden="true">→</span>

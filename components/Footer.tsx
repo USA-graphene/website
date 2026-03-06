@@ -6,13 +6,13 @@ export default function Footer() {
   const navigation = {
     main: [
       { name: 'Home', href: '/' },
-      { name: 'About', href: '/about' },
-      { name: 'Products', href: '/products' },
-      { name: 'Applications', href: '/applications' },
-      { name: 'Equipment', href: '/equipment' },
-      { name: 'Market Research', href: '/market-research' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Contact', href: '/contact' },
+      { name: 'About', href: '/about/' },
+      { name: 'Products', href: '/products/' },
+      { name: 'Applications', href: '/applications/' },
+      { name: 'Equipment', href: '/equipment/' },
+      { name: 'Market Research', href: '/market-research/' },
+      { name: 'Blog', href: '/blog/' },
+      { name: 'Contact', href: '/contact/' },
     ],
     social: [
       {
@@ -107,7 +107,7 @@ export default function Footer() {
               <ul role="list" className="mt-4 space-y-4">
                 <li>
                   <Link
-                    href="/privacy"
+                    href="/privacy/"
                     className="text-base text-gray-300 hover:text-white transition-colors"
                   >
                     Privacy Policy

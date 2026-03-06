@@ -15,7 +15,9 @@ async function getPost(slug: string) {
     excerpt,
     body,
     "author": author->name,
-    "categories": categories[]->title
+    "categories": categories[]->title,
+    seoTitle,
+    seoDescription
   }`
     return client.fetch(query, { slug })
 }
@@ -25,19 +27,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const post = await getPost(slug)
     if (!post) return { title: 'Post Not Found' }
 
-    const title = `${post.title} - USA Graphene Blog`
-    const description = post.excerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
+    const title = post.seoTitle || `${post.title} - USA Graphene Blog`
+
+    // Clean up excerpt: remove literal [...] and trim
+    const cleanExcerpt = post.excerpt ? post.excerpt.replace(/\[\.\.\.\]/g, '').trim() : ''
+    const description = post.seoDescription || cleanExcerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
     const imageUrl = post.mainImage ? urlFor(post.mainImage).url() : '/hero-graphene.jpg'
+    const canonicalUrl = `https://www.usa-graphene.com/blog/${slug}/`
 
     return {
         title,
         description,
         alternates: {
-            canonical: `/blog/${slug}/`,
+            canonical: canonicalUrl,
         },
         openGraph: {
             title,
             description,
+            url: canonicalUrl,
             type: 'article',
             publishedTime: post.publishedAt,
             authors: [post.author],
@@ -73,7 +80,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         headline: post.title,
         image: post.mainImage ? urlFor(post.mainImage).url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
         datePublished: post.publishedAt,
-        dateModified: post.publishedAt, // Should ideally be _updatedAt
+        dateModified: post._updatedAt || post.publishedAt,
         author: {
             '@type': 'Person',
             name: post.author || 'USA Graphene Team',
@@ -88,6 +95,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         },
     }
 
+    const filteredCategories = post.categories?.filter((cat: string) => cat.toLowerCase() !== 'p') || []
+
     return (
         <div className="bg-white px-6 py-32 lg:px-8">
             <script
@@ -95,9 +104,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <div className="mx-auto max-w-3xl text-base leading-7 text-gray-700">
-                <p className="text-base font-semibold leading-7 text-primary-600">
-                    {post.categories && post.categories.join(', ')}
-                </p>
+                {filteredCategories.length > 0 && (
+                    <p className="text-base font-semibold leading-7 text-primary-600">
+                        {filteredCategories.join(', ')}
+                    </p>
+                )}
                 <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{post.title}</h1>
                 <div className="mt-6 flex items-center gap-x-4 text-xs">
                     <time dateTime={post.publishedAt} className="text-gray-500">

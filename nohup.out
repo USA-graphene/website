@@ -1,0 +1,62 @@
+2026-03-01T23:57:49.519-05:00 Gateway failed to start: gateway already running (pid 52282); lock timeout after 5000ms
+If the gateway is supervised, stop it with: openclaw gateway stop
+2026-03-01T23:57:49.638-05:00 Port 18789 is already in use.
+2026-03-01T23:57:49.639-05:00 - pid 52282 raimis: openclaw-gateway (127.0.0.1:18789)
+2026-03-01T23:57:49.640-05:00 - Gateway already running locally. Stop it (openclaw gateway stop) or use a different port.
+2026-03-01T23:57:49.646-05:00 Gateway service appears loaded. Stop it first.
+2026-03-01T23:57:49.646-05:00 Tip: openclaw gateway stop
+2026-03-01T23:57:49.647-05:00 Or: launchctl bootout gui/$UID/ai.openclaw.gateway
+2026-03-01T23:59:25.091-05:00 Gateway failed to start: gateway already running (pid 56648); lock timeout after 5000ms
+If the gateway is supervised, stop it with: openclaw gateway stop
+2026-03-01T23:59:25.207-05:00 Port 18789 is already in use.
+2026-03-01T23:59:25.208-05:00 - pid 56648 raimis: openclaw-gateway (127.0.0.1:18789)
+2026-03-01T23:59:25.208-05:00 - Gateway already running locally. Stop it (openclaw gateway stop) or use a different port.
+2026-03-01T23:59:25.215-05:00 Gateway service appears loaded. Stop it first.
+2026-03-01T23:59:25.216-05:00 Tip: openclaw gateway stop
+2026-03-01T23:59:25.217-05:00 Or: launchctl bootout gui/$UID/ai.openclaw.gateway
+
+[36m╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║[35m    🦞  ████████╗  ████████╗  ████████╗  ██╗   ██╗  ██╗       [36m║
+║[35m        ██╔═══██╗ ██╔═══██╗ ██╔═════╝  ███╗  ██║  ██║       [36m║
+║[35m        ██║   ██║ ██████╔╝  ██████╗    ██╔██ ██║  ██║       [36m║
+║[35m        ██║   ██║ ██╔═══╝   ██╔═══╝    ██║╚████║  ╚═╝       [36m║
+║[35m        ╚██████╔╝ ██║       ████████╗  ██║ ╚███║  ██╗       [36m║
+║[35m         ╚═════╝  ╚═╝       ╚═══════╝  ╚═╝  ╚══╝  ╚═╝       [36m║
+║                                                              ║
+║[33m    ██████╗ ██╗      █████╗ ██╗    ██╗    ██████╗  ██████╗   [36m║
+║[33m   ██╔════╝ ██║     ██╔══██╗██║    ██║    ██╔══██╗██╔═══██╗  [36m║
+║[33m   ██║      ██║     ███████║██║ █╗ ██║    ██████╔╝██║   ██║  [36m║
+║[33m   ██║      ██║     ██╔══██║██║███╗██║    ██╔══██╗██║   ██║  [36m║
+║[33m   ╚██████╗ ███████╗██║  ██║╚███╔███╔╝    ██████╔╝╚██████╔╝  [36m║
+║[33m    ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝     ╚═════╝  ╚═════╝   [36m║
+║                                                              ║
+║[32m              Your Personal AI Assistant Dashboard              [36m║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝[0m
+
+[1m[36m                    EXFOLIATE! EXFOLIATE! 🦞[0m
+
+[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+
+[1m[37m🚀 Boot Dashboard Starting...[0m
+
+[32m✓[0m Server initialized
+[32m✓[0m API routes configured
+[32m✓[0m Dashboard ready
+
+[32m✓[0m Listening on [1m[36mhttp://localhost:3000[0m
+
+[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+[36m📚 Documentation:[0m https://docs.openclaw.ai
+[36m🌐 Website:[0m       https://openclaw.ai
+[36m💬 Discord:[0m       https://discord.gg/clawd
+[36m🛠️  Skills Hub:[0m    https://clawhub.com
+
+[33m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m
+
+[1m[32mPress Ctrl+C to stop the server[0m
+
+

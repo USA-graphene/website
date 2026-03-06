@@ -5,8 +5,14 @@ export function middleware(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const url = request.nextUrl.clone()
 
+    // Redirect non-www to www for usa-graphene.com
+    if (host === 'usa-graphene.com') {
+        url.host = 'www.usa-graphene.com'
+        url.protocol = 'https'
+        return NextResponse.redirect(url.toString(), 301)
+    }
+
     // Only redirect the old domain (graphene2026.com) to the new domain
-    // Canonical tags will handle www vs non-www preference
     if (host.includes('graphene2026.com')) {
         url.host = 'www.usa-graphene.com'
         url.protocol = 'https'

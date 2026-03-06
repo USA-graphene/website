@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
             title,
             description,
             type: 'website',
-            url: `https://www.usa-graphene.com/products/${slug}`,
+            url: `https://www.usa-graphene.com/products/${slug}/`,
             images: product.heroImage?.asset?.url ? [
                 {
                     url: product.heroImage.asset.url,
@@ -151,9 +151,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         },
         offers: {
             '@type': 'Offer',
-            url: `https://www.usa-graphene.com/products/${product.slug.current}`,
+            url: `https://www.usa-graphene.com/products/${product.slug.current}/`,
             priceCurrency: 'USD',
             price: product.price || '0',
+            priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
             availability: 'https://schema.org/InStock',
         },
         aggregateRating: {
@@ -247,7 +248,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                 <p>
                                     Need bulk orders or a custom application?{' '}
                                     <Link
-                                        href="/contact"
+                                        href="/contact/"
                                         className="underline decoration-sky-400/60 hover:decoration-sky-300"
                                     >
                                         Talk to our team

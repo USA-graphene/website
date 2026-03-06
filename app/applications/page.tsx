@@ -66,10 +66,10 @@ const jsonLd = [
         ],
         uploadDate: '2025-12-03T09:41:52-05:00',
         contentUrl: 'https://www.usa-graphene.com/VIDEO-2025-12-03-09-41-52.mp4',
-        embedUrl: 'https://www.usa-graphene.com/applications',
+        embedUrl: 'https://www.usa-graphene.com/applications/',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://www.usa-graphene.com/applications?t={seek_to_second_number}',
+            'target': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}',
             'startOffset-input': 'required name=seek_to_second_number'
         }
     },
@@ -83,10 +83,10 @@ const jsonLd = [
         ],
         uploadDate: '2025-12-03T09:41:56-05:00',
         contentUrl: 'https://www.usa-graphene.com/VIDEO-2025-12-03-09-41-56.mp4',
-        embedUrl: 'https://www.usa-graphene.com/applications',
+        embedUrl: 'https://www.usa-graphene.com/applications/',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://www.usa-graphene.com/applications?t={seek_to_second_number}',
+            'target': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}',
             'startOffset-input': 'required name=seek_to_second_number'
         }
     }
@@ -293,7 +293,7 @@ export default function Applications() {
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6">
                             <Link
-                                href="/contact"
+                                href="/contact/"
                                 className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-primary-600 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white flex items-center gap-2"
                             >
                                 Request a sample & call

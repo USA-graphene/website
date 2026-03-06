@@ -80,7 +80,8 @@ export default function Equipment() {
             'availability': 'https://schema.org/InStock',
             'price': '0',
             'priceCurrency': 'USD',
-            'url': 'https://www.usa-graphene.com/equipment'
+            'priceValidUntil': `${new Date().getFullYear() + 1}-12-31`,
+            'url': 'https://www.usa-graphene.com/equipment/'
         },
         'aggregateRating': {
             '@type': 'AggregateRating',

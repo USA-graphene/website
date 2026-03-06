@@ -264,7 +264,7 @@ export default function MarketResearchClient() {
                                         <Database className="w-5 h-5" />
                                         Download Full Report (PDF)
                                     </a>
-                                    <a href="/contact" className="px-8 py-4 bg-primary-500/20 border border-white/30 text-white rounded-2xl font-bold hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
+                                    <a href="/contact/" className="px-8 py-4 bg-primary-500/20 border border-white/30 text-white rounded-2xl font-bold hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
                                         Contact Our Experts
                                     </a>
                                 </div>

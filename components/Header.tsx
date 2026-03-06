@@ -10,12 +10,12 @@ export default function Header() {
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Products', href: '/products' },
-    { name: 'Applications', href: '/applications' },
-    { name: 'Equipment', href: '/equipment' },
-    { name: 'Market Research', href: '/market-research' },
-    { name: 'Blog', href: '/blog' },
+    { name: 'About', href: '/about/' },
+    { name: 'Products', href: '/products/' },
+    { name: 'Applications', href: '/applications/' },
+    { name: 'Equipment', href: '/equipment/' },
+    { name: 'Market Research', href: '/market-research/' },
+    { name: 'Blog', href: '/blog/' },
   ]
 
   return (
@@ -38,7 +38,7 @@ export default function Header() {
               </Link>
             ))}
             <Link
-              href="/contact"
+              href="/contact/"
               className="rounded-md bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700 transition-colors"
             >
               Contact Us
@@ -72,7 +72,7 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                href="/contact"
+                href="/contact/"
                 className="block rounded-md bg-primary-600 px-3 py-2 text-base font-semibold text-white hover:bg-primary-700"
                 onClick={() => setMobileMenuOpen(false)}
               >

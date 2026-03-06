@@ -47,14 +47,14 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Link
-              href="/applications"
+              href="/applications/"
               className="rounded-md bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all flex items-center gap-2"
             >
               Explore Applications
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/contact"
+              href="/contact/"
               className="text-sm font-semibold leading-6 text-gray-900 hover:text-primary-600 transition-colors"
             >
               Contact Us <span aria-hidden="true">→</span>
