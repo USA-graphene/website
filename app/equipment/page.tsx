@@ -81,7 +81,40 @@ export default function Equipment() {
             'price': '0',
             'priceCurrency': 'USD',
             'priceValidUntil': `${new Date().getFullYear() + 1}-12-31`,
-            'url': 'https://www.usa-graphene.com/equipment/'
+            'url': 'https://www.usa-graphene.com/equipment/',
+            'hasMerchantReturnPolicy': {
+                '@type': 'MerchantReturnPolicy',
+                'applicableCountry': 'US',
+                'returnPolicyCategory': 'https://schema.org/MerchantReturnNotPermitted',
+                'merchantReturnDays': 0
+            },
+            'shippingDetails': {
+                '@type': 'OfferShippingDetails',
+                'shippingDestination': {
+                    '@type': 'DefinedRegion',
+                    'addressCountry': 'US'
+                },
+                'shippingRate': {
+                    '@type': 'MonetaryAmount',
+                    'value': '0',
+                    'currency': 'USD'
+                },
+                'deliveryTime': {
+                    '@type': 'ShippingDeliveryTime',
+                    'handlingTime': {
+                        '@type': 'QuantitativeValue',
+                        'minValue': 1,
+                        'maxValue': 5,
+                        'unitCode': 'DAY'
+                    },
+                    'transitTime': {
+                        '@type': 'QuantitativeValue',
+                        'minValue': 5,
+                        'maxValue': 14,
+                        'unitCode': 'DAY'
+                    }
+                }
+            }
         },
         'aggregateRating': {
             '@type': 'AggregateRating',
