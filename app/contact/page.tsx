@@ -17,7 +17,7 @@ const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'USA Graphene',
-    url: 'https://www.usa-graphene.com',
+    url: 'https://www.usa-graphene.com/',
     email: 'info@usa-graphene.com',
     address: {
         '@type': 'PostalAddress',

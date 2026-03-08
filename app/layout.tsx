@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://www.usa-graphene.com',
+    url: 'https://www.usa-graphene.com/',
     siteName: 'USA Graphene',
     title: 'USA Graphene | Industrial Graphene Materials & Machinery',
     description: 'Leading US manufacturer of industrial-grade graphene materials and production machinery. Scalable, high-purity turbostratic graphene solutions.',

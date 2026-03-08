@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'USA Graphene | Industrial Graphene Powder & Production Machinery',
   description: 'USA Graphene produces high-quality turbostratic graphene using flash joule heating. We supply bulk graphene powder and industrial production machinery.',
   alternates: {
-    canonical: '/',
+    canonical: 'https://www.usa-graphene.com/',
   },
 }
 
@@ -17,7 +17,7 @@ export default function Home() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'USA Graphene',
-    url: 'https://www.usa-graphene.com',
+    url: 'https://www.usa-graphene.com/',
     logo: 'https://www.usa-graphene.com/logo.png', // Ensure this exists or update
     sameAs: [
       'https://twitter.com/USA_Graphene',

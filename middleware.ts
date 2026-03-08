@@ -7,9 +7,15 @@ export function middleware(request: NextRequest) {
 
     // Redirect non-www to www for usa-graphene.com
     if (host === 'usa-graphene.com') {
-        url.host = 'www.usa-graphene.com'
-        url.protocol = 'https'
-        return NextResponse.redirect(url.toString(), 301)
+        const newUrl = new URL(request.url)
+        newUrl.host = 'www.usa-graphene.com'
+
+        // Ensure trailing slash is present if not already there (except for file-like paths)
+        if (!newUrl.pathname.endsWith('/') && !newUrl.pathname.includes('.')) {
+            newUrl.pathname += '/'
+        }
+
+        return NextResponse.redirect(newUrl.toString(), 301)
     }
 
     // Only redirect the old domain (graphene2026.com) to the new domain

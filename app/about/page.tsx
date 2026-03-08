@@ -31,13 +31,13 @@ const jsonLd = {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://www.usa-graphene.com',
+            item: 'https://www.usa-graphene.com/',
         },
         {
             '@type': 'ListItem',
             position: 2,
             name: 'About Us',
-            item: 'https://www.usa-graphene.com/about',
+            item: 'https://www.usa-graphene.com/about/',
         },
     ],
 }
