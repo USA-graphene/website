@@ -1,0 +1,51 @@
+
+> montfort-maritime-graphene@1.0.0 build
+> next build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/raimis/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/raimis/aa/package-lock.json
+
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Environments: .env.local
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Turbopack build encountered 1 warnings:
+[next]/internal/font/google/ad66f9afd8947f86-s.woff2
+Error while requesting resource
+There was an issue establishing a connection while requesting https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7W0Q5n-wU.woff2
+
+
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+[next]/internal/font/google/inter_5972bc34.module.css:26:9
+Module not found: Can't resolve '@vercel/turbopack-next/internal/font/google/font'
+[0m [90m 24 |[39m   font[33m-[39mdisplay[33m:[39m swap[33m;[39m
+ [90m 25 |[39m   src[33m:[39m url([33m@[39mvercel[33m/[39mturbopack[33m-[39mnext[33m/[39minternal[33m/[39mfont[33m/[39mgoogle[35m/font?{%22url%22:%22https:/[39m[33m/[39mfonts[33m.[39mgstatic[33m.[39mcom[33m/[39ms[33m/[39minter[33m/[39mv20[33m/[39m[33mUcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7W0Q5n[39m[33m-[39mwU[33m.[39mwoff2[33m%[39m[35m22[39m[33m,[39m[33m%[39m[35m22[39mpreload[33m%[39m[35m22[39m[33m:[39m[36mfalse[39m[33m,[39m[33m%[39m[35m22[39mhas_size_adjust[33m%[39m[35m22[39m[33m:[39m[36mtrue[39m}) format([32m'woff2'[39m)[33m;[39m
+[31m[1m>[22m[39m[90m 26 |[39m   unicode[33m-[39mrange[33m:[39m [33mU[39m[33m+[39m[35m1[39m[33mF00[39m[33m-[39m[35m1[39m[33mFFF[39m[33m;[39m
+ [90m    |[39m         [31m[1m^[22m[39m
+ [90m 27 |[39m }
+ [90m 28 |[39m [90m/* greek */[39m
+ [90m 29 |[39m [33m@[39mfont[33m-[39mface {[0m
+
+Import map: Resolved by import map
+
+
+Import trace:
+  Server Component:
+    [next]/internal/font/google/inter_5972bc34.module.css
+    [next]/internal/font/google/inter_5972bc34.js
+    ./aa/app/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> ([next]/internal/font/google/inter_5972bc34.module.css:26:9)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
