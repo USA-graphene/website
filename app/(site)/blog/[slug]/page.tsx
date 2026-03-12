@@ -128,7 +128,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     </div>
                 )}
                 <div className="mt-10 max-w-2xl prose prose-lg prose-primary mx-auto">
-                    <PortableText value={post.body} />
+                    {Array.isArray(post.body)
+                        ? <PortableText value={post.body} />
+                        : typeof post.body === 'string'
+                            ? post.body.split('\n\n').map((p: string, i: number) => <p key={i}>{p}</p>)
+                            : null}
                 </div>
             </div>
         </div >
