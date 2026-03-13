@@ -36,6 +36,10 @@ const client = createClient({
     token: token,
 })
 
+function generateKey() {
+    return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10)
+}
+
 const postData = {
     title: "Unlocking the Sodium Revolution: The High-Tech Recipes for Graphene Powder in Next-Gen Batteries",
     bodyText: `1. Introduction: The Spark of a Sodium-Powered Future
@@ -255,7 +259,12 @@ async function createPost() {
         excerpt: "The global demand for sustainable energy storage is driving the development of alternatives to lithium-ion batteries, with Sodium-Ion Batteries (SIBs) emerging as a promising solution.",
         body: postData.bodyText.split('\n\n').map(paragraph => ({
             _type: 'block',
-            children: [{ _type: 'span', text: paragraph }],
+            _key: generateKey(),
+            children: [{ 
+                _type: 'span', 
+                _key: generateKey(),
+                text: paragraph.trim() 
+            }],
             markDefs: [],
             style: 'normal'
         }))

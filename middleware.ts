@@ -5,20 +5,8 @@ export function middleware(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const url = request.nextUrl.clone()
 
-    // Redirect non-www to www for usa-graphene.com
-    if (host === 'usa-graphene.com') {
-        const newUrl = new URL(request.url)
-        newUrl.host = 'www.usa-graphene.com'
-
-        // Ensure trailing slash is present if not already there (except for file-like paths)
-        if (!newUrl.pathname.endsWith('/') && !newUrl.pathname.includes('.')) {
-            newUrl.pathname += '/'
-        }
-
-        return NextResponse.redirect(newUrl.toString(), 301)
-    }
-
-    // Only redirect the old domain (graphene2026.com) to the new domain
+    // Redirect the old domain (graphene2026.com) to the new domain
+    // Vercel and canonical tags handle www vs non-www and trailing slashes for the main domain
     if (host.includes('graphene2026.com')) {
         url.host = 'www.usa-graphene.com'
         url.protocol = 'https'

@@ -26,6 +26,10 @@ const client = createClient({
     token: process.env.SANITY_API_TOKEN,
 })
 
+function generateKey() {
+    return Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10)
+}
+
 // Helper function to convert plain text to Portable Text blocks with heading detection
 function textToPortableText(text) {
     // Split into paragraphs
@@ -40,7 +44,12 @@ function textToPortableText(text) {
         if (headingMatch) {
             return {
                 _type: 'block',
-                children: [{ _type: 'span', text: trimmed }],
+                _key: generateKey(),
+                children: [{ 
+                    _type: 'span', 
+                    _key: generateKey(),
+                    text: trimmed 
+                }],
                 markDefs: [],
                 style: 'h2'
             }
@@ -51,7 +60,12 @@ function textToPortableText(text) {
         if (subHeadingMatch) {
             return {
                 _type: 'block',
-                children: [{ _type: 'span', text: trimmed }],
+                _key: generateKey(),
+                children: [{ 
+                    _type: 'span', 
+                    _key: generateKey(),
+                    text: trimmed 
+                }],
                 markDefs: [],
                 style: 'h3'
             }
@@ -60,7 +74,12 @@ function textToPortableText(text) {
         // Regular paragraph
         return {
             _type: 'block',
-            children: [{ _type: 'span', text: trimmed }],
+            _key: generateKey(),
+            children: [{ 
+                _type: 'span', 
+                _key: generateKey(),
+                text: trimmed 
+            }],
             markDefs: [],
             style: 'normal'
         }
