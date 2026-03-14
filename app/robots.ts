@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: [
                 '/studio/',
-                '/_next/',
+                '/_next/webpack-hmr',
+                '/_next/data/',
             ],
         },
         sitemap: 'https://www.usa-graphene.com/sitemap.xml',
