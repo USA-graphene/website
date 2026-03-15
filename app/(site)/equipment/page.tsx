@@ -58,7 +58,7 @@ const equipment = [
     },
     {
         name: 'Pulsed Electrical resistive carbon conversion system',
-        description: 'Pulsed Electrical resistive carbon conversion system',
+        description: 'A scalable pulsed electrical carbon conversion technology that transforms carbon feedstocks into turbostratic graphene using rapid high-temperature electrical pulses in modular reactors.',
         icon: Zap,
     },
 ]
