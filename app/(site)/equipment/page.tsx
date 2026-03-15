@@ -175,14 +175,14 @@ export default function Equipment() {
                                     <h2 className="text-base font-semibold leading-7 text-yellow-400">Pulsed Electrical Carbon Conversion Technology</h2>
                                 </div>
                                 <h3 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                                    High-Yield Flash Graphene Reactor
+                                    High-Yield Graphene Conversion Reactor
                                 </h3>
                                 <p className="mt-6 text-lg leading-8 text-gray-300">
-                                    Revolutionary FJH system capable of producing 20 grams of high-purity turbostratic graphene in just 20 seconds.
+                                    Advanced pulsed electrical reactor capable of converting 20 grams of carbon feedstock into high-purity turbostratic graphene in 20-second cycles using controlled high-temperature electrical pulses.
                                 </p>
                                 <div className="mt-4 text-base leading-7 text-gray-400 space-y-4">
                                     <p>
-                                        Experience the future of material synthesis with our automated Flash Joule Heating (FJH) reactor. This powerhouse is engineered for unprecedented speed and precision, instantly converting carbon precursors into high-quality turbostratic graphene.
+                                        Experience the next generation of material synthesis with our automated Pulsed Electrical Resistive Carbon Conversion System. This industrial reactor uses precisely controlled high-temperature electrical pulses to rapidly convert carbon materials into turbostratic few-layer graphene without the use of chemical reagents. The system is engineered for reliability, repeatability, and scalable production.
                                     </p>
                                     <p>
                                         <strong>Key Advantages:</strong>
