@@ -57,7 +57,7 @@ const equipment = [
         icon: Activity,
     },
     {
-        name: 'Flash Graphene Reactors',
+        name: 'Pulsed Electrical resistive carbon conversion system',
         description: 'Pulsed Electrical resistive carbon conversion system',
         icon: Zap,
     },
