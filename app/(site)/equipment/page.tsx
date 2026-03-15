@@ -58,7 +58,7 @@ const equipment = [
     },
     {
         name: 'Flash Graphene Reactors',
-        description: 'Automated Flash Joule Heating (FJH) systems for rapid, solvent-free bulk production of high-purity turbostratic graphene.',
+        description: 'Pulsed Electrical resistive carbon conversion system',
         icon: Zap,
     },
 ]
