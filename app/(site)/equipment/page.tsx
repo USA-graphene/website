@@ -172,7 +172,7 @@ export default function Equipment() {
                             <div className="lg:self-center">
                                 <div className="flex items-center gap-x-3 mb-4">
                                     <Zap className="h-6 w-6 text-yellow-400" />
-                                    <h2 className="text-base font-semibold leading-7 text-yellow-400">Flash Joule Heating Technology</h2>
+                                    <h2 className="text-base font-semibold leading-7 text-yellow-400">Pulsed Electrical Carbon Conversion Technology</h2>
                                 </div>
                                 <h3 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                                     High-Yield Flash Graphene Reactor
