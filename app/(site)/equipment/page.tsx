@@ -188,12 +188,13 @@ export default function Equipment() {
                                         <strong>Key Advantages:</strong>
                                     </p>
                                     <ul className="list-disc pl-5 space-y-2">
-                                        <li><strong>Rapid Production:</strong> Synthesizes 20g batches in 20-second cycles.</li>
-                                        <li><strong>Eco-Friendly:</strong> Solvent-free, chemical-free process with low energy consumption.</li>
-                                        <li><strong>Industrial Scalability:</strong> Designed for continuous operation to meet bulk demand.</li>
+                                        <li><strong>Rapid Production:</strong> Produces 20 g graphene batches in ~20-second cycles.</li>
+                                        <li><strong>Chemical-Free Process:</strong> Graphene is produced using high-temperature electrical conversion without solvents or chemical reagents.</li>
+                                        <li><strong>Energy Efficient:</strong> Electrical pulses deliver energy directly to the carbon feedstock for rapid conversion.</li>
+                                        <li><strong>Industrial Scalability:</strong> Modular reactor architecture allows parallel operation for large-scale production.</li>
                                     </ul>
                                     <p>
-                                        This technology redefines scalability, making industrial-grade graphene accessible for applications in concrete, composites, and energy storage.
+                                        This technology enables scalable industrial graphene production, supporting applications in concrete reinforcement, advanced composites, coatings, energy storage, and conductive materials.
                                     </p>
                                 </div>
                             </div>
