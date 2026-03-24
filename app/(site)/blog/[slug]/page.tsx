@@ -3,13 +3,8 @@ import { PortableText } from '@portabletext/react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 3600
-
-export async function generateStaticParams() {
-    const query = `*[_type == "post"]{ "slug": slug.current }`
-    const posts = await client.fetch(query)
-    return posts.map((post: { slug: string }) => ({ slug: post.slug }))
-}
+export const revalidate = 60
+export const dynamicParams = true
 
 async function getPost(slug: string) {
     const query = `*[_type == "post" && slug.current == $slug][0] {

@@ -16,6 +16,32 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Legacy WordPress Date-based Permalinks (e.g., /2025/08/07/post-slug)
+      // Catch both with and without trailing slash in a single redirect to avoid chains
+      {
+        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug',
+        destination: '/blog/:slug/',
+        permanent: true
+      },
+      {
+        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug/',
+        destination: '/blog/:slug/',
+        permanent: true
+      },
+
+      // Legacy search results from previous site
+      {
+        source: '/results/search-results/',
+        destination: '/',
+        permanent: true
+      },
+      // Deleted blog post
+      {
+        source: '/blog/graphene-activities-in-2023-your-chemistry-could-change-from-today/',
+        destination: '/blog/',
+        permanent: true
+      },
+
       // Blog post transitions from root to /blog/
       { source: '/765', destination: '/blog/765/', permanent: true },
       { source: '/beyond-silicon-the-graphene-revolution', destination: '/blog/beyond-silicon-the-graphene-revolution/', permanent: true },
@@ -64,18 +90,6 @@ const nextConfig = {
       { source: '/author/:path*', destination: '/blog/', permanent: true },
       { source: '/feed/:path*', destination: '/sitemap.xml', permanent: true },
       { source: '/comments/feed/:path*', destination: '/blog/', permanent: true },
-
-      // WordPress Date-based Permalinks (e.g., /2025/08/07/post-slug)
-      {
-        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug',
-        destination: '/blog/:slug/',
-        permanent: true
-      },
-      {
-        source: '/:year(\\d{4})/:month(\\d{2})/:day(\\d{2})/:slug/',
-        destination: '/blog/:slug/',
-        permanent: true
-      },
 
       // Additional WordPress paths found in GSC
       { source: '/contact-us', destination: '/contact/', permanent: true },

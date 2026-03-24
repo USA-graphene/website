@@ -9,6 +9,7 @@ export default function robots(): MetadataRoute.Robots {
                 '/studio/',
                 '/_next/webpack-hmr',
                 '/_next/data/',
+                '/results/',
             ],
         },
         sitemap: 'https://www.usa-graphene.com/sitemap.xml',
