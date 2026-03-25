@@ -3,39 +3,117 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+type UiMessage = {
+    role: 'user' | 'ai';
+    content: string;
+    sources?: { title: string; url: string; type: string }[];
+    handoff?: {
+        needsContact?: boolean;
+        label?: string;
+        url?: string;
+    };
+};
+
+const STARTER_MESSAGE: UiMessage = {
+    role: 'ai',
+    content: 'Hello! I am Carbon, your graphene technical consultant. Ask me about products, applications, equipment, or blog topics and I’ll answer from the USA Graphene site knowledge base.'
+};
+
 export default function AIChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
-    const [messages, setMessages] = useState<{ role: 'user' | 'ai'; content: string }[]>([
-        { role: 'ai', content: 'Hello! I am **Carbon**, your Graphene technical consultant. Ask me anything about our materials, applications, or specifications.' }
-    ]);
+    const [messages, setMessages] = useState<UiMessage[]>([STARTER_MESSAGE]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const saved = window.localStorage.getItem('carbon-chat-history');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setMessages(parsed);
+                }
+            } catch {
+                // Ignore invalid local cache
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        window.localStorage.setItem('carbon-chat-history', JSON.stringify(messages.slice(-20)));
+    }, [messages]);
 
     // Auto-scroll to bottom of chat
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
-    }, [messages, isOpen]);
+    }, [messages, isOpen, isTyping]);
 
     const handleSend = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || isTyping) return;
 
-        // Add user message
-        const userMsg = input;
-        setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
+        const userMsg = input.trim();
+        const updatedMessages = [...messages, { role: 'user' as const, content: userMsg }];
+        setMessages(updatedMessages);
         setInput('');
         setIsTyping(true);
 
-        // Simulate AI response (Mock for now)
-        setTimeout(() => {
-            setMessages(prev => [...prev, {
-                role: 'ai',
-                content: "I'm currently in **Simulated Mode**. Once connected to the backend, I'll be able to answer specific questions about USA Graphene products using our technical documentation."
-            }]);
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    messages: updatedMessages.map((message) => ({
+                        role: message.role === 'ai' ? 'assistant' : 'user',
+                        content: message.content,
+                    })),
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data?.error || 'Chat request failed');
+            }
+
+            const needsContact = Boolean(data?.intent?.wantsQuote || data?.intent?.wantsSample || data?.intent?.wantsDemo || data?.intent?.asksAvailability);
+
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'ai',
+                    content: data.answer,
+                    sources: Array.isArray(data.sources) ? data.sources : [],
+                    handoff: needsContact
+                        ? {
+                            needsContact: true,
+                            label: 'Contact USA Graphene',
+                            url: '/contact/',
+                        }
+                        : undefined,
+                },
+            ]);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: 'ai',
+                    content: `I hit a backend issue: ${message}. Once the API key and backend are configured, I can answer live from the USA Graphene knowledge base.`,
+                },
+            ]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
+    };
+
+    const resetChat = () => {
+        setMessages([STARTER_MESSAGE]);
+        window.localStorage.removeItem('carbon-chat-history');
     };
 
     return (
@@ -51,12 +129,10 @@ export default function AIChatWidget() {
                         transition={{ duration: 0.2 }}
                         className="mb-6 w-[380px] max-w-[calc(100vw-48px)] h-[600px] max-h-[calc(100vh-140px)] bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden pointer-events-auto ring-1 ring-white/5 relative"
                     >
-                        {/* Hexagonal Background Pattern */}
                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                             style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
                         </div>
 
-                        {/* Header */}
                         <div className="p-4 bg-gradient-to-r from-gray-900 via-gray-900 to-black border-b border-white/10 flex justify-between items-center relative z-10">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 flex items-center justify-center relative">
@@ -75,15 +151,22 @@ export default function AIChatWidget() {
                                     </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setIsOpen(false)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-all"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={resetChat}
+                                    className="text-[10px] uppercase tracking-wider text-gray-400 hover:text-cyan-300 transition-all"
+                                >
+                                    Reset
+                                </button>
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Messages Area */}
                         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent relative z-10">
                             {messages.map((msg, idx) => (
                                 <motion.div
@@ -95,14 +178,42 @@ export default function AIChatWidget() {
                                 >
                                     <div
                                         className={`max-w-[85%] p-4 text-sm leading-relaxed shadow-lg backdrop-blur-md ${msg.role === 'user'
-                                                ? 'bg-gradient-to-br from-blue-600 to-cyan-700 text-white rounded-2xl rounded-tr-sm border border-white/10'
-                                                : 'bg-white/5 text-gray-200 rounded-2xl rounded-tl-sm border border-white/5'
+                                            ? 'bg-gradient-to-br from-blue-600 to-cyan-700 text-white rounded-2xl rounded-tr-sm border border-white/10'
+                                            : 'bg-white/5 text-gray-200 rounded-2xl rounded-tl-sm border border-white/5'
                                             }`}
                                     >
                                         {msg.role === 'ai' && (
-                                            <div className="mb-1 text-[10px] text-cyan-400/80 font-mono tracking-wider mb-2">● CARBON AI</div>
+                                            <div className="text-[10px] text-cyan-400/80 font-mono tracking-wider mb-2">● CARBON AI</div>
                                         )}
-                                        {msg.content}
+                                        <div className="whitespace-pre-wrap">{msg.content}</div>
+                                        {msg.role === 'ai' && msg.handoff?.needsContact && (
+                                            <div className="mt-3 pt-3 border-t border-white/10">
+                                                <a
+                                                    href={msg.handoff.url || '/contact/'}
+                                                    className="inline-flex items-center rounded-lg bg-cyan-600 px-3 py-2 text-xs font-semibold text-black hover:bg-cyan-400 transition-all"
+                                                >
+                                                    {msg.handoff.label || 'Contact USA Graphene'}
+                                                </a>
+                                            </div>
+                                        )}
+                                        {msg.role === 'ai' && msg.sources && msg.sources.length > 0 && (
+                                            <div className="mt-3 pt-3 border-t border-white/10">
+                                                <div className="text-[10px] uppercase tracking-wider text-gray-400 mb-2">Related sources</div>
+                                                <div className="space-y-1.5">
+                                                    {msg.sources.slice(0, 4).map((source) => (
+                                                        <a
+                                                            key={`${source.type}-${source.url}`}
+                                                            href={source.url}
+                                                            target={source.url.startsWith('http') ? '_blank' : undefined}
+                                                            rel={source.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                                            className="block text-xs text-cyan-300 hover:text-cyan-200 underline underline-offset-2"
+                                                        >
+                                                            {source.title}
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
@@ -117,7 +228,6 @@ export default function AIChatWidget() {
                             )}
                         </div>
 
-                        {/* Input Area */}
                         <div className="p-4 border-t border-white/10 bg-black/60 backdrop-blur-md relative z-10">
                             <form
                                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
@@ -143,7 +253,6 @@ export default function AIChatWidget() {
                 )}
             </AnimatePresence>
 
-            {/* Trigger Button - Large Hexagon */}
             <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 animate={{
@@ -158,15 +267,12 @@ export default function AIChatWidget() {
                 whileTap={{ scale: 0.95 }}
                 className="w-16 h-16 pointer-events-auto relative group focus:outline-none"
             >
-                {/* Glow Effect */}
                 <div className="absolute inset-0 bg-cyan-500/30 blur-xl rounded-full animate-pulse"></div>
 
-                {/* Hexagon Shape */}
                 <div
                     className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center shadow-2xl border border-cyan-500/30 transition-colors group-hover:border-cyan-400/50"
                     style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
                 >
-                    {/* Inner Content */}
                     <div className="relative z-10 text-cyan-400 group-hover:text-white transition-colors">
                         <AnimatePresence mode="wait">
                             {isOpen ? (
@@ -210,7 +316,6 @@ export default function AIChatWidget() {
                         </AnimatePresence>
                     </div>
 
-                    {/* Hexagon Highlight Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white/10 pointer-events-none"></div>
                 </div>
             </motion.button>
