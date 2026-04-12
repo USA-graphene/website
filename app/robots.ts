@@ -7,8 +7,7 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: [
                 '/studio/',
-                '/_next/webpack-hmr',
-                '/_next/data/',
+                '/_next/',
                 '/results/',
             ],
         },

@@ -84,6 +84,9 @@ type KnowledgeDbRow = {
   title: string
   content: string
   chunk_index?: number | null
+  page_start?: number | null
+  page_end?: number | null
+  section_heading?: string | null
   extraction_status?: string | null
   source_metadata?: Record<string, any> | null
   distance?: number | null
@@ -357,6 +360,16 @@ function vectorLiteral(values: number[]): string {
   return '[' + values.map((v) => Number(v).toFixed(8)).join(',') + ']'
 }
 
+function citationForRow(row: AggregatedKnowledgeRow): string {
+  const pages = row.page_start
+    ? `p. ${row.page_start}${row.page_end && row.page_end !== row.page_start ? `-${row.page_end}` : ''}`
+    : null
+  const section = row.section_heading ? `section: ${row.section_heading}` : null
+  const file = row.source_name || row.title
+  const bits = [file, pages, section].filter(Boolean).join(', ')
+  return bits ? `[source: ${bits}]` : `[source: ${file}]`
+}
+
 async function getDatabaseKnowledge(
   question: string,
   queryTokens: string[],
@@ -376,6 +389,9 @@ async function getDatabaseKnowledge(
         select
           kc.id::text as chunk_id,
           kc.chunk_index,
+          kc.page_start,
+          kc.page_end,
+          kc.section_heading,
           ks.source_path,
           ks.source_name,
           ks.source_group,
@@ -418,6 +434,9 @@ async function getDatabaseKnowledge(
         select
           kc.id::text as chunk_id,
           kc.chunk_index,
+          kc.page_start,
+          kc.page_end,
+          kc.section_heading,
           ks.source_path,
           ks.source_name,
           ks.source_group,
@@ -450,14 +469,18 @@ async function getDatabaseKnowledge(
       type: 'knowledge',
       title: row.title,
       url: '#local-knowledge-base',
-      excerpt: row.source_group
-        ? `${row.source_group}: ${row.source_name}${row.supportChunks > 1 ? ` (${row.supportChunks} matching chunks)` : ''}`
-        : `${row.source_name}${row.supportChunks > 1 ? ` (${row.supportChunks} matching chunks)` : ''}`,
+      excerpt: [
+        row.source_group ? `${row.source_group}` : null,
+        row.source_name,
+        row.page_start ? `p.${row.page_start}${row.page_end && row.page_end !== row.page_start ? `-${row.page_end}` : ''}` : null,
+        row.section_heading ? `section: ${row.section_heading}` : null,
+        row.supportChunks > 1 ? `${row.supportChunks} matching chunks` : null,
+      ].filter(Boolean).join(' · '),
     }))
 
     const context = rankedRows.length
       ? 'LOCAL KNOWLEDGE BASE (HYBRID RERANKED + SOURCE-AWARE AGGREGATION):\n' + rankedRows
-          .map((row) => `- ${row.title}\n  Group: ${row.source_group || 'uncategorized'}\n  File: ${row.source_name}${row.chunkIndexes.length ? ` (chunks ${row.chunkIndexes.join(', ')})` : ''}\n  Hybrid score: ${row.finalScore.toFixed(2)} (semantic ${row.semanticScore.toFixed(2)} + keyword ${row.keywordScore.toFixed(2)} + source ${row.sourceWeight.toFixed(2)}${row.supportChunks > 1 ? ` + support bonus ${Math.max(row.finalScore - row.semanticScore - row.keywordScore - row.sourceWeight, 0).toFixed(2)}` : ''})${typeof row.distance === 'number' ? `\n  Best distance: ${Number(row.distance).toFixed(4)}` : ''}\n  Supporting chunks: ${row.supportChunks}\n  Excerpt: ${row.combinedExcerpt}`)
+          .map((row) => `- ${row.title}\n  ${citationForRow(row)}\n  Group: ${row.source_group || 'uncategorized'}\n  File: ${row.source_name}${row.chunkIndexes.length ? ` (chunks ${row.chunkIndexes.join(', ')})` : ''}${row.page_start ? `\n  Pages: ${row.page_start}${row.page_end && row.page_end !== row.page_start ? `-${row.page_end}` : ''}` : ''}${row.section_heading ? `\n  Section: ${row.section_heading}` : ''}\n  Hybrid score: ${row.finalScore.toFixed(2)} (semantic ${row.semanticScore.toFixed(2)} + keyword ${row.keywordScore.toFixed(2)} + source ${row.sourceWeight.toFixed(2)}${row.supportChunks > 1 ? ` + support bonus ${Math.max(row.finalScore - row.semanticScore - row.keywordScore - row.sourceWeight, 0).toFixed(2)}` : ''})${typeof row.distance === 'number' ? `\n  Best distance: ${Number(row.distance).toFixed(4)}` : ''}\n  Supporting chunks: ${row.supportChunks}\n  Excerpt: ${row.combinedExcerpt}`)
           .join('\n\n')
       : ''
 
@@ -633,7 +656,13 @@ export async function getRelevantKnowledge(question: string): Promise<KnowledgeB
             .slice(0, 2)
             .map((d: any) => `${d?.description || d?.asset?.originalFilename || 'PDF'}: ${d?.asset?.url || 'n/a'}`)
             .join('; ')
-          return `- ${item.title}${item.productType ? ` (${item.productType})` : ''}\n  Summary: ${item.shortDescription || item.seoDescription || 'No summary available.'}\n  Features: ${bullets || 'n/a'}\n  Specs: ${specs || 'n/a'}\n  CTA: ${item.primaryCtaLabel || item.primaryCtaType || 'contact'}${item.primaryCtaUrl ? ` (${item.primaryCtaUrl})` : ''}\n  Downloads: ${downloads || 'n/a'}\n  URL: ${item.slug?.current ? `/products/${item.slug.current}/` : '/products/'}`
+          return `- ${item.title}${item.productType ? ` (${item.productType})` : ''}
+  Summary: ${item.shortDescription || item.seoDescription || 'No summary available.'}
+  Features: ${bullets || 'n/a'}
+  Specs: ${specs || 'n/a'}
+  CTA: ${item.primaryCtaLabel || item.primaryCtaType || 'contact'}${item.primaryCtaUrl ? ` (${item.primaryCtaUrl})` : ''}
+  Downloads: ${downloads || 'n/a'}
+  URL: ${item.slug?.current ? `/products/${item.slug.current}/` : '/products/'}`
         })
         .join('\n\n')
     )
@@ -644,7 +673,9 @@ export async function getRelevantKnowledge(question: string): Promise<KnowledgeB
       'BLOG POSTS:\n' +
       scoredPosts
         .map((item: any) =>
-          `- ${item.title}\n  Summary: ${item.excerpt || item.seoDescription || 'No summary available.'}\n  URL: ${item.slug?.current ? `/blog/${item.slug.current}/` : '/blog/'}`
+          `- ${item.title}
+  Summary: ${item.excerpt || item.seoDescription || 'No summary available.'}
+  URL: ${item.slug?.current ? `/blog/${item.slug.current}/` : '/blog/'}`
         )
         .join('\n\n')
     )
@@ -662,7 +693,13 @@ export async function getRelevantKnowledge(question: string): Promise<KnowledgeB
           const recommended = (item.recommendedProducts || [])
             .map((p: any) => p?.title)
             .join('; ')
-          return `- ${item.title}\n  Summary: ${item.tagline || item.seoDescription || 'No summary available.'}\n  Benefits: ${(item.benefits || []).join('; ') || 'n/a'}\n  Industries: ${(item.industries || []).join('; ') || 'n/a'}\n  Recommended products: ${recommended || 'n/a'}\n  Downloads: ${downloads || 'n/a'}\n  URL: ${item.slug?.current ? `/applications/${item.slug.current}/` : '/applications/'}`
+          return `- ${item.title}
+  Summary: ${item.tagline || item.seoDescription || 'No summary available.'}
+  Benefits: ${(item.benefits || []).join('; ') || 'n/a'}
+  Industries: ${(item.industries || []).join('; ') || 'n/a'}
+  Recommended products: ${recommended || 'n/a'}
+  Downloads: ${downloads || 'n/a'}
+  URL: ${item.slug?.current ? `/applications/${item.slug.current}/` : '/applications/'}`
         })
         .join('\n\n')
     )
@@ -707,6 +744,7 @@ Your job:
 - When useful, mention relevant pages, blog posts, downloadable PDFs, or internal knowledge-base findings naturally.
 - If there is a directly relevant product, application, post, or knowledge-base source in the context, mention it.
 - Keep most answers to 1-4 short paragraphs plus bullets when helpful.
+- When you cite knowledge-base material, format citations inline like [source: filename, p. 12, section: Title].
 
 Behavior rules:
 - For comparison questions, give a balanced practical comparison.

@@ -20,7 +20,7 @@ async function getPost(slug: string) {
     seoTitle,
     seoDescription
   }`
-    return client.fetch(query, { slug })
+    return client.fetch(query, { slug }, { next: { revalidate: 60 } })
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {

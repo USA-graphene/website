@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 // Pages that should NOT have a trailing slash appended (files, api routes, etc.)
 const NO_TRAILING_SLASH = /\.(xml|txt|ico|png|jpg|jpeg|webp|svg|json|js|css|woff|woff2)$/i
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const url = request.nextUrl.clone()
     let shouldRedirect = false;

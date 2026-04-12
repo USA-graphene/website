@@ -21,10 +21,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   `)
 
-  // NOTE: All URLs MUST include trailing slashes because next.config.js has
-  // trailingSlash: true. Without trailing slashes, Google would see the sitemap
-  // URL then get a 301 redirect to the trailing-slash version, which causes
-  // "Page with redirect" errors in Google Search Console.
+  // NOTE: All URLs MUST include trailing slashes to match the canonical form
+  // enforced by proxy.ts. Without trailing slashes, Google would see the sitemap
+  // URL, get a 301 redirect to the trailing-slash version, and flag it as
+  // "Page with redirect" in Google Search Console.
   const blogUrls = posts.map((post: any) => ({
     url: `${baseUrl}/blog/${post.slug}/`,
     lastModified: post._updatedAt ? new Date(post._updatedAt) : (post.publishedAt ? new Date(post.publishedAt) : new Date()),

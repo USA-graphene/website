@@ -42,3 +42,4 @@ next-env.d.ts
 /database/PRODUCTION_WIRING_PLAN.md
 /scripts/ingest/__pycache__/
 /private.key
+uploader/.env

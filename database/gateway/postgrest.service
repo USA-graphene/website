@@ -1,0 +1,14 @@
+[Unit]
+Description=PostgREST Service for USA Graphene
+After=postgresql.service
+
+[Service]
+ExecStart=/usr/local/bin/postgrest /etc/postgrest/graphene.conf
+User=graphene_app
+Group=graphene_app
+Restart=always
+# PostgREST doesn't use a lot of memory unless you have deep joins
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

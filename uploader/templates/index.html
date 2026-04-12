@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphene Knowledge Forge | AI Ingestion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0c10;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --accent: #00f2ff;
+            --accent-glow: rgba(0, 242, 255, 0.3);
+            --text: #ffffff;
+            --text-dim: #9499ad;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #00ff95;
+            --error: #ff4d4d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Animated Background Particles */
+        .bg-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            top: 20%;
+            left: 20%;
+            animation: drift 20s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes drift {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(10%, 10%); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
+        /* Dropzone Styling */
+        .dropzone {
+            position: relative;
+            padding: 4rem 2rem;
+            border: 2px dashed var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255,255,255,0.01);
+            overflow: hidden;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent);
+            background: rgba(0, 242, 255, 0.05);
+            transform: scale(1.02);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .dropzone .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .dropzone:hover .icon {
+            transform: translateY(-5px);
+        }
+
+        .dropzone p {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .dropzone span {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        /* Progress Modal */
+        #status-area {
+            margin-top: 1.5rem;
+            display: none;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .log {
+            font-family: 'Monaco', monospace;
+            font-size: 0.75rem;
+            height: 120px;
+            overflow-y: auto;
+            color: #7efcfc;
+            line-height: 1.5;
+            padding-right: 10px;
+        }
+
+        .log::-webkit-scrollbar { width: 4px; }
+        .log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+        /* Branding footer */
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        #file-input { display: none; }
+
+        .btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            width: 100%;
+            display: none;
+        }
+
+        .success-text { color: var(--success); font-weight: 600; }
+        .error-text { color: var(--error); font-weight: 600; }
+
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <h1>Knowledge Forge</h1>
+        <p class="subtitle">Feed scientific articles to the USA Graphene AI</p>
+
+        <form id="upload-form">
+            <label for="file-input" class="dropzone" id="dropzone">
+                <span class="icon">📑</span>
+                <p>Drop PDF or Article here</p>
+                <span>Maximum size: 50MB</span>
+                <input type="file" id="file-input" name="file" accept=".pdf,.doc,.docx,.txt">
+            </label>
+        </form>
+
+        <div id="status-area">
+            <div class="status-header">
+                <span id="process-label">Processing...</span>
+                <div class="spinner" id="main-spinner"></div>
+            </div>
+            <div class="log" id="log-content">
+                Initializing local models...<br>
+                Awaiting connection to 192.168.1.38...<br>
+            </div>
+            <button class="btn" id="finish-btn" onclick="location.reload()">Done</button>
+        </div>
+
+        <div class="footer">USA GRAPHENE • ALPHA NODE V2</div>
+    </div>
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const statusArea = document.getElementById('status-area');
+        const logContent = document.getElementById('log-content');
+        const processLabel = document.getElementById('process-label');
+        const spinner = document.getElementById('main-spinner');
+        const finishBtn = document.getElementById('finish-btn');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        dropzone.addEventListener('dragover', () => dropzone.classList.add('dragover'));
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+
+        dropzone.addEventListener('drop', (e) => {
+            dropzone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length) handleUpload(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleUpload(e.target.files[0]);
+        });
+
+        async function log(text, className = '') {
+            const span = document.createElement('div');
+            span.innerHTML = `> ${text}`;
+            if (className) span.className = className;
+            logContent.appendChild(span);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        async function handleUpload(file) {
+            dropzone.style.display = 'none';
+            statusArea.style.display = 'block';
+            log(`File received: ${file.name}`);
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Step 1: Upload
+            log(`Syncing to local workspace...`);
+            try {
+                const uploadRes = await fetch('/upload', { method: 'POST', body: formData });
+                const data = await uploadRes.json();
+                if (data.error) throw new Error(data.error);
+                
+                log(`Saved to raw_files.`, 'success-text');
+                log(`Igniting Ingestion Pipeline (Selective Mode)...`);
+
+                // Step 2: Trigger Processing for this ONE file
+                const processRes = await fetch('/process', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: data.filename })
+                });
+                const processData = await processRes.json();
+                
+                if (processData.error) throw new Error(processData.error);
+
+                log(processData.output.replace(/\n/g, '<br>'));
+                log(`PUSH TO REMOTE DATABASE SUCCESSFUL.`, 'success-text');
+                log(`AI Model Refreshing chunks...`, 'success-text');
+                
+                processLabel.innerText = "Forge Cycle Complete";
+                spinner.style.display = 'none';
+                finishBtn.style.display = 'block';
+
+            } catch (err) {
+                log(`CRITICAL ERROR: ${err.message}`, 'error-text');
+                processLabel.innerText = "Failure";
+                spinner.style.display = 'none';
+                finishBtn.style.display = 'block';
+                finishBtn.innerText = "Retry";
+            }
+        }
+    </script>
+</body>
+</html>

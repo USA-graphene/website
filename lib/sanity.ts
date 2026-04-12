@@ -9,7 +9,11 @@ export const client = createClient({
     projectId,
     dataset,
     apiVersion,
-    useCdn: false,
+    // useCdn: true enables Sanity's global CDN, reducing latency and allowing
+    // Next.js to treat these fetches as cacheable (ISR). Without this, every
+    // request hits Sanity's API directly and Next.js returns no-cache headers,
+    // preventing Googlebot from caching pages and hurting indexing.
+    useCdn: true,
 })
 
 const builder = createImageUrlBuilder(client)

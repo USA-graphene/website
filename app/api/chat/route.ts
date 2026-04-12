@@ -19,6 +19,63 @@ function firstString(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null
 }
 
+function getModelCandidates(): string[] {
+  const envModel = firstString(process.env.OPENAI_MODEL)
+  const candidates = [
+    envModel,
+    'gpt-4o',
+    'gpt-4.1-mini',
+    'gpt-4.1',
+    'gpt-4o-mini',
+    'gpt-4.1-nano',
+  ].filter((value, index, arr): value is string => Boolean(value) && arr.indexOf(value) === index)
+
+  return candidates
+}
+
+async function callOpenAIWithFallback(apiKey: string, messages: ChatMessage[]) {
+  const candidates = getModelCandidates()
+  let lastErrorText = ''
+
+  for (const model of candidates) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.3,
+        messages,
+      }),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      const answer = data?.choices?.[0]?.message?.content?.trim()
+      if (answer) {
+        return { data, answer, model }
+      }
+      lastErrorText = `Model ${model} returned no content.`
+      continue
+    }
+
+    const errorText = await response.text()
+    lastErrorText = errorText
+
+    // Try the next model if this looks like a model/access problem.
+    if (/model_not_found|does not have access|invalid_request_error/i.test(errorText)) {
+      continue
+    }
+
+    // For other API errors, stop immediately.
+    break
+  }
+
+  throw new Error(lastErrorText || 'OpenAI request failed.')
+}
+
 async function ensureSession(db: Pool | null, body: any) {
   if (!db) return null
   const sessionId = firstString(body?.sessionId)
@@ -111,7 +168,6 @@ export async function POST(req: NextRequest) {
 
     const db = getDbPool()
     const sessionId = await ensureSession(db, body)
-    const model = process.env.OPENAI_MODEL || 'gpt-4o-mini'
     const userMessageId = await saveMessage(db, sessionId, 'user', latestUserMessage.content, null, {
       user_agent: body?.userAgent || body?.user_agent || null,
       landing_page: body?.landingPage || body?.landing_page || null,
@@ -120,33 +176,22 @@ export async function POST(req: NextRequest) {
     const { context, sources, intent } = await getRelevantKnowledge(latestUserMessage.content)
     const completionMessages = buildCarbonMessages(cleanedMessages, context, intent)
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.3,
-        messages: completionMessages,
-      }),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
+    let result
+    try {
+      result = await callOpenAIWithFallback(apiKey, completionMessages)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'OpenAI request failed.'
+      console.error('OpenAI model fallback failed:', errorMessage)
       return NextResponse.json(
-        { error: `OpenAI error: ${errorText}` },
+        {
+          error: 'Carbon could not reach a supported OpenAI model right now. Update OPENAI_MODEL to an allowed model or grant the project access to the current model.',
+          details: errorMessage,
+        },
         { status: 502 }
       )
     }
 
-    const data = await response.json()
-    const answer = data?.choices?.[0]?.message?.content?.trim()
-
-    if (!answer) {
-      return NextResponse.json({ error: 'No response generated.' }, { status: 502 })
-    }
+    const { data, answer, model } = result
 
     const assistantMessageId = await saveMessage(db, sessionId, 'assistant', answer, model, {
       retrieved_sources: sources,
