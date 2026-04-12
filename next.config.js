@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Note: trailing slash enforcement is handled by proxy.ts as HTTP 301.
-  // Removing trailingSlash: true prevents Next.js from emitting competing 308
-  // redirects that Google Search Console flags as "Page with redirect" failures.
-  // trailingSlash: true,
+  trailingSlash: true,
 
   images: {
     remotePatterns: [
