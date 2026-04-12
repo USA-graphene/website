@@ -10,7 +10,7 @@ export default function VisitorTracker() {
   useEffect(() => {
     // Ignore bots, crawlers, and server-side renders
     if (typeof navigator === 'undefined') return
-    fetch('/api/visitors', { method: 'POST' }).catch(() => {/* silent */})
+    fetch('/api/visitors/', { method: 'POST' }).catch(() => {/* silent */})
   }, [])
 
   return null

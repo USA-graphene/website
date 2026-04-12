@@ -7,8 +7,8 @@
  *   visitors:m:{YYYY-MM}     → monthly count            (TTL: 35 days)
  */
 
-const UPSTASH_URL   = process.env.UPSTASH_REDIS_REST_URL  || ''
-const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || ''
+const UPSTASH_URL   = (process.env.UPSTASH_REDIS_REST_URL   || '').replace(/^["']|["']$/g, '')
+const UPSTASH_TOKEN = (process.env.UPSTASH_REDIS_REST_TOKEN || '').replace(/^["']|["']$/g, '')
 
 function today()  { return new Date().toISOString().slice(0, 10)  } // YYYY-MM-DD
 function month()  { return new Date().toISOString().slice(0, 7)   } // YYYY-MM
