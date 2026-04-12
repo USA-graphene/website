@@ -50,7 +50,12 @@ export function proxy(request: NextRequest) {
     }
 
     if (shouldRedirect) {
-        return NextResponse.redirect(url, 301)
+        // IMPORTANT: Use an absolute string URL, NOT the NextURL object.
+        // Next.js 16's NextURL normalizes trailing slashes away when you assign
+        // url.pathname, causing an infinite redirect loop. Building the string
+        // explicitly bypasses that internal normalization.
+        const dest = `${url.protocol}//${url.host}${url.pathname}${url.search}`
+        return NextResponse.redirect(dest, 301)
     }
 
     return NextResponse.next()
