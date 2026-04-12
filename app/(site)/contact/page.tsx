@@ -1,4 +1,7 @@
 import { Metadata } from 'next'
+import { getCounts } from '@/lib/visitors'
+
+export const dynamic = 'force-dynamic' // always fresh counts
 
 export const metadata: Metadata = {
     title: 'Contact USA Graphene - Get in Touch for Graphene Solutions',
@@ -30,7 +33,9 @@ const jsonLd = {
     },
 }
 
-export default function Contact() {
+export default async function Contact() {
+    const { daily, monthly } = await getCounts()
+
     return (
         <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
             <script
@@ -126,6 +131,13 @@ export default function Contact() {
                         Send message
                     </button>
                 </div>
+
+                {/* Visitor counter — no labels, just numbers */}
+                {(monthly > 0 || daily > 0) && (
+                    <p className="mt-6 text-center font-mono text-xs text-gray-400 tracking-widest select-none">
+                        M{monthly} D{daily}
+                    </p>
+                )}
             </form>
         </div>
     )
