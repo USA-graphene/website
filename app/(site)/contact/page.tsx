@@ -133,11 +133,9 @@ export default async function Contact() {
                 </div>
 
                 {/* Visitor counter — no labels, just numbers */}
-                {(monthly > 0 || daily > 0) && (
-                    <p className="mt-6 text-center font-mono text-xs text-gray-400 tracking-widest select-none">
-                        M{monthly} D{daily}
-                    </p>
-                )}
+                <p className="mt-6 text-center font-mono text-xs text-gray-400 tracking-widest select-none">
+                    M{monthly} D{daily}
+                </p>
             </form>
         </div>
     )
