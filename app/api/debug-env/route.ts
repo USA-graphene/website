@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server'
+import { getCounts } from '@/lib/visitors'
 
-// Temporary debug route — delete after fixing env vars
+// Temporary debug route — delete after fixing
 export const runtime = 'nodejs'
 
 export async function GET() {
-  const url = process.env.UPSTASH_REDIS_REST_URL || 'NOT SET'
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || 'NOT SET'
-  return NextResponse.json({
-    url_length: url.length,
-    url_preview: url.slice(0, 30),
-    token_length: token.length,
-    token_preview: token.slice(0, 10),
-  })
+  const counts = await getCounts()
+  return NextResponse.json(counts)
 }
