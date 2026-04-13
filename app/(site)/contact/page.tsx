@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { getCounts } from '@/lib/visitors'
 
-export const dynamic = 'force-dynamic' // always fresh counts
+export const dynamic = 'force-dynamic' // always fresh counts — v2
 
 export const metadata: Metadata = {
     title: 'Contact USA Graphene - Get in Touch for Graphene Solutions',
