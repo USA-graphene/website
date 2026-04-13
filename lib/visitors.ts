@@ -7,13 +7,16 @@
  *   visitors:m:{YYYY-MM}     → monthly count            (TTL: 35 days)
  */
 
-const UPSTASH_URL   = (process.env.UPSTASH_REDIS_REST_URL   || '').replace(/^["']|["']$/g, '')
-const UPSTASH_TOKEN = (process.env.UPSTASH_REDIS_REST_TOKEN || '').replace(/^["']|["']$/g, '')
+// Read env vars inside functions to ensure runtime evaluation (not build-time)
+function getUrl()   { return (process.env.UPSTASH_REDIS_REST_URL   || '').replace(/^["']|["']$/g, '') }
+function getToken() { return (process.env.UPSTASH_REDIS_REST_TOKEN || '').replace(/^["']|["']$/g, '') }
 
 function today()  { return new Date().toISOString().slice(0, 10)  } // YYYY-MM-DD
 function month()  { return new Date().toISOString().slice(0, 7)   } // YYYY-MM
 
 async function redisCmd(cmd: string[]): Promise<number | null> {
+  const UPSTASH_URL   = getUrl()
+  const UPSTASH_TOKEN = getToken()
   if (!UPSTASH_URL || !UPSTASH_TOKEN) return null
   try {
     const res = await fetch(`${UPSTASH_URL}/${cmd.map(encodeURIComponent).join('/')}`, {
@@ -22,7 +25,11 @@ async function redisCmd(cmd: string[]): Promise<number | null> {
       next: { revalidate: 0 }, // always fresh
     })
     const json = await res.json()
-    return typeof json.result === 'number' ? json.result : null
+    // Redis GET returns a string, INCR returns a number — handle both
+    const val = json.result
+    if (val === null || val === undefined) return null
+    const n = Number(val)
+    return isNaN(n) ? null : n
   } catch {
     return null
   }
