@@ -44,6 +44,38 @@ const nextConfig = {
     return [
       // (Note: WordPress date patterns are now handled in one-hop by middleware.ts for SEO)
 
+      // Legacy page aliases (absolute URLs for one-hop redirects)
+      {
+        source: '/contact-us/',
+        destination: 'https://www.usa-graphene.com/contact/',
+        permanent: true
+      },
+      {
+        source: '/contact-us',
+        destination: 'https://www.usa-graphene.com/contact/',
+        permanent: true
+      },
+      {
+        source: '/about-us/',
+        destination: 'https://www.usa-graphene.com/about/',
+        permanent: true
+      },
+      {
+        source: '/about-us',
+        destination: 'https://www.usa-graphene.com/about/',
+        permanent: true
+      },
+      {
+        source: '/about-us-2/',
+        destination: 'https://www.usa-graphene.com/about/',
+        permanent: true
+      },
+      {
+        source: '/about-us-2',
+        destination: 'https://www.usa-graphene.com/about/',
+        permanent: true
+      },
+
       // Legacy search results from previous site
       {
         source: '/results/search-results/',
