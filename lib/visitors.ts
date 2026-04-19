@@ -11,8 +11,24 @@
 function getUrl()   { return (process.env.UPSTASH_REDIS_REST_URL   || '').replace(/^["']|["']$/g, '') }
 function getToken() { return (process.env.UPSTASH_REDIS_REST_TOKEN || '').replace(/^["']|["']$/g, '') }
 
-function today()  { return new Date().toISOString().slice(0, 10)  } // YYYY-MM-DD
-function month()  { return new Date().toISOString().slice(0, 7)   } // YYYY-MM
+/** Returns current date string in EST/EDT: "YYYY-MM-DD" */
+function today(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date()) // en-CA gives YYYY-MM-DD format natively
+}
+
+/** Returns current month string in EST/EDT: "YYYY-MM" */
+function month(): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric', month: '2-digit',
+  }).formatToParts(new Date())
+  const y = parts.find(p => p.type === 'year')!.value
+  const m = parts.find(p => p.type === 'month')!.value
+  return `${y}-${m}`
+}
 
 async function redisCmd(cmd: string[]): Promise<number | null> {
   const UPSTASH_URL   = getUrl()
