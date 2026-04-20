@@ -14,7 +14,13 @@ async function getPost(slug: string) {
     "mainImage": coalesce(mainImage, image, coverImage),
     publishedAt,
     excerpt,
-    "body": coalesce(body, content, articleBody),
+    "body": coalesce(body, content, articleBody)[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset-> { _id, url }
+      }
+    },
     "author": coalesce(author->name, authors[0]->name),
     "categories": categories[]->title,
     seoTitle,
@@ -130,7 +136,28 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 )}
                 <div className="mt-10 max-w-2xl prose prose-lg prose-primary mx-auto">
                     {Array.isArray(post.body)
-                        ? <PortableText value={post.body} />
+                        ? <PortableText
+                            value={post.body}
+                            components={{
+                                types: {
+                                    image: ({ value }: { value: { asset?: { url?: string }; alt?: string } }) => {
+                                        const src = value?.asset?.url || (value?.asset ? urlFor(value).url() : null)
+                                        if (!src) return null
+                                        return (
+                                            <figure className="my-8">
+                                                <Image
+                                                    src={src}
+                                                    alt={value?.alt || ''}
+                                                    width={800}
+                                                    height={450}
+                                                    className="w-full rounded-xl object-cover shadow-md"
+                                                />
+                                            </figure>
+                                        )
+                                    },
+                                },
+                            }}
+                          />
                         : typeof post.body === 'string'
                             ? post.body.split('\n\n').map((p: string, i: number) => <p key={i}>{p}</p>)
                             : null}
