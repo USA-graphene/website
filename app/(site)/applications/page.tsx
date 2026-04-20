@@ -69,7 +69,13 @@ const jsonLd = [
         embedUrl: 'https://www.usa-graphene.com/applications/',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}',
+            // Use EntryPoint with urlTemplate so Google treats this as a
+            // template (not a real crawlable URL), fixing the GSC
+            // "Alternate page with proper canonical tag" error.
+            'target': {
+                '@type': 'EntryPoint',
+                'urlTemplate': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}'
+            },
             'startOffset-input': 'required name=seek_to_second_number'
         }
     },
@@ -86,7 +92,10 @@ const jsonLd = [
         embedUrl: 'https://www.usa-graphene.com/applications/',
         potentialAction: {
             '@type': 'SeekAction',
-            'target': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}',
+            'target': {
+                '@type': 'EntryPoint',
+                'urlTemplate': 'https://www.usa-graphene.com/applications/?t={seek_to_second_number}'
+            },
             'startOffset-input': 'required name=seek_to_second_number'
         }
     }

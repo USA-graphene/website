@@ -38,43 +38,33 @@ const nextConfig = {
           },
         ],
       },
+      // Prevent Google from indexing the VideoObject SeekAction URL template
+      // (?t={seek_to_second_number}) as a real page. Without this, GSC flags
+      // it as "Alternate page with proper canonical tag".
+      {
+        source: '/applications/',
+        has: [{ type: 'query', key: 't' }],
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        ],
+      },
     ]
   },
   async redirects() {
     return [
       // (Note: WordPress date patterns are now handled in one-hop by middleware.ts for SEO)
 
-      // Legacy page aliases (absolute URLs for one-hop redirects)
-      {
-        source: '/contact-us/',
-        destination: 'https://www.usa-graphene.com/contact/',
-        permanent: true
-      },
-      {
-        source: '/contact-us',
-        destination: 'https://www.usa-graphene.com/contact/',
-        permanent: true
-      },
-      {
-        source: '/about-us/',
-        destination: 'https://www.usa-graphene.com/about/',
-        permanent: true
-      },
-      {
-        source: '/about-us',
-        destination: 'https://www.usa-graphene.com/about/',
-        permanent: true
-      },
-      {
-        source: '/about-us-2/',
-        destination: 'https://www.usa-graphene.com/about/',
-        permanent: true
-      },
-      {
-        source: '/about-us-2',
-        destination: 'https://www.usa-graphene.com/about/',
-        permanent: true
-      },
+      // Legacy page aliases — use relative paths so that Vercel's domain-level
+      // redirect (bare usa-graphene.com → www.usa-graphene.com) and these
+      // path redirects stay as separate, independent hops rather than chaining.
+      // An absolute destination here would cause a chain:
+      //   usa-graphene.com/contact-us/ → (Vercel) → www/contact-us/ → (next.config) → www/contact/
+      { source: '/contact-us/', destination: '/contact/', permanent: true },
+      { source: '/contact-us',  destination: '/contact/', permanent: true },
+      { source: '/about-us/',   destination: '/about/',   permanent: true },
+      { source: '/about-us',    destination: '/about/',   permanent: true },
+      { source: '/about-us-2/', destination: '/about/',   permanent: true },
+      { source: '/about-us-2',  destination: '/about/',   permanent: true },
 
       // Legacy search results from previous site
       {
