@@ -149,7 +149,12 @@ Output the result strictly as a raw JSON object (NO markdown code blocks, just r
       success: true,
       message: 'Automated Daily Post Published!',
       originalPaper: selectedPaper.title,
-      url: `https://usa-graphene.com/blog/${slug}`
+      url: `https://usa-graphene.com/blog/${slug}`,
+      debug: {
+        projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 't9t7is4j',
+        dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+        createdId: createdPost._id
+      }
     });
 
   } catch (error: any) {
