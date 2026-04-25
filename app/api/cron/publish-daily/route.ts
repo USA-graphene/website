@@ -23,35 +23,50 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log("Fetching recent papers from Semantic Scholar...");
-    // 2. Fetch recent Graphene papers from Semantic Scholar API
-    const searchRes = await fetch('https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&limit=10&fields=title,abstract,authors,year&sort=publicationDate:desc');
-    const searchData = await searchRes.json();
+    console.log("Fetching recent papers from ArXiv...");
+    // 2. Fetch recent Graphene papers from ArXiv API (Atom XML format)
+    const searchRes = await fetch('http://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending');
+    const xmlText = await searchRes.text();
     
-    if (!searchData.data || searchData.data.length === 0) {
-      return NextResponse.json({ error: 'No papers found' }, { status: 404 });
+    // 3. Extract papers from XML using Regex (lightweight, no extra dependencies)
+    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+    const papers = [];
+    let match;
+    while ((match = entryRegex.exec(xmlText)) !== null) {
+      const entry = match[1];
+      const titleMatch = entry.match(/<title>([\s\S]*?)<\/title>/);
+      const summaryMatch = entry.match(/<summary>([\s\S]*?)<\/summary>/);
+      if (titleMatch && summaryMatch) {
+        papers.push({
+          title: titleMatch[1].replace(/\n/g, ' ').trim(),
+          abstract: summaryMatch[1].replace(/\n/g, ' ').trim(),
+        });
+      }
     }
 
-    // 3. Find an unpublished paper
+    if (papers.length === 0) {
+      return NextResponse.json({ error: 'No papers found on ArXiv' }, { status: 404 });
+    }
+
+    // 4. Find an unpublished paper
     const existingPosts = await sanityClient.fetch(`*[_type == "post"]{title}`);
     const existingTitles = new Set(existingPosts.map((p: any) => p.title.toLowerCase()));
 
     let selectedPaper = null;
-    for (const paper of searchData.data) {
-      // Only use papers that have a valid abstract and aren't already published
-      if (paper.abstract && paper.abstract.length > 200 && !existingTitles.has(paper.title.toLowerCase())) {
+    for (const paper of papers) {
+      if (paper.abstract.length > 200 && !existingTitles.has(paper.title.toLowerCase())) {
         selectedPaper = paper;
         break;
       }
     }
 
     if (!selectedPaper) {
-      return NextResponse.json({ message: 'No new unpublished papers with abstracts found today.' });
+      return NextResponse.json({ message: 'All recent ArXiv papers are already published.' });
     }
 
     console.log(`Selected Paper: ${selectedPaper.title}`);
 
-    // 4. Generate Post using Gemini 2.5 Flash
+    // 5. Generate Post using Gemini 2.5 Flash
     const geminiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
     const prompt = `You are an elite SEO blog writer for USA Graphene.
 Analyze the following scientific research paper and write a highly engaging, scientific yet accessible blog post.
@@ -80,6 +95,11 @@ Output the result strictly as a raw JSON object (NO markdown code blocks, just r
       })
     });
     const geminiData = await geminiRes.json();
+    
+    if (!geminiData.candidates || !geminiData.candidates[0]) {
+       throw new Error(`Gemini API Error: ${JSON.stringify(geminiData)}`);
+    }
+
     let rawJson = geminiData.candidates[0].content.parts[0].text;
     
     // Clean up potential markdown formatting from Gemini
