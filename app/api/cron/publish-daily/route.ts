@@ -76,8 +76,8 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
     const gData = await gRes.json();
     const raw = gData.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
     
-    const blogTitle = raw.match(/\[TITLE\](.*?)\[\/TITLE\]/s)?.[1]?.trim() || selected.title;
-    const blogBody = raw.match(/\[BODY\](.*?)\[\/BODY\]/s)?.[1]?.trim();
+    const blogTitle = raw.match(/\[TITLE\]([\s\S]*?)\[\/TITLE\]/)?.[1]?.trim() || selected.title;
+    const blogBody = raw.match(/\[BODY\]([\s\S]*?)\[\/BODY\]/)?.[1]?.trim();
 
     if (!blogBody || blogBody.length < 500) {
       throw new Error(`Gemini failed content check. Model used: gemini-pro-latest`);
