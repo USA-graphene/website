@@ -43,31 +43,32 @@ export default function Header() {
             <Logo className="text-white" />
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex lg:items-center lg:gap-1">
-            {navigation.map((item) => {
-              const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    active
-                      ? 'text-white bg-white/8'
-                      : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  {item.name}
-                  {active && (
-                    <span className="absolute bottom-0.5 left-3.5 right-3.5 h-px bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] rounded-full" />
-                  )}
-                </Link>
-              )
-            })}
-          </div>
+          {/* Desktop Right Side */}
+          <div className="hidden lg:flex lg:items-center lg:gap-8">
+            {/* Desktop Nav */}
+            <div className="flex items-center gap-1">
+              {navigation.map((item) => {
+                const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      active
+                        ? 'text-white bg-white/8'
+                        : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {item.name}
+                    {active && (
+                      <span className="absolute bottom-0.5 left-3.5 right-3.5 h-px bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] rounded-full" />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
 
-          {/* CTA */}
-          <div className="hidden lg:flex lg:items-center lg:gap-3">
+            {/* CTA */}
             <Link
               href="/contact/"
               className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#2d6ef0] to-[#1a55d0] hover:from-[#3a7af5] hover:to-[#2d6ef0] transition-all shadow-[0_2px_12px_rgba(45,110,240,0.35)] hover:shadow-[0_4px_20px_rgba(45,110,240,0.5)]"
