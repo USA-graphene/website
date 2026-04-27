@@ -108,11 +108,25 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
       title: finalTitle,
       slug: { _type: 'slug', current: finalSlug },
       excerpt: blogBody.substring(0, 160).replace(/\n/g, ' ') + '...',
-      body: blogBody.split('\n\n').filter(p => p.trim() !== '').map(p => ({
-        _type: 'block', _key: Math.random().toString(36).slice(2, 11),
-        style: p.startsWith('## ') ? 'h2' : 'normal',
-        children: [{ _type: 'span', text: p.replace(/^## /, ''), marks: [] }]
-      })),
+      body: blogBody.split('\n\n').filter(p => p.trim() !== '').map(p => {
+        let style = 'normal';
+        let text = p.trim();
+        if (text.startsWith('### ')) {
+          style = 'h3';
+          text = text.replace(/^###\s+/, '');
+        } else if (text.startsWith('## ')) {
+          style = 'h2';
+          text = text.replace(/^##\s+/, '');
+        } else if (text.startsWith('# ')) {
+          style = 'h2';
+          text = text.replace(/^#\s+/, '');
+        }
+        return {
+          _type: 'block', _key: Math.random().toString(36).slice(2, 11),
+          style: style,
+          children: [{ _type: 'span', text: text, marks: [] }]
+        };
+      }),
       publishedAt: nowEST(),
       mainImage: assetId ? { _type: 'image', asset: { _type: 'reference', _ref: assetId } } : undefined,
       categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju', _key: 'cat1' }],
