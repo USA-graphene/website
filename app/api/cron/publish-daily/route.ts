@@ -108,7 +108,7 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
       title: finalTitle,
       slug: { _type: 'slug', current: finalSlug },
       excerpt: blogBody.substring(0, 160).replace(/\n/g, ' ') + '...',
-      body: blogBody.split('\n\n').filter(p => p.trim() !== '').map(p => {
+      body: blogBody.split('\n\n').filter((p: string) => p.trim() !== '').map((p: string) => {
         let style = 'normal';
         let text = p.trim();
         if (text.startsWith('### ')) {
