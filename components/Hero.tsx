@@ -114,7 +114,7 @@ export default function Hero() {
               <div className="absolute bottom-4 left-4 right-4">
                 <div className="inline-flex items-center gap-2 rounded-xl bg-[#070d1a]/85 backdrop-blur-sm border border-white/10 px-4 py-2.5 text-xs text-white">
                   <Zap className="h-3.5 w-3.5 text-[#00c8ff]" />
-                  <span className="font-semibold">Flash Joule Heating Technology</span>
+                  <span className="font-semibold">Advanced Pulsed Electrical Reactor Technology</span>
                   <span className="text-[#8b9ab5]">— 1g in &lt; 100ms</span>
                 </div>
               </div>
