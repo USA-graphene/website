@@ -51,61 +51,56 @@ const stats = [
 
 export default function About() {
     return (
-        <div className="relative isolate overflow-hidden bg-white px-6 py-32 lg:px-8">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        <div className="relative isolate overflow-hidden bg-[#070d1a] px-6 py-32 lg:px-8 min-h-screen">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+            {/* Background layers */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_30%_20%,rgba(45,110,240,0.13)_0%,transparent_70%)]" />
+            <div className="absolute inset-0 opacity-[0.03]"
+                style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='1' fill='%23ffffff'/%3E%3C/svg%3E\")", backgroundSize: '40px 40px' }}
             />
+            {/* Background image with dark overlay */}
             <div className="absolute inset-0 -z-10 h-full w-full">
-                <Image
-                    src="/about-background.jpg"
-                    alt="Graphene Background"
-                    fill
-                    className="object-cover object-right opacity-60"
-                    priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/70 to-white" />
+                <Image src="/about-background.jpg" alt="Graphene Background" fill className="object-cover object-right opacity-8" priority />
+                <div className="absolute inset-0 bg-[#070d1a]/90" />
             </div>
+
             <FadeIn>
-                <div className="mx-auto max-w-3xl text-base leading-7 text-gray-700 relative">
-                    <p className="text-base font-semibold leading-7 text-primary-600">About Us</p>
-                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                        We’re not just manufacturing graphene and graphene making equipment. <br />
-                        <span className="text-primary-600">We’re believing in it.</span>
+                <div className="mx-auto max-w-3xl text-base leading-7 relative">
+                    <p className="text-sm font-semibold tracking-widest uppercase text-[#5b9af5]">About Us</p>
+                    <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl font-display">
+                        We&apos;re not just manufacturing graphene.{' '}
+                        <span className="bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] bg-clip-text text-transparent">We&apos;re believing in it.</span>
                     </h1>
-                    <div className="mt-10 max-w-2xl space-y-8">
-                        <p className="text-xl leading-8">
-                            At USA-Graphene, we’re a team of makers, engineers, and dreamers united by one idea: carbon can change everything. We believe in the quiet power of a single atom arranged just right. We believe in breakthroughs born from black powder. We believe that the future isn’t found—it’s built.
+                    <div className="mt-2 h-0.5 w-12 rounded-full bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff]" />
+                    <div className="mt-8 max-w-2xl space-y-6 text-[#a8b8d8]">
+                        <p className="text-lg leading-8">
+                            At USA-Graphene, we&apos;re a team of makers, engineers, and dreamers united by one idea: carbon can change everything. We believe in the quiet power of a single atom arranged just right. We believe in breakthroughs born from black powder. We believe that the future isn&apos;t found—it&apos;s built.
                         </p>
                         <p>
-                            We’re a startup rooted in the USA, driven not by hype, but by conviction—that this one material can unlock cleaner energy, stronger structures, faster electronics, and smarter design. And we’re here to make it real.
+                            We&apos;re a startup rooted in the USA, driven not by hype, but by conviction—that this one material can unlock cleaner energy, stronger structures, faster electronics, and smarter design. And we&apos;re here to make it real.
                         </p>
                         <p>
                             Our machines hum with purpose. Our hands carry the dust of ambition. Our mission? Bring this wonder material out of the lab and into the world—where it belongs.
                         </p>
-                        <div className="border-l-4 border-primary-600 pl-6 italic bg-white/50 backdrop-blur-sm rounded-r-lg py-2">
-                            <p className="font-semibold text-gray-900">
-                                Graphene isn’t just a product to us.
-                            </p>
-                            <p className="mt-2 font-semibold text-gray-900">
-                                It’s a movement.
-                            </p>
-                            <p className="mt-2 font-semibold text-gray-900">
-                                And we’re all in.
-                            </p>
+                        <div className="border-l-2 border-[#2d6ef0] pl-6 py-3 bg-white/3 rounded-r-xl">
+                            <p className="font-semibold text-white text-lg">Graphene isn&apos;t just a product to us.</p>
+                            <p className="mt-1 font-semibold text-white">It&apos;s a movement.</p>
+                            <p className="mt-1 font-semibold text-[#00c8ff]">And we&apos;re all in.</p>
                         </div>
-                        <p className="text-2xl font-bold tracking-tight text-gray-900 text-center pt-8">
+                        <p className="text-xl font-bold tracking-tight text-white text-center pt-4">
                             Think Carbon. Think Big. Think Different.
                         </p>
                     </div>
                 </div>
             </FadeIn>
+
             <FadeIn delay={0.2}>
-                <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 text-base leading-7 sm:grid-cols-2 sm:gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+                <div className="mx-auto mt-16 grid max-w-2xl grid-cols-2 gap-6 sm:gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-4">
                     {stats.map((stat) => (
-                        <div key={stat.label} className="flex flex-col-reverse gap-y-4 border-l border-gray-200 pl-6">
-                            <dt className="text-base leading-7 text-gray-600">{stat.label}</dt>
-                            <dd className="text-3xl font-semibold tracking-tight text-gray-900">{stat.value}</dd>
+                        <div key={stat.label} className="rounded-xl bg-white/5 border border-white/10 p-6 text-center">
+                            <dd className="text-3xl font-bold text-white font-display">{stat.value}</dd>
+                            <dt className="mt-1 text-sm text-[#8b9ab5]">{stat.label}</dt>
                         </div>
                     ))}
                 </div>

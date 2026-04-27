@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import VisitorTracker from '@/components/VisitorTracker'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space' })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.usa-graphene.com'),
@@ -70,7 +71,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-50 text-slate-900`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#070d1a] text-[#e8edf5] antialiased`}>
         <VisitorTracker />
         {children}
       </body>

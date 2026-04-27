@@ -203,31 +203,36 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <main className="min-h-screen bg-slate-950 text-slate-50">
+            <main className="relative isolate min-h-screen bg-[#070d1a] text-[#e8edf5]">
+                {/* Background layers */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_70%_20%,rgba(45,110,240,0.13)_0%,transparent_70%)]" />
+                <div className="absolute inset-0 opacity-[0.035]"
+                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='30,2 52,16 52,44 30,58 8,44 8,16' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E\")", backgroundSize: '60px 60px' }}
+                />
 
                 {/* HERO */}
-                <section className="max-w-6xl mx-auto px-6 py-16 grid gap-10 md:grid-cols-[1.3fr,1fr] items-center">
+                <section className="relative max-w-7xl mx-auto px-6 py-24 sm:py-32 grid gap-12 lg:grid-cols-[1.3fr,1fr] items-center">
                     <div>
-                        <p className="text-xs uppercase tracking-[0.2em] text-sky-400 mb-3">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#00c8ff] mb-6">
                             USA-Graphene • {product.productType === 'machine' ? 'Production Machine' : 'Graphene Materials'}
-                        </p>
-                        <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-4">
+                        </div>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-white font-display">
                             {product.title}
                         </h1>
                         {product.shortDescription && (
-                            <p className="text-slate-300 text-sm md:text-base max-w-xl mb-6">
+                            <p className="text-[#8b9ab5] text-lg max-w-xl mb-8 leading-8">
                                 {product.shortDescription}
                             </p>
                         )}
 
-                        <div className="flex flex-wrap items-center gap-4 mb-8">
+                        <div className="flex flex-wrap items-center gap-6 mb-10">
                             {hasPrice && (
-                                <div className="text-lg font-medium text-sky-300">
+                                <div className="text-2xl font-bold text-white font-display">
                                     {priceLabel}
                                 </div>
                             )}
                             {!hasPrice && priceLabel && (
-                                <div className="text-sm font-medium text-slate-300">
+                                <div className="text-lg font-semibold text-[#8b9ab5]">
                                     {priceLabel}
                                 </div>
                             )}
@@ -235,7 +240,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                             {product.primaryCtaUrl && (
                                 <Link
                                     href={product.primaryCtaUrl}
-                                    className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-sky-500 hover:bg-sky-400 transition shadow-lg shadow-sky-500/30"
+                                    className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-[#2d6ef0] to-[#1a55d0] hover:from-[#3a7af5] hover:to-[#2d6ef0] transition-all shadow-[0_4px_20px_rgba(45,110,240,0.35)] hover:shadow-[0_8px_32px_rgba(45,110,240,0.5)] hover:-translate-y-0.5"
                                 >
                                     {ctaLabel}
                                 </Link>
@@ -243,11 +248,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                         </div>
 
                         {product.featureBullets && product.featureBullets.length > 0 && (
-                            <ul className="grid gap-2 text-sm text-slate-200">
+                            <ul className="grid gap-3 text-sm text-white/90">
                                 {product.featureBullets.map((item, index) => (
-                                    <li key={index} className="flex gap-2">
-                                        <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-sky-400"></span>
-                                        <span>{item}</span>
+                                    <li key={index} className="flex gap-3 items-start">
+                                        <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#00c8ff] flex-shrink-0" />
+                                        <span className="leading-relaxed">{item}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -255,10 +260,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     </div>
 
                     <div className="relative">
-                        <div className="absolute -inset-6 rounded-3xl bg-sky-500/10 blur-xl" />
-                        <div className="relative rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900 to-slate-950 p-4">
+                        <div className="absolute -inset-4 bg-gradient-to-r from-[#2d6ef0]/20 to-[#00c8ff]/10 rounded-3xl blur-2xl" />
+                        <div className="relative rounded-3xl border border-white/10 bg-[#0d1630]/80 backdrop-blur-xl p-5 shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
                             {imageUrl ? (
-                                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#070d1a]">
                                     <Image
                                         src={imageUrl}
                                         alt={product.title}
@@ -266,14 +271,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                         className="object-cover"
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                     />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#070d1a]/80 via-transparent to-transparent opacity-60" />
                                 </div>
                             ) : (
-                                <div className="aspect-[4/3] rounded-2xl border border-dashed border-slate-700 flex items-center justify-center text-xs text-slate-500">
+                                <div className="aspect-[4/3] rounded-2xl border border-dashed border-white/10 bg-white/5 flex items-center justify-center text-sm text-[#8b9ab5]">
                                     Product image coming soon
                                 </div>
                             )}
 
-                            <div className="mt-4 text-xs text-slate-400 space-y-1">
+                            <div className="mt-6 text-sm text-[#8b9ab5] space-y-2 px-2 pb-2">
                                 <p>
                                     Turbostratic graphene produced in the USA. Engineered for high
                                     dispersion and industrial scale.
@@ -282,11 +288,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                     Need bulk orders or a custom application?{' '}
                                     <Link
                                         href="/contact/"
-                                        className="underline decoration-sky-400/60 hover:decoration-sky-300"
+                                        className="text-[#2d6ef0] hover:text-[#00c8ff] font-medium transition-colors"
                                     >
-                                        Talk to our team
+                                        Talk to our team →
                                     </Link>
-                                    .
                                 </p>
                             </div>
                         </div>
@@ -294,65 +299,69 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </section>
 
                 {/* SPECS + STORY */}
-                <section className="max-w-6xl mx-auto px-6 pb-24 grid gap-12 md:grid-cols-[1.1fr,1fr]">
-                    <div>
-                        <h2 className="text-xl font-semibold mb-4">Why this matters</h2>
-                        <p className="text-sm text-slate-300 mb-4">
+                <section className="relative max-w-7xl mx-auto px-6 pb-32 grid gap-12 lg:grid-cols-[1.1fr,1fr]">
+                    <div className="p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-sm">
+                        <h2 className="text-2xl font-bold mb-6 text-white font-display">Why this matters</h2>
+                        <p className="text-base leading-7 text-[#8b9ab5] mb-6">
                             Most “graphene” on the market is poorly characterized carbon.
                             USA-Graphene machines use flash-joule heating to convert high
                             quality carbon into turbostratic graphene with excellent dispersion,
                             enabling real performance gains in rubber, plastics, cement and
                             energy storage.
                         </p>
-                        <p className="text-sm text-slate-300">
+                        <p className="text-base leading-7 text-[#8b9ab5]">
                             When you work with us, you are not just buying powder or a machine.
                             You are getting process know-how from a team actually running
                             equipment and shipping graphene every day.
                         </p>
                     </div>
 
-                    {product.techSpecs && product.techSpecs.length > 0 && (
-                        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5">
-                            <h3 className="text-sm font-semibold mb-3">Key Specifications</h3>
-                            <dl className="space-y-2 text-xs text-slate-200">
-                                {product.techSpecs.map((spec, index) => (
-                                    <div key={index} className="flex justify-between gap-4 border-b border-slate-800/80 pb-1">
-                                        <dt className="text-slate-400">{spec.label}</dt>
-                                        <dd className="font-medium text-right">{spec.value}</dd>
-                                    </div>
-                                ))}
-                            </dl>
-                        </div>
-                    )}
-
-                    {product.downloads && product.downloads.length > 0 && (
-                        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 mt-6">
-                            <h3 className="text-sm font-semibold mb-3">Downloads & Resources</h3>
-                            <div className="space-y-2">
-                                {product.downloads.map((download, index) => (
-                                    <a
-                                        key={index}
-                                        href={download.asset.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors group"
-                                    >
-                                        <svg className="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-slate-200 group-hover:text-sky-400 transition-colors">
-                                                {download.description || 'Download PDF'}
-                                            </p>
+                    <div className="space-y-6">
+                        {product.techSpecs && product.techSpecs.length > 0 && (
+                            <div className="rounded-3xl border border-[#2d6ef0]/20 bg-[#0d1630]/60 backdrop-blur-md p-8">
+                                <h3 className="text-sm font-semibold tracking-widest uppercase text-[#5b9af5] mb-6">Key Specifications</h3>
+                                <dl className="space-y-3 text-sm">
+                                    {product.techSpecs.map((spec, index) => (
+                                        <div key={index} className="flex justify-between gap-4 border-b border-white/10 pb-3">
+                                            <dt className="text-[#8b9ab5]">{spec.label}</dt>
+                                            <dd className="font-semibold text-white text-right">{spec.value}</dd>
                                         </div>
-                                        <svg className="w-4 h-4 text-slate-400 group-hover:text-sky-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
-                                    </a>
-                                ))}
+                                    ))}
+                                </dl>
                             </div>
-                        </div>
-                    )}
+                        )}
+
+                        {product.downloads && product.downloads.length > 0 && (
+                            <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md p-8">
+                                <h3 className="text-sm font-semibold tracking-widest uppercase text-[#5b9af5] mb-6">Downloads & Resources</h3>
+                                <div className="space-y-3">
+                                    {product.downloads.map((download, index) => (
+                                        <a
+                                            key={index}
+                                            href={download.asset.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#2d6ef0]/50 hover:bg-[#2d6ef0]/10 transition-all group"
+                                        >
+                                            <div className="flex-shrink-0 p-2 rounded-lg bg-[#2d6ef0]/20 text-[#00c8ff]">
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-semibold text-white group-hover:text-[#00c8ff] transition-colors">
+                                                    {download.description || 'Download PDF'}
+                                                </p>
+                                            </div>
+                                            <svg className="w-5 h-5 text-[#8b9ab5] group-hover:text-[#00c8ff] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </section>
             </main>
         </>

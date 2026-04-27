@@ -74,23 +74,23 @@ export default function MarketResearchClient() {
     ]
 
     return (
-        <div className="bg-[#0f172a] min-h-screen text-slate-300">
+        <div className="bg-[#070d1a] min-h-screen text-[#8b9ab5]">
 
             {/* Premium Hero Section */}
             <section className="relative pt-40 pb-32 overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent -z-10" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,110,240,0.15)_0%,transparent_70%)] -z-10" />
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <FadeIn>
-                        <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-primary-500/10 text-primary-400 ring-1 ring-inset ring-primary-500/20 mb-8">
+                        <span className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold bg-[#2d6ef0]/10 text-[#00c8ff] ring-1 ring-inset ring-[#2d6ef0]/30 mb-8 tracking-widest uppercase">
                             Strategic Research Report 2026
                         </span>
-                        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-8">
+                        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-8 font-display">
                             Graphene Market <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-primary-500">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff]">
                                 Outlook 2026
                             </span>
                         </h1>
-                        <p className="max-w-3xl mx-auto text-xl text-slate-400 leading-relaxed font-light">
+                        <p className="max-w-3xl mx-auto text-xl text-[#8b9ab5] leading-relaxed font-light">
                             Global Growth and USA's Strategic Role in the Future of Materials Science.
                             As of 2026, graphene is re-defining industries from energy to aerospace.
                         </p>
@@ -105,13 +105,13 @@ export default function MarketResearchClient() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {stats.map((stat, idx) => (
                                 <FadeIn key={idx}>
-                                    <div className="bg-slate-800/50 backdrop-blur-sm rounded-3xl p-10 border border-slate-700 hover:border-primary-500/50 transition-all group">
-                                        <div className={`p-3 rounded-2xl bg-slate-900 w-fit mb-6 group-hover:scale-110 transition-transform`}>
-                                            <stat.icon className={`w-8 h-8 ${stat.color.replace('text-', 'text-opacity-90 ')}`} />
+                                    <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-10 border border-white/10 hover:border-[#2d6ef0]/50 transition-all group hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:-translate-y-1">
+                                        <div className={`p-3 rounded-2xl bg-[#0d1630] border border-[#2d6ef0]/20 w-fit mb-6 group-hover:scale-110 transition-transform`}>
+                                            <stat.icon className={`w-8 h-8 text-[#00c8ff]`} />
                                         </div>
-                                        <p className="text-slate-400 font-medium mb-2">{stat.label}</p>
-                                        <p className={`text-3xl font-bold text-white mb-4`}>{stat.value}</p>
-                                        <p className="text-slate-500 text-sm leading-relaxed">{stat.description}</p>
+                                        <p className="text-[#8b9ab5] font-medium mb-2">{stat.label}</p>
+                                        <p className={`text-3xl font-bold text-white mb-4 font-display`}>{stat.value}</p>
+                                        <p className="text-[#8b9ab5]/80 text-sm leading-relaxed">{stat.description}</p>
                                     </div>
                                 </FadeIn>
                             ))}
@@ -121,12 +121,12 @@ export default function MarketResearchClient() {
             </section>
 
             {/* USA Strategic Section */}
-            <section className="py-24 bg-slate-950/50">
+            <section className="py-24 bg-[#0d1630]/30 border-y border-white/5">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <FadeIn>
-                            <h2 className="text-4xl font-bold text-white mb-6">USA: Strategic Rise in a Competitive Landscape</h2>
-                            <p className="text-lg text-slate-400 mb-8 leading-relaxed">
+                            <h2 className="text-4xl font-bold text-white mb-6 font-display">USA: Strategic Rise in a Competitive Landscape</h2>
+                            <p className="text-lg text-[#8b9ab5] mb-8 leading-relaxed">
                                 The USA is carving out a specialized niche in advanced manufacturing. With North America's CAGR projected at 36.98%, the strategic focus is on Energy Leadership and Semiconductor innovation.
                             </p>
                             <div className="space-y-6">
@@ -135,19 +135,21 @@ export default function MarketResearchClient() {
                                     { label: '2030 Projection', value: '$400.1M' },
                                     { label: '2034 Potential', value: '$2.3B+' },
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex justify-between items-center p-6 bg-slate-900 rounded-2xl border border-slate-800 hover:border-slate-700 transition-colors">
-                                        <span className="text-slate-400 font-medium">{item.label}</span>
-                                        <span className="text-2xl font-bold text-primary-400">{item.value}</span>
+                                    <div key={idx} className="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-white/10 hover:border-[#2d6ef0]/30 transition-colors">
+                                        <span className="text-[#8b9ab5] font-medium">{item.label}</span>
+                                        <span className="text-2xl font-bold text-[#00c8ff] font-display">{item.value}</span>
                                     </div>
                                 ))}
                             </div>
                         </FadeIn>
                         <FadeIn>
                             <div className="relative">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-primary-600 rounded-[2.5rem] blur opacity-25" />
-                                <div className="relative bg-slate-900 rounded-[2.5rem] p-10 border border-slate-800 shadow-2xl">
-                                    <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                                        <Scale className="text-primary-500" />
+                                <div className="absolute -inset-1 bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] rounded-[2.5rem] blur opacity-25" />
+                                <div className="relative bg-[#070d1a] rounded-[2.5rem] p-10 border border-white/10 shadow-2xl">
+                                    <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3 font-display">
+                                        <div className="p-2 bg-[#2d6ef0]/20 rounded-lg">
+                                            <Scale className="text-[#00c8ff] w-5 h-5" />
+                                        </div>
                                         US Government Support
                                     </h3>
                                     <ul className="space-y-4">
@@ -157,8 +159,8 @@ export default function MarketResearchClient() {
                                             'Department of Defense (DoD): $43M+ in research contracts',
                                             'Critical Minerals Strategy: Domestic supply chain security'
                                         ].map((text, i) => (
-                                            <li key={i} className="flex items-start gap-3 text-slate-400 text-sm">
-                                                <ChevronRight className="w-4 h-4 text-primary-500 mt-1 shrink-0" />
+                                            <li key={i} className="flex items-start gap-3 text-[#8b9ab5] text-sm">
+                                                <div className="mt-1 h-1.5 w-1.5 rounded-full bg-[#00c8ff] flex-shrink-0" />
                                                 {text}
                                             </li>
                                         ))}
@@ -174,20 +176,20 @@ export default function MarketResearchClient() {
             <section className="py-24">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <FadeIn className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-white mb-4">Key Global Growth Drivers</h2>
-                        <p className="text-slate-500">Multiple vectors converging to drive market expansion.</p>
+                        <h2 className="text-3xl font-bold text-white mb-4 font-display">Key Global Growth Drivers</h2>
+                        <p className="text-[#8b9ab5]">Multiple vectors converging to drive market expansion.</p>
                     </FadeIn>
                     <FadeInStagger>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {drivers.map((driver, idx) => (
                                 <FadeIn key={idx}>
-                                    <div className="p-8 bg-slate-900/30 rounded-3xl border border-slate-800 hover:bg-slate-900/60 transition-colors flex gap-6">
-                                        <div className="shrink-0 p-3 bg-slate-800 rounded-xl h-fit">
-                                            <driver.icon className="w-6 h-6 text-primary-500" />
+                                    <div className="p-8 bg-white/5 rounded-3xl border border-white/10 hover:bg-white/10 transition-colors flex gap-6">
+                                        <div className="shrink-0 p-3 bg-[#0d1630] border border-[#2d6ef0]/20 rounded-xl h-fit">
+                                            <driver.icon className="w-6 h-6 text-[#00c8ff]" />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-white mb-2">{driver.title}</h4>
-                                            <p className="text-sm text-slate-500 leading-relaxed">{driver.text}</p>
+                                            <h4 className="font-bold text-white mb-2 font-display">{driver.title}</h4>
+                                            <p className="text-sm text-[#8b9ab5] leading-relaxed">{driver.text}</p>
                                         </div>
                                     </div>
                                 </FadeIn>
@@ -198,28 +200,30 @@ export default function MarketResearchClient() {
             </section>
 
             {/* Application Table */}
-            <section className="py-24 bg-slate-950/30">
+            <section className="py-24 bg-[#0d1630]/30 border-y border-white/5">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <FadeIn className="mb-12">
-                        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                            <Zap className="text-yellow-500" />
+                        <h2 className="text-3xl font-bold text-white flex items-center gap-4 font-display">
+                            <div className="p-2 bg-amber-500/20 rounded-xl border border-amber-500/30">
+                                <Zap className="text-amber-400 w-6 h-6" />
+                            </div>
                             Industrial Applications (2025-2026)
                         </h2>
                     </FadeIn>
                     <FadeInStagger className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {applicationAreas.map((area, idx) => (
-                            <FadeIn key={idx} className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 flex justify-between items-center group hover:bg-slate-800 transition-colors">
+                            <FadeIn key={idx} className="bg-white/5 p-6 rounded-2xl border border-white/10 flex justify-between items-center group hover:bg-white/10 transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-2 bg-slate-950 rounded-lg">
-                                        <area.icon className="w-5 h-5 text-primary-500" />
+                                    <div className="p-2 bg-[#0d1630] border border-[#2d6ef0]/20 rounded-lg">
+                                        <area.icon className="w-5 h-5 text-[#00c8ff]" />
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-white">{area.name}</h4>
-                                        <p className="text-xs text-slate-500">{area.detail}</p>
+                                        <p className="text-xs text-[#8b9ab5] mt-1">{area.detail}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-primary-400 font-bold">{area.share}</span>
+                                    <span className="text-[#00c8ff] font-bold">{area.share}</span>
                                 </div>
                             </FadeIn>
                         ))}
@@ -231,13 +235,13 @@ export default function MarketResearchClient() {
             <section className="py-24">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <FadeIn>
-                        <h2 className="text-3xl font-bold text-white mb-12 flex items-center justify-center gap-3">
-                            <Users className="text-blue-500" />
+                        <h2 className="text-3xl font-bold text-white mb-12 flex items-center justify-center gap-3 font-display">
+                            <Users className="text-[#2d6ef0]" />
                             Innovation Ecosystem
                         </h2>
                         <div className="flex flex-wrap justify-center gap-3">
                             {players.map((player, idx) => (
-                                <span key={idx} className="px-5 py-2 rounded-full bg-slate-900 border border-slate-800 text-slate-400 text-sm hover:border-primary-500 hover:text-white transition-all cursor-default">
+                                <span key={idx} className="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-[#8b9ab5] text-sm hover:border-[#2d6ef0]/50 hover:text-white hover:bg-[#2d6ef0]/10 transition-all cursor-default">
                                     {player}
                                 </span>
                             ))}
@@ -250,21 +254,21 @@ export default function MarketResearchClient() {
             <section className="py-24 pb-40">
                 <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
                     <FadeIn>
-                        <div className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-800 p-12 md:p-20 text-center shadow-2xl">
-                            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-[100px] -mr-48 -mt-48 rounded-full" />
+                        <div className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-[#0d1630] to-[#070d1a] border border-[#2d6ef0]/30 p-12 md:p-20 text-center shadow-[0_0_60px_rgba(45,110,240,0.15)] group">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(45,110,240,0.15)_0%,transparent_70%)] opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
                             <div className="relative z-10">
-                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
+                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 font-display">
                                     Stay Ahead in the <br /> Graphene Revolution
                                 </h2>
-                                <p className="text-xl text-primary-100 max-w-2xl mx-auto mb-12 font-light">
+                                <p className="text-xl text-[#8b9ab5] max-w-2xl mx-auto mb-12 font-light">
                                     The market is moving faster than ever. Contact our experts to discuss how graphene can power your next innovation or explore our latest insights.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                                    <a href="/market-research-2026.pdf" download className="px-8 py-4 bg-white text-primary-700 rounded-2xl font-bold hover:bg-slate-100 transition-all shadow-xl shadow-black/20 scale-100 hover:scale-105 flex items-center justify-center gap-2">
+                                    <a href="/market-research-2026.pdf" download className="px-8 py-4 bg-gradient-to-r from-[#2d6ef0] to-[#1a55d0] text-white rounded-2xl font-bold hover:shadow-[0_8px_32px_rgba(45,110,240,0.5)] transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5">
                                         <Database className="w-5 h-5" />
                                         Download Full Report (PDF)
                                     </a>
-                                    <a href="/contact/" className="px-8 py-4 bg-primary-500/20 border border-white/30 text-white rounded-2xl font-bold hover:bg-white/10 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
+                                    <a href="/contact/" className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold hover:bg-white/10 hover:border-[#2d6ef0]/50 transition-all backdrop-blur-sm flex items-center justify-center gap-2">
                                         Contact Our Experts
                                     </a>
                                 </div>
