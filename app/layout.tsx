@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     'Graphene Manufacturer USA',
     'Bulk Graphene Powder',
     'Graphene Production Machinery',
-    'Flash Joule Heating',
+    'Advanced Pulsed Electrical Reactor',
     'Industrial Graphene Applications',
     'Conductive Additives',
     'Graphene Concrete',

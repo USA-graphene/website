@@ -4,10 +4,10 @@ import Image from 'next/image'
 
 export const metadata: Metadata = {
     title: 'Industrial Graphene Production Equipment & Machinery | USA Graphene',
-    description: 'Explore our advanced graphene production equipment, including automated Flash Joule Heating systems for bulk turbostratic graphene, CVD reactors, and characterization tools.',
+    description: 'Explore our advanced graphene production equipment, including automated Advanced Pulsed Electrical Reactor systems for bulk turbostratic graphene, CVD reactors, and characterization tools.',
     keywords: [
         'Graphene Production Equipment',
-        'Flash Joule Heating Machine',
+        'Advanced Pulsed Electrical Reactor',
         'Turbostratic Graphene Reactor',
         'CVD Graphene Systems',
         'Graphene Exfoliation Unit',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         title: 'Industrial Graphene Production Equipment | USA Graphene',
-        description: 'Automated Flash Joule Heating systems and CVD reactors for scalable graphene production.',
+        description: 'Automated Advanced Pulsed Electrical Reactor systems and CVD reactors for scalable graphene production.',
         url: 'https://www.usa-graphene.com/equipment/',
         siteName: 'USA Graphene',
         images: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
                 url: '/flash-graphene-machine.jpg',
                 width: 1024,
                 height: 1024,
-                alt: 'Automated Flash Joule Heating Graphene Machine',
+                alt: 'Automated Pulsed Electrical Reactor Graphene Machine',
             },
         ],
         locale: 'en_US',
@@ -67,8 +67,8 @@ export default function Equipment() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Product',
-        'name': 'Flash Graphene Production Machine',
-        'description': 'Fully automated Flash Joule Heating machine capable of producing 20g of turbostratic graphene in 20 seconds.',
+        'name': 'Pulsed Electrical Reactor Machine',
+        'description': 'Fully automated Advanced Pulsed Electrical Reactor capable of producing 20g of turbostratic graphene in 20 seconds.',
         'brand': {
             '@type': 'Brand',
             'name': 'USA Graphene'
@@ -168,7 +168,7 @@ export default function Equipment() {
                         </dl>
                     </div>
 
-                    {/* Flash Graphene Machine Section */}
+                    {/* Pulsed Electrical Reactor Section */}
                     <div className="mt-32 overflow-hidden rounded-3xl border border-[#2d6ef0]/30 bg-gradient-to-br from-[#0d1630] to-[#070d1a] shadow-[0_0_40px_rgba(45,110,240,0.15)] lg:grid lg:grid-cols-2 lg:gap-4 relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-[#2d6ef0]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         
@@ -211,7 +211,7 @@ export default function Equipment() {
                             <Image
                                 className="w-full h-full object-cover bg-gray-800 lg:h-full"
                                 src="/flash-graphene-machine.jpg"
-                                alt="Automated Flash Joule Heating Graphene Machine"
+                                alt="Automated Pulsed Electrical Reactor Graphene Machine"
                                 width={1024}
                                 height={1024}
                             />
