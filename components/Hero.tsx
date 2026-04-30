@@ -7,10 +7,10 @@ import Image from 'next/image'
 
 
 const features = [
-  { icon: Factory, label: 'Complete Factories', desc: 'Full production lines, turnkey delivered' },
-  { icon: Zap, label: 'Industrial Machines', desc: 'Pulsed electrical reactor technology' },
-  { icon: Atom, label: 'Pure Materials', desc: '99.9% turbostratic graphene powder' },
-  { icon: Shield, label: 'US Manufactured', desc: 'Designed and built in America' },
+  { icon: Factory, label: 'Complete Factories', desc: 'Full production lines, turnkey delivered', href: '/equipment/' },
+  { icon: Zap, label: 'Industrial Machines', desc: 'Pulsed electrical reactor technology', href: '/equipment/' },
+  { icon: Atom, label: 'Pure Materials', desc: '99.9% turbostratic graphene powder', href: '/products/' },
+  { icon: Shield, label: 'US Manufactured', desc: 'Designed and built in America', href: '/about/' },
 ]
 
 const stats = [
@@ -95,7 +95,7 @@ export default function Hero() {
             {/* CTA buttons — PA style pill buttons */}
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/products/"
+                href="/equipment/"
                 className="inline-flex items-center gap-3 bg-[#2d6ef0] hover:bg-[#1a55d0] text-white font-bold px-8 py-4 rounded-full transition-all hover:scale-105 shadow-[0_8px_30px_rgba(45,110,240,0.4)] text-base"
               >
                 View Our Machines <ArrowRight className="h-5 w-5" />
@@ -191,25 +191,26 @@ export default function Hero() {
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map(({ icon: Icon, label, desc }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                whileHover={{ y: -8, boxShadow: "0 20px 60px rgba(45,110,240,0.15)" }}
-                className="bg-[#f8fafc] rounded-3xl p-8 border border-[#e2e8f0] cursor-pointer transition-all duration-300 group"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-[#1a3a6b] flex items-center justify-center mb-6 group-hover:bg-[#2d6ef0] transition-colors">
-                  <Icon className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-black text-[#0f1f3d] mb-2">{label}</h3>
-                <p className="text-[#64748b] font-medium leading-relaxed">{desc}</p>
-                <div className="mt-6 flex items-center gap-1 text-[#2d6ef0] font-bold text-sm group-hover:gap-2 transition-all">
-                  Learn more <ChevronRight className="h-4 w-4" />
-                </div>
-              </motion.div>
+            {features.map(({ icon: Icon, label, desc, href }, i) => (
+              <Link key={label} href={href}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  whileHover={{ y: -8, boxShadow: "0 20px 60px rgba(45,110,240,0.15)" }}
+                  className="bg-[#f8fafc] rounded-3xl p-8 border border-[#e2e8f0] cursor-pointer transition-all duration-300 group h-full"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-[#1a3a6b] flex items-center justify-center mb-6 group-hover:bg-[#2d6ef0] transition-colors">
+                    <Icon className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black text-[#0f1f3d] mb-2">{label}</h3>
+                  <p className="text-[#64748b] font-medium leading-relaxed">{desc}</p>
+                  <div className="mt-6 flex items-center gap-1 text-[#2d6ef0] font-bold text-sm group-hover:gap-2 transition-all">
+                    Learn more <ChevronRight className="h-4 w-4" />
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
