@@ -192,7 +192,7 @@ export default function Hero() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map(({ icon: Icon, label, desc, href }, i) => (
-              <Link key={label} href={href}>
+              <Link key={label} href={href} passHref className="block h-full">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
