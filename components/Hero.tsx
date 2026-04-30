@@ -68,8 +68,11 @@ export default function Hero() {
                 </span>
               </h1>
 
-              <p className="mt-8 text-xl text-[#94a3b8] leading-relaxed font-light">
-                Machines, materials, and full factories for serious manufacturers. High-purity turbostratic graphene at industrial scale — <span className="text-white font-medium">ready to deploy.</span>
+              <p className="mt-8 text-2xl text-white font-semibold leading-relaxed drop-shadow-lg tracking-wide border-l-4 border-[#00c8ff] pl-5 bg-gradient-to-r from-[#2d6ef0]/10 to-transparent py-2">
+                Machines, materials, and full factories for serious manufacturers. <br/>
+                <span className="text-xl text-[#94a3b8] font-light tracking-normal block mt-2">
+                  High-purity turbostratic graphene at industrial scale — <span className="text-white font-medium">ready to deploy.</span>
+                </span>
               </p>
 
               {/* CTA Buttons */}
@@ -80,7 +83,7 @@ export default function Hero() {
                 >
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
                   <span className="relative z-10 flex items-center gap-2">
-                    View Products
+                    View Machines & Products
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </Link>
@@ -135,8 +138,8 @@ export default function Hero() {
             >
               {/* The new stunning 3D Image */}
               <Image
-                src="/hero-graphene-new.png"
-                alt="Futuristic Graphene Molecular Structure in Advanced Cleanroom"
+                src="/hero-machine-new.png"
+                alt="High-Tech Graphene Production Machinery in Advanced Cleanroom"
                 width={1200}
                 height={800}
                 className="w-full object-cover transform scale-105 hover:scale-100 transition-transform duration-1000"
