@@ -5,7 +5,12 @@ import { ArrowUpRight, Shield } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function Hero() {
+// CONCEPT 3: DARK CINEMATIC — "The Reactor"
+// The enormous glowing reactor machine IS the full page.
+// Minimal text. Industrial. Powerful. Like a defense contractor's website.
+// Clarity: A giant machine glowing with energy tells you everything in 0 seconds.
+
+export default function HeroConcept3() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-black">
       {/* Full-screen reactor image */}
