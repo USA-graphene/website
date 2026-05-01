@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/publish-daily",
-      "schedule": "0 12,16,20 * * *"
+      "schedule": "0 13 * * *"
     }
   ]
 }

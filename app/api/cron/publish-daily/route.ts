@@ -43,23 +43,26 @@ export async function GET(req: Request) {
     const arxivUrl = `https://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending`;
     const arxivRes = await fetch(arxivUrl);
     const arxivXml = await arxivRes.text();
-    let selected: any = null;
+    let selectedList: any[] = [];
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
     let match;
-    while ((match = entryRegex.exec(arxivXml)) !== null) {
+    while ((match = entryRegex.exec(arxivXml)) !== null && selectedList.length < 3) {
       const entry = match[1];
       const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim();
       const abstract = entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim();
       if (title && !Array.from(existingSlugs).some(s => s.includes(slugify(title).substring(0, 15)))) {
-        selected = { title, abstract };
-        break;
+        selectedList.push({ title, abstract });
+        existingSlugs.add(slugify(title).substring(0, 15));
       }
     }
 
-    if (!selected) return NextResponse.json({ message: 'No new articles' });
+    if (selectedList.length === 0) return NextResponse.json({ message: 'No new articles' });
 
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
-    const prompt = `Write a TECHNICAL science article (2000 words) about: ${selected.title}. 
+    const results = [];
+
+    for (const selected of selectedList) {
+      const prompt = `Write a TECHNICAL science article (2000 words) about: ${selected.title}. 
 Context: ${selected.abstract}
 
 FORMATTING RULES (STRICT):
@@ -131,44 +134,52 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
       console.warn(`Imagen generation error: ${iErr}`);
     }
 
-    const finalTitle = `${nextNumber}. ${blogTitle}`;
-    const finalSlug = slugify(finalTitle);
+      const finalTitle = `${nextNumber}. ${blogTitle}`;
+      const finalSlug = slugify(finalTitle);
 
-    const created = await sanityClient.create({
-      _type: 'post',
-      title: finalTitle,
-      slug: { _type: 'slug', current: finalSlug },
-      excerpt: blogBody.substring(0, 200).replace(/\n/g, ' ') + '...',
-      body: blogBody.split('\n\n').filter((p: string) => p.trim() !== '').map((p: string) => {
-        let style = 'normal';
-        let text = p.trim();
-        if (text.startsWith('### ')) {
-          style = 'h3';
-          text = text.replace(/^###\s+/, '');
-        } else if (text.startsWith('## ')) {
-          style = 'h2';
-          text = text.replace(/^##\s+/, '');
-        } else if (text.startsWith('# ')) {
-          style = 'h2';
-          text = text.replace(/^#\s+/, '');
-        }
-        return {
-          _type: 'block', _key: Math.random().toString(36).slice(2, 11),
-          style: style,
-          children: [{ _type: 'span', text: text, marks: [] }]
-        };
-      }),
-      publishedAt: nowEST(),
-      mainImage: assetId ? { _type: 'image', asset: { _type: 'reference', _ref: assetId } } : undefined,
-      categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju', _key: 'cat1' }],
-      author: { _type: 'reference', _ref: '0fbb5f25-9a9b-40ee-a727-0a900e3152f1' },
-    });
+      const created = await sanityClient.create({
+        _type: 'post',
+        title: finalTitle,
+        slug: { _type: 'slug', current: finalSlug },
+        excerpt: blogBody.substring(0, 200).replace(/\n/g, ' ') + '...',
+        body: blogBody.split('\n\n').filter((p: string) => p.trim() !== '').map((p: string) => {
+          let style = 'normal';
+          let text = p.trim();
+          if (text.startsWith('### ')) {
+            style = 'h3';
+            text = text.replace(/^###\s+/, '');
+          } else if (text.startsWith('## ')) {
+            style = 'h2';
+            text = text.replace(/^##\s+/, '');
+          } else if (text.startsWith('# ')) {
+            style = 'h2';
+            text = text.replace(/^#\s+/, '');
+          }
+          return {
+            _type: 'block', _key: Math.random().toString(36).slice(2, 11),
+            style: style,
+            children: [{ _type: 'span', text: text, marks: [] }]
+          };
+        }),
+        publishedAt: nowEST(),
+        mainImage: assetId ? { _type: 'image', asset: { _type: 'reference', _ref: assetId } } : undefined,
+        categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju', _key: 'cat1' }],
+        author: { _type: 'reference', _ref: '0fbb5f25-9a9b-40ee-a727-0a900e3152f1' },
+      });
+
+      results.push({
+        id: created._id,
+        title: finalTitle,
+        url: `https://usa-graphene.com/blog/${finalSlug}`
+      });
+      
+      nextNumber++;
+    }
 
     return NextResponse.json({ 
       success: true, 
-      id: created._id, 
-      title: finalTitle,
-      url: `https://usa-graphene.com/blog/${finalSlug}` 
+      count: results.length,
+      posts: results
     });
   } catch (err: any) {
     console.error(`Cron Job Failed: ${err.message}`);
