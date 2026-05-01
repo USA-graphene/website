@@ -150,26 +150,8 @@ export default function Equipment() {
                         </p>
                     </div>
 
-                    <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-                        <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-                            {equipment.map((item) => (
-                                <div key={item.name} className="flex flex-col rounded-2xl bg-white/5 border border-white/10 p-8 transition-all hover:bg-white/10 hover:border-white/20">
-                                    <dt className="flex items-center gap-x-4 text-lg font-bold leading-7 text-white font-display">
-                                        <div className="flex-shrink-0 p-3 bg-[#2d6ef0]/20 rounded-xl border border-[#2d6ef0]/30">
-                                            <item.icon className="h-6 w-6 text-[#00c8ff]" aria-hidden="true" />
-                                        </div>
-                                        {item.name}
-                                    </dt>
-                                    <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-[#8b9ab5]">
-                                        <p className="flex-auto">{item.description}</p>
-                                    </dd>
-                                </div>
-                            ))}
-                        </dl>
-                    </div>
-
                     {/* Pulsed Electrical Reactor Section */}
-                    <div className="mt-32 overflow-hidden rounded-3xl border border-[#2d6ef0]/30 bg-gradient-to-br from-[#0d1630] to-[#070d1a] shadow-[0_0_40px_rgba(45,110,240,0.15)] lg:grid lg:grid-cols-2 lg:gap-4 relative group">
+                    <div className="mt-16 sm:mt-20 lg:mt-24 overflow-hidden rounded-3xl border border-[#2d6ef0]/30 bg-gradient-to-br from-[#0d1630] to-[#070d1a] shadow-[0_0_40px_rgba(45,110,240,0.15)] lg:grid lg:grid-cols-2 lg:gap-4 relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-[#2d6ef0]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         
                         <div className="px-6 pb-12 pt-10 sm:px-16 sm:pt-16 lg:py-16 lg:pr-0 xl:py-20 lg:pl-20 relative z-10">
@@ -216,6 +198,24 @@ export default function Equipment() {
                                 height={1024}
                             />
                         </div>
+                    </div>
+
+                    <div className="mx-auto mt-32 max-w-2xl  lg:max-w-none">
+                        <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
+                            {equipment.map((item) => (
+                                <div key={item.name} className="flex flex-col rounded-2xl bg-white/5 border border-white/10 p-8 transition-all hover:bg-white/10 hover:border-white/20">
+                                    <dt className="flex items-center gap-x-4 text-lg font-bold leading-7 text-white font-display">
+                                        <div className="flex-shrink-0 p-3 bg-[#2d6ef0]/20 rounded-xl border border-[#2d6ef0]/30">
+                                            <item.icon className="h-6 w-6 text-[#00c8ff]" aria-hidden="true" />
+                                        </div>
+                                        {item.name}
+                                    </dt>
+                                    <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-[#8b9ab5]">
+                                        <p className="flex-auto">{item.description}</p>
+                                    </dd>
+                                </div>
+                            ))}
+                        </dl>
                     </div>
                 </div>
             </div>
