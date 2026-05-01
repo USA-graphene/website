@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     });
     let nextNumber = maxNumber + 1;
 
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending`;
+    const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending`;
     const arxivRes = await fetch(arxivUrl);
     const arxivXml = await arxivRes.text();
     let selectedList: any[] = [];
@@ -50,9 +50,13 @@ export async function GET(req: Request) {
       const entry = match[1];
       const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim();
       const abstract = entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim();
-      if (title && !Array.from(existingSlugs).some(s => s.includes(slugify(title).substring(0, 15)))) {
+      const arxivWords = slugify(title).split('-').filter(w => w.length > 3).slice(0, 2);
+      if (title && !Array.from(existingSlugs).some(s => {
+        if (!s) return false;
+        return arxivWords.every(w => (s as string).includes(w));
+      })) {
         selectedList.push({ title, abstract });
-        existingSlugs.add(slugify(title).substring(0, 15));
+        existingSlugs.add(slugify(title));
       }
     }
 
@@ -68,6 +72,8 @@ Context: ${selected.abstract}
 FORMATTING RULES (STRICT):
 1. [TITLE] Write only the title here [/TITLE]
 2. [BODY] Write the full 2000-word article here. Use ## for headings. No bolding. [/BODY]
+
+IMPORTANT: Focus heavily on the Graphene aspect of the technology, its properties, and its industrial or scientific implications.
 
 DO NOT INCLUDE ANY OTHER TEXT.`;
 
