@@ -38,7 +38,7 @@ export async function GET(req: Request) {
       const m = p.title.match(/^(\d+)\./);
       if (m) maxNumber = Math.max(maxNumber, parseInt(m[1]));
     });
-    const nextNumber = maxNumber + 1;
+    let nextNumber = maxNumber + 1;
 
     const arxivUrl = `https://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending`;
     const arxivRes = await fetch(arxivUrl);
