@@ -113,7 +113,7 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
       
       if (geminiKey) {
         try {
-          const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-2:generateContent?key=${geminiKey}`;
+          const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${geminiKey}`;
           const iRes = await fetch(apiURL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
