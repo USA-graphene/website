@@ -56,9 +56,9 @@ export async function GET(req: Request) {
       }
     }
 
-    if (selectedList.length === 0) return NextResponse.json({ message: 'No new articles' });
+    const openAiKey = process.env.OPENAI_API_KEY;
+    if (!openAiKey) throw new Error('OPENAI_API_KEY is not configured in Vercel');
 
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
     const results = [];
 
     for (const selected of selectedList) {
@@ -71,68 +71,72 @@ FORMATTING RULES (STRICT):
 
 DO NOT INCLUDE ANY OTHER TEXT.`;
 
-    // Use gemini-3.1-pro-preview as it is confirmed working in other scripts
-    const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${geminiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        contents: [{ parts: [{ text: prompt }] }], 
-        generationConfig: { 
-          temperature: 0.8,
-          maxOutputTokens: 8192 
-        } 
-      })
-    });
-
-    if (!gRes.ok) {
-      const errText = await gRes.text();
-      throw new Error(`Gemini API error (${gRes.status}): ${errText.substring(0, 200)}`);
-    }
-
-    const gData = await gRes.json();
-    const raw = gData.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-    
-    // Improved regex that is more resilient to formatting issues or missing closing tags
-    let blogTitle = raw.match(/\[TITLE\]([\s\S]*?)\[\/TITLE\]/)?.[1]?.trim();
-    if (!blogTitle) {
-      blogTitle = raw.match(/\[TITLE\]([\s\S]*)$/)?.[1]?.trim() || selected.title;
-    }
-
-    let blogBody = raw.match(/\[BODY\]([\s\S]*?)\[\/BODY\]/)?.[1]?.trim();
-    if (!blogBody) {
-      // Fallback: take everything after [BODY] if the closing tag is missing
-      blogBody = raw.match(/\[BODY\]([\s\S]*)$/)?.[1]?.trim();
-    }
-
-    if (!blogBody || blogBody.length < 500) {
-      throw new Error(`Gemini failed content check. Response length: ${raw.length}. Model: gemini-3.1-pro-preview`);
-    }
-
-    const imgPrompt = `A high-end, futuristic 3D product render of ${blogTitle}. Set in a sterile, modern research facility. Soft studio lighting, glossy reflections, clean geometry, 8k resolution, highly detailed. Absolutely no text, no labels, no watermarks.`;
-    let assetId = '';
-    const imagenUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${geminiKey}`;
-    try {
-      const iRes = await fetch(imagenUrl, {
+      // Use OpenAI GPT-4o since OPENAI_API_KEY is available
+      const oRes = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${openAiKey}`
+        },
         body: JSON.stringify({ 
-          instances: [{ prompt: imgPrompt }], 
-          parameters: { sampleCount: 1, aspectRatio: '16:9' } 
+          model: process.env.OPENAI_MODEL || 'gpt-4o',
+          messages: [{ role: 'user', content: prompt }],
+          temperature: 0.7,
         })
       });
-      if (iRes.ok) {
-        const iData = await iRes.json();
-        const b64 = iData.predictions?.[0]?.bytesBase64Encoded;
-        if (b64) {
-          const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: 'cover.png' });
-          assetId = asset._id;
-        }
-      } else {
-        console.warn(`Imagen failed with status ${iRes.status}`);
+
+      if (!oRes.ok) {
+        const errText = await oRes.text();
+        throw new Error(`OpenAI API error (${oRes.status}): ${errText.substring(0, 200)}`);
       }
-    } catch (iErr) {
-      console.warn(`Imagen generation error: ${iErr}`);
-    }
+
+      const oData = await oRes.json();
+      const raw = oData.choices?.[0]?.message?.content ?? '';
+      
+      let blogTitle = raw.match(/\[TITLE\]([\s\S]*?)\[\/TITLE\]/)?.[1]?.trim();
+      if (!blogTitle) {
+        blogTitle = raw.match(/\[TITLE\]([\s\S]*)$/)?.[1]?.trim() || selected.title;
+      }
+
+      let blogBody = raw.match(/\[BODY\]([\s\S]*?)\[\/BODY\]/)?.[1]?.trim();
+      if (!blogBody) {
+        blogBody = raw.match(/\[BODY\]([\s\S]*)$/)?.[1]?.trim();
+      }
+
+      if (!blogBody || blogBody.length < 500) {
+        throw new Error(`OpenAI failed content check. Response length: ${raw.length}.`);
+      }
+
+      const imgPrompt = `A high-end, futuristic 3D product render of ${blogTitle}. Set in a sterile, modern research facility. Soft studio lighting, glossy reflections, clean geometry, highly detailed. Absolutely no text, no labels, no watermarks.`;
+      let assetId = '';
+      try {
+        const iRes = await fetch('https://api.openai.com/v1/images/generations', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openAiKey}`
+          },
+          body: JSON.stringify({ 
+            model: 'dall-e-3',
+            prompt: imgPrompt,
+            n: 1,
+            size: '1024x1024',
+            response_format: 'b64_json'
+          })
+        });
+        if (iRes.ok) {
+          const iData = await iRes.json();
+          const b64 = iData.data?.[0]?.b64_json;
+          if (b64) {
+            const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: 'cover.png' });
+            assetId = asset._id;
+          }
+        } else {
+          console.warn(`DALL-E failed with status ${iRes.status}`);
+        }
+      } catch (iErr) {
+        console.warn(`DALL-E generation error: ${iErr}`);
+      }
 
       const finalTitle = `${nextNumber}. ${blogTitle}`;
       const finalSlug = slugify(finalTitle);
