@@ -107,35 +107,44 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
         throw new Error(`OpenAI failed content check. Response length: ${raw.length}.`);
       }
 
-      const imgPrompt = `A high-end, futuristic 3D product render of ${blogTitle}. Set in a sterile, modern research facility. Soft studio lighting, glossy reflections, clean geometry, highly detailed. Absolutely no text, no labels, no watermarks.`;
+      const imgPrompt = `A hyper-realistic, professional 3D scientific visualization of ${blogTitle}. Featuring elegant molecular structures and futuristic industrial applications of graphene. Cinematic lighting with deep shadows and glowing highlights, metallic and carbon textures, 8k resolution, masterfully composed, clean and premium aesthetic. Absolutely no text, no labels, no watermarks.`;
       let assetId = '';
-      try {
-        const iRes = await fetch('https://api.openai.com/v1/images/generations', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openAiKey}`
-          },
-          body: JSON.stringify({ 
-            model: 'dall-e-3',
-            prompt: imgPrompt,
-            n: 1,
-            size: '1024x1024',
-            response_format: 'b64_json'
-          })
-        });
-        if (iRes.ok) {
-          const iData = await iRes.json();
-          const b64 = iData.data?.[0]?.b64_json;
-          if (b64) {
-            const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: 'cover.png' });
-            assetId = asset._id;
+      const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
+      
+      if (geminiKey) {
+        try {
+          const apiURL = `https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-2:generateContent?key=${geminiKey}`;
+          const iRes = await fetch(apiURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              contents: [{ parts: [{ text: imgPrompt }] }]
+            })
+          });
+          if (iRes.ok) {
+            const iData = await iRes.json();
+            const parts = iData.candidates?.[0]?.content?.parts || [];
+            let b64 = '';
+            for (const p of parts) {
+              if (p.inlineData && p.inlineData.data) {
+                b64 = p.inlineData.data;
+                break;
+              }
+            }
+            if (b64) {
+              const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: 'cover.png' });
+              assetId = asset._id;
+            } else {
+              console.warn(`Nano Banana Pro 2 returned no image data`);
+            }
+          } else {
+            console.warn(`Nano Banana Pro 2 failed with status ${iRes.status}`);
           }
-        } else {
-          console.warn(`DALL-E failed with status ${iRes.status}`);
+        } catch (iErr) {
+          console.warn(`Nano Banana Pro 2 generation error: ${iErr}`);
         }
-      } catch (iErr) {
-        console.warn(`DALL-E generation error: ${iErr}`);
+      } else {
+        console.warn('Skipping Nano Banana Pro 2: GEMINI_API_KEY or GOOGLE_AI_API_KEY not found in Vercel');
       }
 
       const finalTitle = `${nextNumber}. ${blogTitle}`;
