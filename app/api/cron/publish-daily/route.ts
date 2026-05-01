@@ -153,8 +153,10 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
       const created = await sanityClient.create({
         _type: 'post',
         title: finalTitle,
+        seoTitle: finalTitle,
+        seoDescription: blogBody.substring(0, 160).replace(/\n/g, ' ').trim() + '...',
         slug: { _type: 'slug', current: finalSlug },
-        excerpt: blogBody.substring(0, 200).replace(/\n/g, ' ') + '...',
+        excerpt: blogBody.substring(0, 200).replace(/\n/g, ' ').trim() + '...',
         body: blogBody.split('\n\n').filter((p: string) => p.trim() !== '').map((p: string) => {
           let style = 'normal';
           let text = p.trim();
