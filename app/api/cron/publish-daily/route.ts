@@ -207,8 +207,6 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
         title: finalTitle,
         url: `https://usa-graphene.com/blog/${finalSlug}`
       });
-      
-      nextNumber++;
     }
 
     return NextResponse.json({ 
