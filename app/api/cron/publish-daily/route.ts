@@ -50,13 +50,18 @@ export async function GET(req: Request) {
       const entry = match[1];
       const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim();
       const abstract = entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim();
-      const arxivWords = slugify(title).split('-').filter(w => w.length > 3).slice(0, 2);
-      if (title && !Array.from(existingSlugs).some(s => {
-        if (!s) return false;
-        return arxivWords.every(w => (s as string).includes(w));
-      })) {
-        selectedList.push({ title, abstract });
-        existingSlugs.add(slugify(title));
+      
+      if (title) {
+        const arxivWords = slugify(title).split('-').filter(w => w.length > 3).slice(0, 2);
+        const isDuplicate = Array.from(existingSlugs).some(s => {
+          if (!s) return false;
+          return arxivWords.every(w => (s as string).includes(w));
+        });
+
+        if (!isDuplicate) {
+          selectedList.push({ title, abstract });
+          existingSlugs.add(slugify(title));
+        }
       }
     }
 
