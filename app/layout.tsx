@@ -64,6 +64,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { Analytics } from '@vercel/analytics/react'
+
 export default function RootLayout({
   children,
 }: {
@@ -74,6 +76,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#070d1a] text-[#e8edf5] antialiased`}>
         <VisitorTracker />
         {children}
+        <Analytics />
       </body>
     </html>
   )
