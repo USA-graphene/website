@@ -158,6 +158,15 @@ DO NOT INCLUDE ANY OTHER TEXT.`;
         console.warn('Skipping Nano Banana Pro 2: GEMINI_API_KEY or GOOGLE_AI_API_KEY not found in Vercel');
       }
 
+      // Dynamically fetch max number right before creation to prevent concurrent execution collisions
+      const currentPosts: any[] = await sanityClient.fetch(`*[_type == "post"]{ title }`);
+      let currentMax = 0;
+      currentPosts.forEach(p => {
+        const m = p.title.match(/^(\d+)\./);
+        if (m) currentMax = Math.max(currentMax, parseInt(m[1]));
+      });
+      const nextNumber = currentMax + 1;
+
       const finalTitle = `${nextNumber}. ${blogTitle}`;
       const finalSlug = slugify(finalTitle);
 
