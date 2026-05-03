@@ -1,8 +1,16 @@
 {
   "crons": [
     {
-      "path": "/api/cron/publish-daily",
+      "path": "/api/cron/publish-daily?limit=1",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/publish-daily?limit=1",
+      "schedule": "5 13 * * *"
+    },
+    {
+      "path": "/api/cron/publish-daily?limit=1",
+      "schedule": "10 13 * * *"
     }
   ]
 }
