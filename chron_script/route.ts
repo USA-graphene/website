@@ -109,8 +109,8 @@ Authors: """${selected.authors}"""
 Abstract: """${selected.abstract}"""
 
 WRITING RULES:
-1. Length: Minimum 2000 words of technical analysis.
-2. Credit the researchers: In the introduction, explicitly mention the authors (e.g., "Led by ${selected.authors}, the research team has...") to give proper credit.
+1. MANDATORY CREDIT: You must explicitly credit the researchers in the very first paragraph of the article (e.g., "Researchers led by ${selected.authors} have found..." or "${selected.authors} have conducted a study that..."). This is a non-negotiable requirement for academic politeness.
+2. Length: Minimum 2000 words of technical analysis.
 3. Structure: Introduction → 5-7 sections with ## H2 headings → FAQ (5 Q&A) → Conclusion.
 3. Every paragraph: 4-7 sentences. NO bullet points, NO numbered lists, NO bolding (**).
 4. Tone: expert, technical. Use natural transitions.
