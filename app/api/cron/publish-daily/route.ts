@@ -36,7 +36,13 @@ export async function GET(req: Request) {
 
   try {
     // 2 & 3. Authentication & Environment Validation
-    if (req.headers.get('x-cron-secret') !== cronSecret && !dryRun) {
+    const authHeader = req.headers.get('Authorization');
+    const xCronHeader = req.headers.get('x-cron-secret');
+    const isAuthorized = dryRun || 
+                        xCronHeader === cronSecret || 
+                        authHeader === `Bearer ${cronSecret}`;
+
+    if (!isAuthorized) {
        console.warn('[Cron] Unauthorized access attempt blocked.');
        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
