@@ -148,6 +148,15 @@ Return ONLY a JSON object:
 
         console.log(`[Cron] Text generated (${wordCount} words). Generating Image...`);
 
+        // Fetch current max number to ensure sequential continuity
+        const allCurrentPosts: any[] = await sanityClient.fetch(`*[_type == "post"]{ title }`);
+        let maxNumber = 0;
+        allCurrentPosts.forEach(p => {
+          const m = p.title.match(/^(\d+)\./);
+          if (m) maxNumber = Math.max(maxNumber, parseInt(m[1]));
+        });
+        const nextNumber = maxNumber + 1;
+
         let assetId = '';
         try {
           const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${geminiKey}`, {
@@ -171,7 +180,8 @@ Return ONLY a JSON object:
           }
         } catch (iErr) { console.warn(`[Cron] Image generation failed: ${iErr}`); }
 
-        const finalTitle = p.title;
+        // Restore numbered titles as requested
+        const finalTitle = `${nextNumber}. ${p.title}`;
         const finalSlug = slugify(finalTitle);
 
         if (!dryRun) {
