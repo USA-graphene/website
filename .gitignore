@@ -43,3 +43,14 @@ next-env.d.ts
 /scripts/ingest/__pycache__/
 /private.key
 uploader/.env
+# Squad: ignore runtime state (logs, inbox, sessions)
+.squad/orchestration-log/
+.squad/log/
+.squad/decisions/inbox/
+.squad/sessions/
+# Squad: SubSquad activation file (local to this machine)
+.squad-workstream
+# Local publication scripts and logs
+publish_all.sh
+publish_log.txt
+*.log

@@ -12,6 +12,13 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "arxivId",
+      title: "ArXiv ID",
+      type: "string",
+      description: "Original ArXiv ID to prevent duplicates.",
+      readOnly: true,
+    }),
+    defineField({
       name: "slug",
       title: "Slug",
       type: "slug",

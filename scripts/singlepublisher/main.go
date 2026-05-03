@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -26,7 +27,7 @@ const (
 	sanityProject = "t9t7is4j"
 	authorID      = "0fbb5f25-9a9b-40ee-a727-0a900e3152f1"
 	catScience    = "7QyVE6fI6HWfwHJOF8VGju"
-	postTitle     = "GMG Unveils Graphene Aluminum-Ion Battery That Fully Charges in 6 Minutes"
+	postTitle     = "Graphene-Rubber Nanocomposites: The Future of High-Performance Tires"
 )
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -53,6 +54,44 @@ func env(key, def string) string {
 		return v
 	}
 	return def
+}
+
+// ── Sanity post-count helper ─────────────────────────────────────────────────
+
+// fetchNextPostNumber queries Sanity for the current max numbered post.
+func fetchNextPostNumber(sanityToken string) (int, error) {
+	apiURL := fmt.Sprintf(
+		"https://%s.api.sanity.io/v2023-05-03/data/query/production?query=%s",
+		sanityProject,
+		url.QueryEscape(`*[_type=="post"]|order(publishedAt asc){title}`),
+	)
+	req, _ := http.NewRequest("GET", apiURL, nil)
+	req.Header.Set("Authorization", "Bearer "+sanityToken)
+	resp, err := (&http.Client{Timeout: 60 * time.Second}).Do(req)
+	if err != nil {
+		return 1, err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var res struct {
+		Result []struct {
+			Title string `json:"title"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal(body, &res); err != nil {
+		return 1, err
+	}
+	reNum := regexp.MustCompile(`^(\d+)\.`)
+	maxN := 0
+	for _, p := range res.Result {
+		if m := reNum.FindStringSubmatch(p.Title); m != nil {
+			if n, _ := strconv.Atoi(m[1]); n > maxN {
+				maxN = n
+			}
+		}
+	}
+	return maxN + 1, nil
 }
 
 // ── PDF Extraction ────────────────────────────────────────────────────────────
@@ -135,10 +174,10 @@ Return ONLY a JSON object:
 
 	body := map[string]any{
 		"contents":         []any{map[string]any{"parts": []any{map[string]any{"text": prompt}}}},
-		"generationConfig": map[string]any{"temperature": 0.85, "maxOutputTokens": 8192},
+		"generationConfig": map[string]any{"temperature": 0.85, "maxOutputTokens": 16384},
 	}
 	raw, _ := json.Marshal(body)
-	apiURL := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiKey
+	apiURL := "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=" + geminiKey
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(raw))
 	if err != nil {
@@ -161,22 +200,24 @@ Return ONLY a JSON object:
 	}
 
 	text := result.Candidates[0].Content.Parts[0].Text
-	text = strings.TrimPrefix(text, "```json\n")
-	text = strings.TrimPrefix(text, "```\n")
-	text = strings.TrimSuffix(strings.TrimSpace(text), "```")
+	text = strings.TrimSpace(text)
+	text = strings.TrimPrefix(text, "```json")
+	text = strings.TrimPrefix(text, "```")
+	text = strings.TrimSuffix(text, "```")
+	text = strings.TrimSpace(text)
 
-	extract := func(field, next string) string {
-		if next != "" {
-			pat := regexp.MustCompile(`(?s)"` + regexp.QuoteMeta(field) + `"\s*:\s*"(.*?)"\s*,\s*"` + regexp.QuoteMeta(next) + `"`)
-			if m := pat.FindStringSubmatch(text); len(m) > 1 {
-				return strings.ReplaceAll(strings.ReplaceAll(m[1], `\n`, "\n"), `\"`, `"`)
-			}
-		}
-		pat := regexp.MustCompile(`(?s)"` + regexp.QuoteMeta(field) + `"\s*:\s*"(.*?[^\\])"`)
-		if m := pat.FindStringSubmatch(text); len(m) > 1 {
-			return strings.ReplaceAll(strings.ReplaceAll(m[1], `\n`, "\n"), `\"`, `"`)
-		}
-		return ""
+	var p struct {
+		Title          string `json:"title"`
+		Slug           string `json:"slug"`
+		Excerpt        string `json:"excerpt"`
+		Body           string `json:"body"`
+		SeoTitle       string `json:"seoTitle"`
+		PrimaryKeyword string `json:"primaryKeyword"`
+		Prompt1        string `json:"imagePrompt1"`
+	}
+
+	if err := json.Unmarshal([]byte(text), &p); err != nil {
+		return Post{}, fmt.Errorf("json unmarshal failed: %v | text: %s", err, text[:min(100, len(text))])
 	}
 
 	cleanBody := func(s string) string {
@@ -189,54 +230,67 @@ Return ONLY a JSON object:
 		return strings.TrimSpace(s)
 	}
 
-	p := Post{
-		Title:          extract("title", ""),
-		Slug:           extract("slug", ""),
-		Excerpt:        extract("excerpt", ""),
-		Body:           cleanBody(extract("body", "seoTitle")),
-		SeoTitle:       extract("seoTitle", ""),
-		PrimaryKeyword: extract("primaryKeyword", ""),
-		Prompt1:        extract("imagePrompt1", ""),
+	res := Post{
+		Title:          p.Title,
+		Slug:           p.Slug,
+		Excerpt:        p.Excerpt,
+		Body:           cleanBody(p.Body),
+		SeoTitle:       p.SeoTitle,
+		PrimaryKeyword: p.PrimaryKeyword,
+		Prompt1:        p.Prompt1,
 	}
-	if p.Title == "" {
-		p.Title = chTitle
+
+	if res.Title == "" {
+		res.Title = chTitle
 	}
-	if p.Slug == "" {
-		p.Slug = slugify(chTitle)
+	if res.Slug == "" {
+		res.Slug = slugify(chTitle)
 	}
-	if p.Prompt1 == "" {
-		p.Prompt1 = "A high-end, futuristic 3D product render of " + chTitle + ". Set in a sterile, modern research facility. Soft studio lighting, glossy reflections, clean geometry, 8k resolution, highly detailed. Absolutely no text, no labels, no watermarks."
+	if res.Prompt1 == "" {
+		res.Prompt1 = "A high-end, futuristic 3D product render of " + chTitle + ". Set in a sterile, modern research facility. Soft studio lighting, glossy reflections, clean geometry, 8k resolution, highly detailed. Absolutely no text, no labels, no watermarks."
 	}
-	return p, nil
+	return res, nil
 }
 
 // ── Image Generation ──────────────────────────────────────────────────────────
 
 func generateImage(geminiKey, prompt string, seed int) ([]byte, string, error) {
 	if geminiKey != "" {
-		imgURL := "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=" + geminiKey
+		imgURL := "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=" + geminiKey
 		body := map[string]any{
-			"instances":  []any{map[string]any{"prompt": prompt}},
-			"parameters": map[string]any{"sampleCount": 1, "aspectRatio": "16:9"},
+			"contents": []any{map[string]any{"parts": []any{map[string]any{"text": prompt}}}},
+			"generationConfig": map[string]any{
+				"response_modalities": []string{"IMAGE"},
+			},
 		}
 		raw, _ := json.Marshal(body)
 		resp, err := http.Post(imgURL, "application/json", bytes.NewReader(raw))
 		if err == nil && resp.StatusCode == 200 {
 			defer resp.Body.Close()
 			var r struct {
-				Predictions []struct {
-					BytesBase64Encoded string `json:"bytesBase64Encoded"`
-				} `json:"predictions"`
+				Candidates []struct {
+					Content struct {
+						Parts []struct {
+							InlineData struct {
+								Data string `json:"data"`
+							} `json:"inlineData"`
+						} `json:"parts"`
+					} `json:"content"`
+				} `json:"candidates"`
 			}
-			if data, _ := io.ReadAll(resp.Body); json.Unmarshal(data, &r) == nil && len(r.Predictions) > 0 {
-				imgBytes, _ := base64.StdEncoding.DecodeString(r.Predictions[0].BytesBase64Encoded)
-				if len(imgBytes) > 0 {
-					return imgBytes, "image/png", nil
+			if data, _ := io.ReadAll(resp.Body); json.Unmarshal(data, &r) == nil && len(r.Candidates) > 0 {
+				for _, p := range r.Candidates[0].Content.Parts {
+					if p.InlineData.Data != "" {
+						imgBytes, _ := base64.StdEncoding.DecodeString(p.InlineData.Data)
+						if len(imgBytes) > 0 {
+							return imgBytes, "image/png", nil
+						}
+					}
 				}
 			}
 		} else if resp != nil {
 			resp.Body.Close()
-			fmt.Printf("     Imagen failed (%d), using Pollinations fallback...\n", resp.StatusCode)
+			fmt.Printf("     Gemini 3 Pro Image failed (%d), using Pollinations fallback...\n", resp.StatusCode)
 		}
 	}
 
@@ -392,17 +446,32 @@ func main() {
 		os.Exit(1)
 	}
 	chText := string(textBytes)
-	if len(chText) > 12000 {
-		chText = chText[:12000]
+	if len(chText) > 10000 {
+		chText = chText[:10000]
 	}
 	fmt.Printf("  📄 Using %d chars of text for generation\n", len(chText))
 
-	fmt.Printf("  🤖 Writing SEO post (Gemini 2.5 Flash)...\n")
+	// Fetch current max post number
+	fmt.Println("🔢 Fetching current post count from Sanity...")
+	nextNum, fetchErr := fetchNextPostNumber(sanityToken)
+	if fetchErr != nil {
+		fmt.Printf("⚠️  Could not fetch post count (%v), starting from 1\n", fetchErr)
+		nextNum = 1
+	}
+	fmt.Printf("   Next post number: %d\n\n", nextNum)
+
+	fmt.Printf("  🤖 Writing SEO post (Gemini 3.1 Pro)...\n")
 	post, err := geminiWritePost(geminiKey, postTitle, chText)
 	if err != nil {
 		fmt.Printf("  ❌ Post generation failed: %v\n", err)
 		os.Exit(1)
 	}
+
+	// Prefix title with sequential post number
+	numberedTitle := fmt.Sprintf("%d. %s", nextNum, post.Title)
+	post.Title = numberedTitle
+	post.Slug = slugify(numberedTitle)
+
 	fmt.Printf("     Title : %s\n", post.Title)
 	fmt.Printf("     Words : %d\n", len(strings.Fields(post.Body)))
 

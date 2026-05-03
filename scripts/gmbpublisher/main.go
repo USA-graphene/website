@@ -116,6 +116,19 @@ func uniqueSeed(n int) int64 {
 	return new(big.Int).Mod(val, mod).Int64()
 }
 
+func sanityQuery(token, query string) ([]byte, error) {
+	apiURL := fmt.Sprintf("https://%s.api.sanity.io/v2023-05-03/data/query/production?query=%s",
+		sanityProject, url.QueryEscape(query))
+	req, _ := http.NewRequest("GET", apiURL, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := (&http.Client{Timeout: 60 * time.Second}).Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return io.ReadAll(resp.Body)
+}
+
 // ── Sanity post-count helper ─────────────────────────────────────────────────
 
 // fetchNextPostNumber queries Sanity for the current maximum numbered post
@@ -503,6 +516,9 @@ func publishToSanity(post map[string]string, imageID, categoryID, sanityToken st
 func main() {
 	sanityToken := os.Getenv("SANITY_API_TOKEN")
 	geminiKey := os.Getenv("GEMINI_API_KEY")
+	if geminiKey == "" {
+		geminiKey = os.Getenv("GOOGLE_AI_API_KEY")
+	}
 	if sanityToken == "" {
 		fmt.Fprintln(os.Stderr, "❌ SANITY_API_TOKEN required")
 		os.Exit(1)
@@ -542,10 +558,39 @@ func main() {
 	}
 	fmt.Printf("   Next post number: %d\n\n", nextNum)
 
+	// Fetch all current post titles for duplicate checking
+	fmt.Println("📊 Checking for existing posts in Sanity...")
+	allPostsRaw, err := sanityQuery(sanityToken, `*[_type=="post"]{title}`)
+	var existingTitles []string
+	if err == nil {
+		var res struct {
+			Result []struct{ Title string `json:"title"` } `json:"result" `
+		}
+		if json.Unmarshal(allPostsRaw, &res) == nil {
+			for _, p := range res.Result {
+				existingTitles = append(existingTitles, strings.ToLower(p.Title))
+			}
+		}
+	}
+
 	var published, failed int
 	for i, ch := range chapters[startCh:endCh] {
 		chNum := startCh + i + 1
-		postNum := nextNum + i // sequential within this run
+		postNum := nextNum + published // use published to increment sequence correctly
+
+		// Check if this chapter already exists
+		isDuplicate := false
+		chLower := strings.ToLower(ch.title)
+		for _, et := range existingTitles {
+			if strings.Contains(et, chLower) || strings.Contains(chLower, strings.ReplaceAll(et, "unlocking performance: ", "")) {
+				isDuplicate = true
+				break
+			}
+		}
+		if isDuplicate {
+			fmt.Printf("\n⏭️  Skipping Chapter %02d: %s (Already published)\n", chNum, ch.title)
+			continue
+		}
 		fmt.Printf("\n%s\n", strings.Repeat("═", 68))
 		fmt.Printf("📝 Chapter %02d/%d [post #%d]: %s\n", chNum, len(chapters), postNum, ch.title)
 		fmt.Printf("%s\n", strings.Repeat("═", 68))

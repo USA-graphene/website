@@ -23,7 +23,7 @@ import (
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const (
-	pdfPath       = "/Users/raimis/aa/database/graphene_knowledge_base/raw_files/ownCloud__Desktop__Graphene & books__Graphene Science Handbook - Size-Dependent Properties - Volume 5 (2016) (Pdf) Gooner__Graphene Science Handbook - Size-Dependent Properties - Vol.5 _2016_.pdf"
+	pdfPath       = "/Users/raimis/ownCloud/Desktop/Graphene & books/Graphene Science Handbook - Size-Dependent Properties - Volume 5 (2016) (Pdf) Gooner/Graphene Science Handbook - Size-Dependent Properties - Vol.5 (2016).pdf"
 	sanityProject = "t9t7is4j"
 	authorID      = "0fbb5f25-9a9b-40ee-a727-0a900e3152f1"
 
@@ -31,9 +31,10 @@ const (
 	catElectronics = "category-electronics-photonics"
 	catEnergy      = "category-energy-storage"
 	catComposites  = "3c7c1ec6-d835-49e0-b0f2-1c2873c6d86c"
-	catSensors     = "category-sensors-biomedical"
+	catSensors     = "91bad9b1-6801-4835-a938-09cc56cb8f8e"
 	catWater       = "category-water-environment"
 	catCoatings    = "category-coatings-materials"
+	catChem        = "7QyVE6fI6HWfwHJOF8VGju"
 )
 
 type Chapter struct {
@@ -101,42 +102,6 @@ func env(key, def string) string {
 	return def
 }
 
-// ── Sanity post-count helper ─────────────────────────────────────────────────
-
-// fetchNextPostNumber queries Sanity for the current max numbered post.
-func fetchNextPostNumber(sanityToken string) (int, error) {
-	apiURL := fmt.Sprintf(
-		"https://%s.api.sanity.io/v2023-05-03/data/query/production?query=%s",
-		sanityProject,
-		url.QueryEscape(`*[_type=="post"]|order(publishedAt asc){title}`),
-	)
-	req, _ := http.NewRequest("GET", apiURL, nil)
-	req.Header.Set("Authorization", "Bearer "+sanityToken)
-	resp, err := (&http.Client{Timeout: 60 * time.Second}).Do(req)
-	if err != nil {
-		return 1, err
-	}
-	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
-
-	var res struct {
-		Result []struct{ Title string `json:"title"` } `json:"result"`
-	}
-	if err := json.Unmarshal(body, &res); err != nil {
-		return 1, err
-	}
-	reNum := regexp.MustCompile(`^(\d+)\.`)
-	maxN := 0
-	for _, p := range res.Result {
-		if m := reNum.FindStringSubmatch(p.Title); m != nil {
-			if n, _ := strconv.Atoi(m[1]); n > maxN {
-				maxN = n
-			}
-		}
-	}
-	return maxN + 1, nil
-}
-
 // ── PDF Extraction ────────────────────────────────────────────────────────────
 
 func extractAllPages(path string) ([]string, error) {
@@ -175,7 +140,6 @@ func chapterText(pages []string, chIdx int) string {
 		}
 	}
 	if startPage < 0 {
-		// fallback: approximate by chapter index
 		startPage = (len(pages) / len(chapters)) * chIdx
 	}
 
@@ -201,13 +165,13 @@ func chapterText(pages []string, chIdx int) string {
 // ── Gemini Post Generation ────────────────────────────────────────────────────
 
 type Post struct {
-	Title          string
-	Slug           string
-	Excerpt        string
-	Body           string
-	SeoTitle       string
-	PrimaryKeyword string
-	Prompt1        string
+	Title          string `json:"title"`
+	Slug           string `json:"slug"`
+	Excerpt        string `json:"excerpt"`
+	Body           string `json:"body"`
+	SeoTitle       string `json:"seoTitle"`
+	PrimaryKeyword string `json:"primaryKeyword"`
+	Prompt1        string `json:"imagePrompt1"`
 }
 
 func geminiWritePost(geminiKey, chTitle, chText string) (Post, error) {
@@ -240,10 +204,10 @@ Return ONLY a JSON object:
 
 	body := map[string]any{
 		"contents":         []any{map[string]any{"parts": []any{map[string]any{"text": prompt}}}},
-		"generationConfig": map[string]any{"temperature": 0.85, "maxOutputTokens": 8192},
+		"generationConfig": map[string]any{"temperature": 0.85, "maxOutputTokens": 8192, "response_mime_type": "application/json"},
 	}
 	raw, _ := json.Marshal(body)
-	apiURL := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiKey
+	apiURL := "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=" + geminiKey
 
 	resp, err := http.Post(apiURL, "application/json", bytes.NewReader(raw))
 	if err != nil {
@@ -266,23 +230,6 @@ Return ONLY a JSON object:
 	}
 
 	text := result.Candidates[0].Content.Parts[0].Text
-	text = strings.TrimPrefix(text, "```json\n")
-	text = strings.TrimPrefix(text, "```\n")
-	text = strings.TrimSuffix(strings.TrimSpace(text), "```")
-
-	extract := func(field, next string) string {
-		if next != "" {
-			pat := regexp.MustCompile(`(?s)"` + regexp.QuoteMeta(field) + `"\s*:\s*"(.*?)"\s*,\s*"` + regexp.QuoteMeta(next) + `"`)
-			if m := pat.FindStringSubmatch(text); len(m) > 1 {
-				return strings.ReplaceAll(strings.ReplaceAll(m[1], `\n`, "\n"), `\"`, `"`)
-			}
-		}
-		pat := regexp.MustCompile(`(?s)"` + regexp.QuoteMeta(field) + `"\s*:\s*"(.*?)"`)
-		if m := pat.FindStringSubmatch(text); len(m) > 1 {
-			return strings.ReplaceAll(strings.ReplaceAll(m[1], `\n`, "\n"), `\"`, `"`)
-		}
-		return ""
-	}
 
 	cleanBody := func(s string) string {
 		s = strings.ReplaceAll(s, "**", "")
@@ -294,15 +241,15 @@ Return ONLY a JSON object:
 		return strings.TrimSpace(s)
 	}
 
-	p := Post{
-		Title:          extract("title", ""),
-		Slug:           extract("slug", ""),
-		Excerpt:        extract("excerpt", ""),
-		Body:           cleanBody(extract("body", "seoTitle")),
-		SeoTitle:       extract("seoTitle", ""),
-		PrimaryKeyword: extract("primaryKeyword", ""),
-		Prompt1:        extract("imagePrompt1", ""),
+	var p Post
+	if err := json.Unmarshal([]byte(text), &p); err != nil {
+		// Fallback to minimal extraction if JSON is slightly malformed
+		fmt.Printf("  ⚠️  JSON unmarshal failed, using fallback: %v\n", err)
+		p.Title = chTitle
+		p.Slug = slugify(chTitle)
 	}
+
+	p.Body = cleanBody(p.Body)
 	if p.Title == "" {
 		p.Title = chTitle
 	}
@@ -318,7 +265,6 @@ Return ONLY a JSON object:
 // ── Image Generation ──────────────────────────────────────────────────────────
 
 func generateImage(geminiKey, prompt string, seed int) ([]byte, string, error) {
-	// Try Imagen 4 first
 	if geminiKey != "" {
 		imgURL := "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=" + geminiKey
 		body := map[string]any{
@@ -346,7 +292,6 @@ func generateImage(geminiKey, prompt string, seed int) ([]byte, string, error) {
 		}
 	}
 
-	// Pollinations fallback
 	h := sha256.Sum256([]byte(fmt.Sprintf("%d-%s", seed, prompt[:min(40, len(prompt))])))
 	n := new(big.Int).SetBytes(h[:])
 	pollSeed := new(big.Int).Mod(n, big.NewInt(999983)).Int64()
@@ -372,7 +317,6 @@ func generateImage(geminiKey, prompt string, seed int) ([]byte, string, error) {
 // ── Sanity ────────────────────────────────────────────────────────────────────
 
 func uploadImageToSanity(sanityToken string, imgBytes []byte, mime, title, suffix string) (string, error) {
-	// Build filename
 	re := regexp.MustCompile(`[^\w\s]`)
 	name := re.ReplaceAllString(title, "")
 	re2 := regexp.MustCompile(`\s+`)
@@ -453,18 +397,64 @@ func bodyToBlocks(body string) []block {
 	return blocks
 }
 
-func publishToSanity(sanityToken string, p Post, img1ID, categoryID string) error {
+func sanityQuery(token, query string) ([]byte, error) {
+	apiURL := fmt.Sprintf("https://%s.api.sanity.io/v2023-05-03/data/query/production?query=%s",
+		sanityProject, url.QueryEscape(query))
+	req, _ := http.NewRequest("GET", apiURL, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := (&http.Client{Timeout: 60 * time.Second}).Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	return io.ReadAll(resp.Body)
+}
+
+func fetchNextPostNumber(sanityToken string) (int, error) {
+	apiURL := fmt.Sprintf(
+		"https://%s.api.sanity.io/v2023-05-03/data/query/production?query=%s",
+		sanityProject,
+		url.QueryEscape(`*[_type=="post"]|order(publishedAt asc){title}`),
+	)
+	req, _ := http.NewRequest("GET", apiURL, nil)
+	req.Header.Set("Authorization", "Bearer "+sanityToken)
+	resp, err := (&http.Client{Timeout: 60 * time.Second}).Do(req)
+	if err != nil {
+		return 1, err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var res struct {
+		Result []struct {
+			Title string `json:"title"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal(body, &res); err != nil {
+		return 1, err
+	}
+	reNum := regexp.MustCompile(`^(\d+)\.`)
+	maxN := 0
+	for _, p := range res.Result {
+		if m := reNum.FindStringSubmatch(p.Title); m != nil {
+			if n, _ := strconv.Atoi(m[1]); n > maxN {
+				maxN = n
+			}
+		}
+	}
+	return maxN + 1, nil
+}
+
+func publishToSanity(sanityToken string, p Post, img1ID, categoryID string, nextNum int) error {
+	finalTitle := fmt.Sprintf("%d. %s", nextNum, p.Title)
 	doc := map[string]any{
 		"_type":       "post",
-		"title":       p.Title,
+		"title":       finalTitle,
 		"slug":        map[string]any{"_type": "slug", "current": p.Slug},
 		"excerpt":     p.Excerpt,
 		"body":        bodyToBlocks(p.Body),
 		"seoTitle":    p.SeoTitle,
-		"publishedAt": func() string {
-			loc, _ := time.LoadLocation("America/New_York")
-			return time.Now().In(loc).Format(time.RFC3339)
-		}(),
+		"publishedAt": time.Now().UTC().Format(time.RFC3339),
 		"author":      map[string]any{"_type": "reference", "_ref": authorID},
 		"mainImage":   map[string]any{"_type": "image", "asset": map[string]any{"_type": "reference", "_ref": img1ID}},
 		"categories":  []any{map[string]any{"_type": "reference", "_ref": categoryID, "_key": "cat1"}},
@@ -495,6 +485,9 @@ func publishToSanity(sanityToken string, p Post, img1ID, categoryID string) erro
 func main() {
 	sanityToken := env("SANITY_API_TOKEN", "")
 	geminiKey := env("GEMINI_API_KEY", "")
+	if geminiKey == "" {
+		geminiKey = env("GOOGLE_AI_API_KEY", "")
+	}
 
 	if sanityToken == "" || geminiKey == "" {
 		fmt.Fprintln(os.Stderr, "❌  SANITY_API_TOKEN and GEMINI_API_KEY must be set")
@@ -521,45 +514,58 @@ func main() {
 	}
 	fmt.Printf("    %d pages loaded.\n", len(pages))
 
-	// Fetch current max post number ONCE before the loop
-	fmt.Println("🔢 Fetching current post count from Sanity...")
-	nextNum, fetchErr := fetchNextPostNumber(sanityToken)
-	if fetchErr != nil {
-		fmt.Printf("⚠️  Could not fetch post count (%v), starting from 1\n", fetchErr)
+	nextNum, err := fetchNextPostNumber(sanityToken)
+	if err != nil {
+		fmt.Printf("⚠️  Could not fetch next post number, defaulting to 1: %v\n", err)
 		nextNum = 1
 	}
-	fmt.Printf("   Next post number: %d\n\n", nextNum)
 
-	type result struct {
-		num   int
-		title string
-		slug  string
+	// 2. Fetch all current post titles for duplicate checking
+	fmt.Println("📊 Checking for existing posts in Sanity...")
+	allPostsRaw, err := sanityQuery(sanityToken, `*[_type=="post"]{title}`)
+	var existingTitles []string
+	if err == nil {
+		var res struct {
+			Result []struct{ Title string `json:"title"` } `json:"result" `
+		}
+		if json.Unmarshal(allPostsRaw, &res) == nil {
+			for _, p := range res.Result {
+				existingTitles = append(existingTitles, strings.ToLower(p.Title))
+			}
+		}
 	}
-	var results []result
 
 	for i := startCh; i < endCh; i++ {
 		ch := chapters[i]
 		num := i + 1
-		postNum := nextNum + i
+
+		// Check if this chapter (or something very similar) already exists
+		isDuplicate := false
+		chLower := strings.ToLower(ch.Title)
+		for _, et := range existingTitles {
+			if strings.Contains(et, chLower) || strings.Contains(chLower, strings.ReplaceAll(et, "unlocking performance: ", "")) {
+				isDuplicate = true
+				break
+			}
+		}
+		if isDuplicate {
+			fmt.Printf("\n⏭️  Skipping Chapter %02d: %s (Already published)\n", num, ch.Title)
+			continue
+		}
+
 		fmt.Printf("\n%s\n", strings.Repeat("=", 68))
-		fmt.Printf("📝 Chapter %02d/%02d [post #%d]: %s\n", num, len(chapters), postNum, ch.Title)
+		fmt.Printf("📝 Chapter %02d/%02d: %s (Post #%d)\n", num, len(chapters), ch.Title, nextNum)
 		fmt.Printf("%s\n", strings.Repeat("=", 68))
 
 		chText := chapterText(pages, i)
 		fmt.Printf("  📄 Extracted %d chars\n", len(chText))
 
-		fmt.Printf("  🤖 Writing SEO post (Gemini 2.5 Flash)...\n")
+		fmt.Printf("  🤖 Writing SEO post (Gemini 3.1 Pro)...\n")
 		post, err := geminiWritePost(geminiKey, ch.Title, chText)
 		if err != nil {
 			fmt.Printf("  ❌ Chapter %d failed (Gemini): %v\n", num, err)
 			continue
 		}
-
-		// Prefix title with sequential post number
-		numberedTitle := fmt.Sprintf("%d. %s", postNum, post.Title)
-		post.Title = numberedTitle
-		post.Slug  = slugify(numberedTitle)
-
 		fmt.Printf("     Title : %s\n", post.Title)
 		fmt.Printf("     Words : %d\n", len(strings.Fields(post.Body)))
 
@@ -576,25 +582,22 @@ func main() {
 		}
 
 		fmt.Printf("  🚀 Publishing to Sanity...\n")
-		if err := publishToSanity(sanityToken, post, img1ID, ch.Category); err != nil {
+		if err := publishToSanity(sanityToken, post, img1ID, ch.Category, nextNum); err != nil {
 			fmt.Printf("  ❌ Chapter %d publish failed: %v\n", num, err)
 			continue
 		}
 
 		liveURL := fmt.Sprintf("usa-graphene.com/blog/%s", post.Slug)
 		fmt.Printf("  ✅ Live → %s\n", liveURL)
-		results = append(results, result{num, post.Title, liveURL})
-
+		
+		nextNum++
 		if i < endCh-1 {
 			time.Sleep(8 * time.Second)
 		}
 	}
 
 	fmt.Printf("\n%s\n", strings.Repeat("=", 68))
-	fmt.Printf("✅ DONE — %d published\n\n", len(results))
-	for _, r := range results {
-		fmt.Printf("  Ch%02d: %s\n        → %s\n", r.num, r.title, r.slug)
-	}
+	fmt.Printf("✅ DONE\n\n")
 }
 
 func min(a, b int) int {
