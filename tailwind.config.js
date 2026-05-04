@@ -73,6 +73,10 @@ module.exports = {
         fadeInUp:  { '0%': { opacity: '0', transform: 'translateY(24px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
         float:     { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-8px)' } },
         pulseGlow: { '0%, 100%': { boxShadow: '0 0 20px rgba(45,110,240,0.3)' }, '50%': { boxShadow: '0 0 40px rgba(45,110,240,0.6)' } },
+        blogPulse: {
+          '0%, 100%': { transform: 'scale(1)', boxShadow: '0 2px 16px rgba(255,106,0,0.4)' },
+          '50%': { transform: 'scale(1.02)', boxShadow: '0 4px 24px rgba(255,106,0,0.7)' },
+        },
       },
       boxShadow: {
         'blue-glow':  '0 0 30px rgba(45,110,240,0.4)',

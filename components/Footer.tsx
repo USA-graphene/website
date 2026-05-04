@@ -100,13 +100,24 @@ export default function Footer() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-widest text-[#5b9af5] mb-4">More</h4>
               <ul className="space-y-2.5">
-                {links.slice(4).map((l) => (
-                  <li key={l.name}>
-                    <Link href={l.href} className="text-sm text-[#8b9ab5] hover:text-white transition-colors">
-                      {l.name}
-                    </Link>
-                  </li>
-                ))}
+                {links.slice(4).map((l) => {
+                  const isBlog = l.name === 'Blog'
+                  return (
+                    <li key={l.name}>
+                      <Link 
+                        href={l.href} 
+                        className={`text-sm transition-colors ${
+                          isBlog 
+                            ? 'text-[#ff8c00] font-semibold hover:text-[#ffaa00] flex items-center gap-1.5' 
+                            : 'text-[#8b9ab5] hover:text-white'
+                        }`}
+                      >
+                        {isBlog && <span className="text-[10px]">✦</span>}
+                        {l.name}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
             <div>

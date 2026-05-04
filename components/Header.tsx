@@ -49,18 +49,23 @@ export default function Header() {
             <div className="flex items-center gap-1">
               {navigation.map((item) => {
                 const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                const isBlog = item.name === 'Blog'
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
                     className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                      active
-                        ? 'text-white bg-white/8'
-                        : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
+                      isBlog
+                        ? 'text-white font-semibold bg-gradient-to-r from-[#ff6a00] to-[#ee0979] hover:from-[#ff8c00] hover:to-[#ff2d95] shadow-[0_2px_16px_rgba(255,106,0,0.4)] hover:shadow-[0_4px_24px_rgba(255,106,0,0.6)] hover:scale-105 animate-[blogPulse_2.5s_ease-in-out_infinite]'
+                        : active
+                          ? 'text-white bg-white/8'
+                          : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
                     }`}
+                    style={isBlog ? { borderRadius: '9999px', padding: '6px 18px' } : undefined}
                   >
+                    {isBlog && <span className="mr-1.5 text-xs">✦</span>}
                     {item.name}
-                    {active && (
+                    {!isBlog && active && (
                       <span className="absolute bottom-0.5 left-3.5 right-3.5 h-px bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] rounded-full" />
                     )}
                   </Link>
@@ -95,18 +100,24 @@ export default function Header() {
           <div className="px-4 py-4 space-y-1">
             {navigation.map((item) => {
               const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+              const isBlog = item.name === 'Blog'
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-[#2d6ef0]/15 text-white border border-[#2d6ef0]/25'
-                      : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
+                    isBlog
+                      ? 'bg-gradient-to-r from-[#ff6a00] to-[#ee0979] text-white font-semibold shadow-[0_2px_16px_rgba(255,106,0,0.35)] rounded-full'
+                      : active
+                        ? 'bg-[#2d6ef0]/15 text-white border border-[#2d6ef0]/25'
+                        : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  {item.name}
+                  <span className="flex items-center gap-2">
+                    {isBlog && <span className="text-xs">✦</span>}
+                    {item.name}
+                  </span>
                   <ChevronRight className="h-4 w-4 opacity-40" />
                 </Link>
               )
