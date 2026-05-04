@@ -67,6 +67,7 @@ module.exports = {
         'fade-in-up':  'fadeInUp 0.6s ease-out forwards',
         'float':       'float 6s ease-in-out infinite',
         'pulse-glow':  'pulseGlow 3s ease-in-out infinite',
+        'blog-pulse':  'blogPulse 2.5s ease-in-out infinite',
       },
       keyframes: {
         fadeIn:    { '0%': { opacity: '0' }, '100%': { opacity: '1' } },

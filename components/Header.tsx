@@ -56,7 +56,7 @@ export default function Header() {
                     href={item.href}
                     className={`relative px-3.5 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                       isBlog
-                        ? 'text-white font-semibold bg-gradient-to-r from-[#ff6a00] to-[#ee0979] hover:from-[#ff8c00] hover:to-[#ff2d95] shadow-[0_2px_16px_rgba(255,106,0,0.4)] hover:shadow-[0_4px_24px_rgba(255,106,0,0.6)] hover:scale-105 animate-[blogPulse_2.5s_ease-in-out_infinite]'
+                        ? 'text-white font-semibold bg-gradient-to-r from-[#ff6a00] to-[#ee0979] hover:from-[#ff8c00] hover:to-[#ff2d95] shadow-[0_2px_16px_rgba(255,106,0,0.4)] hover:shadow-[0_4px_24px_rgba(255,106,0,0.6)] hover:scale-105 animate-blog-pulse'
                         : active
                           ? 'text-white bg-white/8'
                           : 'text-[#8b9ab5] hover:text-white hover:bg-white/5'
