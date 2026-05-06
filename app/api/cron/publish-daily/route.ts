@@ -47,12 +47,27 @@ export async function GET(req: Request) {
     const existingArxivIds: string[] = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
     const arxivIdSet = new Set(existingArxivIds);
 
-    // 2. Fetch from ArXiv (Broadened search to ensure 3 posts)
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
-    const arxivRes = await fetch(arxivUrl);
-    if (!arxivRes.ok) throw new Error(`ArXiv fetch failed: ${arxivRes.status}`);
+    // 2. Fetch from ArXiv with Retry & Smart User-Agent
+    const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
     
-    const arxivXml = await arxivRes.text();
+    let arxivXml = '';
+    let retries = 5;
+    while (retries > 0) {
+      const res = await fetch(arxivUrl, {
+        headers: { 'User-Agent': `USA-Graphene-Bot/${Math.random().toString(36).substring(7)} (info@usa-graphene.com)` }
+      });
+      const text = await res.text();
+      if (text.includes('<entry>')) {
+        arxivXml = text;
+        break;
+      }
+      console.warn(`[Cron] ArXiv rate limited or empty. Retrying in ${6 - retries}s...`);
+      await new Promise(r => setTimeout(r, (6 - retries) * 1000));
+      retries--;
+    }
+
+    if (!arxivXml) throw new Error("ArXiv API failed to return entries after retries (likely rate limited)");
+    
     const parser = new XMLParser({ ignoreAttributes: false, htmlEntities: true });
     const parsed = parser.parse(arxivXml);
     const entries = Array.isArray(parsed.feed?.entry) ? parsed.feed.entry : (parsed.feed?.entry ? [parsed.feed.entry] : []);
@@ -77,7 +92,6 @@ export async function GET(req: Request) {
     const results = [];
     for (const paper of selectedList) {
       try {
-        // Text Generation (Verified Model: gemini-2.5-flash)
         const prompt = `You are an expert science journalist for usa-graphene.com.
 Write a technical, 1200+ word article based on this research:
 Title: ${paper.title}
@@ -110,44 +124,34 @@ RULES:
         try {
           p = JSON.parse(rawText.replace(/```json\n?/, '').replace(/\n?```/, '').trim());
         } catch (jsonErr) {
-          console.warn(`[Cron] Standard JSON parse failed, using regex fallback for ${paper.arxivId}`);
           const extract = (field: string) => {
             const re = new RegExp(`"${field}"\\s*:\\s*"([\\s\\S]*?)"(?=[\\s,}]|$)`);
             const match = rawText.match(re);
-            if (!match) return '';
-            return match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').trim();
+            return match ? match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').trim() : '';
           };
-          p = {
-            title: extract('title'),
-            excerpt: extract('excerpt'),
-            body: extract('body'),
-            imagePrompt: extract('imagePrompt')
-          };
+          p = { title: extract('title'), excerpt: extract('excerpt'), body: extract('body'), imagePrompt: extract('imagePrompt') };
         }
 
-        if (!p.title || !p.body) throw new Error('Could not extract title or body from Gemini response');
+        if (!p.title || !p.body) throw new Error('Could not extract title or body');
 
-        // Atomic Numbering
+        // Numbering
         const allPosts: any[] = await sanityClient.fetch(`*[_type == "post"]{ title }`);
         let maxNum = 0;
         allPosts.forEach(post => {
           const m = post.title.match(/^(\d+)\./);
           if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
         });
-        const nextNum = maxNum + 1;
-        const finalTitle = `${nextNum}. ${p.title}`;
+        const finalTitle = `${maxNum + 1}. ${p.title}`;
         const finalSlug = slugify(finalTitle);
 
-        // Image Generation (Primary: Gemini 3 Pro Image Preview, Fallback: Pollinations)
+        // Image
         let assetId = '';
         try {
           const imgPrompt = `A high-end, futuristic 3D scientific visualization of ${p.title}. No text, 16:9 aspect ratio, cinematic lighting, 8k resolution.`;
           const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: imgPrompt }] }]
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: imgPrompt }] }] })
           });
 
           if (iRes.ok) {
@@ -158,9 +162,7 @@ RULES:
               assetId = asset._id;
             }
           } 
-          
           if (!assetId) {
-            console.warn(`[Cron] Gemini 3 Pro Image failed or returned no data, trying Pollinations...`);
             const pRes = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(p.imagePrompt || p.title)}?width=1280&height=720&nologo=true`);
             if (pRes.ok && !dryRun) {
               const buffer = Buffer.from(await pRes.arrayBuffer());
@@ -168,7 +170,7 @@ RULES:
               assetId = asset._id;
             }
           }
-        } catch (imgErr) { console.warn(`[Cron] Image logic failed: ${imgErr}`); }
+        } catch (imgErr) { console.warn(`[Cron] Image failed: ${imgErr}`); }
 
         if (!dryRun) {
           await sanityClient.create({
