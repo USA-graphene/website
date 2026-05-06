@@ -138,28 +138,30 @@ RULES:
         const finalTitle = `${nextNum}. ${p.title}`;
         const finalSlug = slugify(finalTitle);
 
-        // Image Generation (Primary: Imagen 4.0, Fallback: Pollinations)
+        // Image Generation (Primary: Gemini 3 Pro Image Preview, Fallback: Pollinations)
         let assetId = '';
         try {
-          const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${geminiKey}`, {
+          const imgPrompt = `A high-end, futuristic 3D scientific visualization of ${p.title}. No text, 16:9 aspect ratio, cinematic lighting, 8k resolution.`;
+          const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              instances: [{ prompt: `Photorealistic 3D scientific visualization of ${p.title}. No text, 16:9 aspect ratio.` }],
-              parameters: { sampleCount: 1, aspectRatio: "16:9" }
+              contents: [{ parts: [{ text: imgPrompt }] }]
             })
           });
 
           if (iRes.ok) {
             const iData = await iRes.json();
-            const b64 = iData.predictions?.[0]?.bytesBase64Encoded;
+            const b64 = iData.candidates?.[0]?.content?.parts?.find((part: any) => part.inlineData)?.inlineData?.data;
             if (b64 && !dryRun) {
               const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: `arxiv-${paper.arxivId}.png` });
               assetId = asset._id;
             }
-          } else {
-            console.warn(`[Cron] Imagen 4 failed (Status ${iRes.status}), trying Pollinations...`);
-            const pRes = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(p.imagePrompt)}?width=1280&height=720&nologo=true`);
+          } 
+          
+          if (!assetId) {
+            console.warn(`[Cron] Gemini 3 Pro Image failed or returned no data, trying Pollinations...`);
+            const pRes = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(p.imagePrompt || p.title)}?width=1280&height=720&nologo=true`);
             if (pRes.ok && !dryRun) {
               const buffer = Buffer.from(await pRes.arrayBuffer());
               const asset = await sanityClient.assets.upload('image', buffer, { filename: `fallback-${paper.arxivId}.jpg` });
