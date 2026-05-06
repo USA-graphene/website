@@ -45,6 +45,12 @@ export default function Header() {
           className="pointer-events-none absolute inset-x-4 top-0 h-px rounded-full"
           style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.95), transparent)' }}
         />
+        {/* Inner glow band */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-full opacity-40"
+          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 100%)' }}
+        />
 
         <div className={`overflow-hidden transition-all duration-500 ${open ? 'rounded-3xl' : 'rounded-full'}`}>
           <div className="flex items-center justify-between px-5 sm:px-6 h-16">
@@ -81,13 +87,29 @@ export default function Header() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 ${
+                    className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 overflow-hidden ${
                       active
-                        ? 'bg-white text-slate-900 font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)]'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                        ? [
+                            'bg-white text-slate-900 font-semibold',
+                            'shadow-[0_3px_14px_rgba(0,0,0,0.12),inset_0_2px_0_rgba(255,255,255,1),inset_0_-1px_0_rgba(0,0,0,0.04)]',
+                          ].join(' ')
+                        : [
+                            'text-slate-600 hover:text-slate-900',
+                            'hover:bg-white/70 hover:shadow-[0_2px_10px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.9)]',
+                          ].join(' ')
                     }`}
                   >
-                    {item.name}
+                    {/* Specular shine — top-half white gloss */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-x-1 top-[2px] h-[45%] rounded-full"
+                      style={{
+                        background: active
+                          ? 'linear-gradient(to bottom, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 100%)'
+                          : 'linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%)',
+                      }}
+                    />
+                    <span className="relative z-10">{item.name}</span>
                   </Link>
                 )
               })}
