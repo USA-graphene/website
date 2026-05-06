@@ -103,7 +103,29 @@ RULES:
 
         if (!gRes.ok) throw new Error(`Gemini Text API error: ${gRes.status}`);
         const gData = await gRes.json();
-        const p = JSON.parse(gData.candidates[0].content.parts[0].text);
+        const rawText = gData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!rawText) throw new Error('Gemini returned empty response');
+        
+        let p;
+        try {
+          p = JSON.parse(rawText.replace(/```json\n?/, '').replace(/\n?```/, '').trim());
+        } catch (jsonErr) {
+          console.warn(`[Cron] Standard JSON parse failed, using regex fallback for ${paper.arxivId}`);
+          const extract = (field: string) => {
+            const re = new RegExp(`"${field}"\\s*:\\s*"([\\s\\S]*?)"(?=[\\s,}]|$)`);
+            const match = rawText.match(re);
+            if (!match) return '';
+            return match[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').trim();
+          };
+          p = {
+            title: extract('title'),
+            excerpt: extract('excerpt'),
+            body: extract('body'),
+            imagePrompt: extract('imagePrompt')
+          };
+        }
+
+        if (!p.title || !p.body) throw new Error('Could not extract title or body from Gemini response');
 
         // Atomic Numbering
         const allPosts: any[] = await sanityClient.fetch(`*[_type == "post"]{ title }`);
