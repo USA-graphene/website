@@ -237,6 +237,8 @@ Return ONLY a JSON object:
           _type: 'post',
           arxivId: p.arxivId,
           title: finalTitle,
+          seoTitle: p.title,
+          seoDescription: p.excerpt,
           slug: { _type: 'slug', current: finalSlug },
           excerpt: p.excerpt,
           body: p.body.replace(/\r\n/g, '\n').split(/\n{2,}/).filter((para: string) => para.trim() !== '').map((para: string) => {
