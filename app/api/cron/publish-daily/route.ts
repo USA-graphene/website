@@ -47,8 +47,8 @@ export async function GET(req: Request) {
     const existingArxivIds: string[] = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
     const arxivIdSet = new Set(existingArxivIds);
 
-    // 2. Fetch from ArXiv
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene&start=0&max_results=15&sortBy=submittedDate&sortOrder=descending`;
+    // 2. Fetch from ArXiv (Broadened search to ensure 3 posts)
+    const arxivUrl = `https://export.arxiv.org/api/query?search_query=all:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
     const arxivRes = await fetch(arxivUrl);
     if (!arxivRes.ok) throw new Error(`ArXiv fetch failed: ${arxivRes.status}`);
     
