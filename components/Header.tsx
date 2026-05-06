@@ -7,13 +7,13 @@ import { usePathname } from 'next/navigation'
 import Logo from '@/components/Logo'
 
 const navigation = [
-  { name: 'Home',          href: '/' },
-  { name: 'About',         href: '/about/' },
-  { name: 'Products',      href: '/products/' },
-  { name: 'Applications',  href: '/applications/' },
-  { name: 'Equipment',     href: '/equipment/' },
+  { name: 'Home',            href: '/' },
+  { name: 'About',           href: '/about/' },
+  { name: 'Products',        href: '/products/' },
+  { name: 'Applications',    href: '/applications/' },
+  { name: 'Equipment',       href: '/equipment/' },
   { name: 'Market Research', href: '/market-research/' },
-  { name: 'Blog',          href: '/blog/' },
+  { name: 'Blog',            href: '/blog/' },
 ]
 
 export default function Header() {
@@ -28,118 +28,128 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 sm:pt-6 transition-all duration-300 pointer-events-none">
-      <div 
-        className={`pointer-events-auto w-full max-w-7xl rounded-2xl transition-all duration-500 overflow-hidden ${
-          scrolled 
-            ? 'bg-[#0d1630]/90 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]' 
-            : 'bg-[#070d1a]/70 backdrop-blur-xl border border-white/5 shadow-2xl'
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 sm:pt-5 pointer-events-none">
+      {/* The pill bar */}
+      <div
+        className={`pointer-events-auto w-full max-w-6xl transition-all duration-500 ${
+          open ? 'rounded-3xl' : 'rounded-full'
+        } ${
+          scrolled
+            ? 'bg-white/55 backdrop-blur-2xl border border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.9)]'
+            : 'bg-white/40 backdrop-blur-xl border border-white/70 shadow-[0_4px_24px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.8)]'
         }`}
       >
-        <nav className="px-4 sm:px-6 lg:px-6">
-          <div className={`flex items-center justify-between transition-all duration-500 ${scrolled ? 'h-16' : 'h-20'}`}>
-            
+        {/* Top-edge specular line */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-4 top-0 h-px rounded-full"
+          style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.95), transparent)' }}
+        />
+
+        <div className={`overflow-hidden transition-all duration-500 ${open ? 'rounded-3xl' : 'rounded-full'}`}>
+          <div className="flex items-center justify-between px-5 sm:px-6 h-16">
+
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0 group">
-              <div className="transition-transform duration-300 group-hover:scale-105">
-                <Logo className="text-white" />
-              </div>
+              <Logo className="text-[#2d6ef0]" />
             </Link>
 
-            {/* Desktop Right Side */}
-            <div className="hidden lg:flex lg:items-center lg:gap-6">
-              {/* Desktop Nav */}
-              <div className="flex items-center gap-1">
-                {navigation.map((item) => {
-                  const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
-                  const isBlog = item.name === 'Blog'
+            {/* Desktop Nav */}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navigation.map((item) => {
+                const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                const isBlog = item.name === 'Blog'
+
+                if (isBlog) {
                   return (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className={`relative px-3.5 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
-                        isBlog
-                          ? 'text-white font-semibold bg-gradient-to-r from-[#ff6a00] to-[#ee0979] hover:from-[#ff8c00] hover:to-[#ff2d95] shadow-[0_2px_16px_rgba(255,106,0,0.4)] hover:shadow-[0_4px_24px_rgba(255,106,0,0.6)] hover:scale-105 animate-blog-pulse'
-                          : active
-                            ? 'text-white bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]'
-                            : 'text-[#a4b5d0] hover:text-white hover:bg-white/5'
-                      }`}
-                      style={isBlog ? { borderRadius: '9999px', padding: '6px 18px' } : undefined}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-white
+                        bg-gradient-to-r from-[#ff6a00] to-[#ee0979]
+                        shadow-[0_3px_12px_rgba(238,9,121,0.4)]
+                        hover:shadow-[0_4px_20px_rgba(238,9,121,0.55)]
+                        hover:scale-105 active:scale-95 transition-all duration-200 ml-1"
                     >
-                      <span className="flex items-center gap-1.5 relative z-10">
-                        {isBlog && <span className="text-xs">✦</span>}
-                        {item.name}
-                      </span>
-                      {!isBlog && active && (
-                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] rounded-t-full shadow-[0_-2px_8px_rgba(45,110,240,0.8)]" />
-                      )}
+                      <span className="text-xs font-black">+</span>
+                      Blog
                     </Link>
                   )
-                })}
-              </div>
+                }
 
-              <div className="w-px h-6 bg-white/10 mx-1"></div>
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 active:scale-95 ${
+                      active
+                        ? 'bg-white text-slate-900 font-semibold shadow-[0_2px_10px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)]'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </nav>
 
-              {/* CTA */}
-              <Link
-                href="/contact/"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all shadow-lg hover:shadow-xl group"
-              >
-                Contact Us
-                <ChevronRight className="h-4 w-4 text-[#8b9ab5] group-hover:text-white transition-colors group-hover:translate-x-0.5" />
-              </Link>
-            </div>
+            {/* Contact Us CTA */}
+            <Link
+              href="/contact/"
+              className="hidden lg:flex items-center gap-1 text-sm font-semibold text-slate-700 hover:text-[#2d6ef0] transition-colors duration-200 group"
+            >
+              Contact Us
+              <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-[#2d6ef0] group-hover:translate-x-0.5 transition-all duration-200" />
+            </Link>
 
             {/* Mobile hamburger */}
             <button
-              className="lg:hidden p-2.5 rounded-xl text-[#a4b5d0] hover:text-white hover:bg-white/10 transition-colors border border-transparent hover:border-white/10"
+              className="lg:hidden p-2.5 rounded-full text-slate-600 hover:text-slate-900 bg-white/50 hover:bg-white/80 active:bg-white active:scale-95 transition-all border border-white/60 shadow-sm"
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
             >
               {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
-        </nav>
 
-        {/* Mobile menu */}
-        <div 
-          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden border-t border-white/5 ${
-            open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 border-t-transparent'
-          }`}
-        >
-          <div className="px-4 py-4 space-y-1.5 bg-[#0a1020]/50">
-            {navigation.map((item) => {
-              const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
-              const isBlog = item.name === 'Blog'
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-medium transition-all ${
-                    isBlog
-                      ? 'bg-gradient-to-r from-[#ff6a00] to-[#ee0979] text-white font-semibold shadow-[0_2px_16px_rgba(255,106,0,0.35)] rounded-full'
-                      : active
-                        ? 'bg-gradient-to-r from-[#2d6ef0]/20 to-transparent text-white border-l-2 border-[#2d6ef0]'
-                        : 'text-[#a4b5d0] hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    {isBlog && <span className="text-xs">✦</span>}
-                    {item.name}
-                  </span>
-                  <ChevronRight className={`h-4 w-4 ${isBlog ? 'opacity-80' : 'opacity-40'}`} />
-                </Link>
-              )
-            })}
-            <div className="pt-4 pb-2">
+          {/* Mobile dropdown */}
+          <div
+            className={`lg:hidden transition-all duration-300 ease-in-out border-t border-slate-100/60 bg-white/30 backdrop-blur-sm ${
+              open ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0 overflow-hidden'
+            }`}
+          >
+            <div className="px-4 pt-3 space-y-1">
+              {navigation.map((item) => {
+                const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                const isBlog = item.name === 'Blog'
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    className={`flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all active:scale-95 ${
+                      isBlog
+                        ? 'bg-gradient-to-r from-[#ff6a00] to-[#ee0979] text-white font-bold shadow-[0_2px_12px_rgba(238,9,121,0.3)]'
+                        : active
+                        ? 'bg-white text-slate-900 font-semibold shadow-sm'
+                        : 'text-slate-600 hover:bg-white/60 hover:text-slate-900'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {isBlog && <span className="text-xs font-black">+</span>}
+                      {item.name}
+                    </span>
+                    <ChevronRight className={`h-4 w-4 ${isBlog ? 'opacity-80' : 'opacity-30'}`} />
+                  </Link>
+                )
+              })}
               <Link
                 href="/contact/"
                 onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3.5 rounded-xl text-sm font-semibold text-white bg-white/5 border border-white/10 active:bg-white/10"
+                className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-[#2d6ef0] hover:bg-white/60 active:scale-95 transition-all"
               >
                 Contact Us
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4 opacity-60" />
               </Link>
             </div>
           </div>
