@@ -21,9 +21,14 @@ export default function Header() {
   const [isLightPage, setIsLightPage] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
+  // Detect if the current page is the Home page
   useEffect(() => {
     setIsLightPage(pathname === '/')
-    setIsOpen(false) // Close menu on route change
+  }, [pathname])
+
+  // Only close the menu when the pathname actually changes (navigation occurs)
+  useEffect(() => {
+    setIsOpen(false)
   }, [pathname])
 
   const textColor = isLightPage ? 'text-neutral-800' : 'text-white/90'
@@ -84,9 +89,9 @@ export default function Header() {
       </div>
 
       {/* Mobile Liquid Glass Overlay */}
-      <div className={`lg:hidden fixed inset-0 z-[-1] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
+      <div className={`lg:hidden fixed inset-0 z-[100] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
                       ${isOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-full pointer-events-none'}`}>
-        <div className={`absolute inset-0 ${isLightPage ? 'bg-white/40' : 'bg-black/40'} backdrop-blur-[80px] saturate-[200%]`} />
+        <div className={`absolute inset-0 ${isLightPage ? 'bg-white/60' : 'bg-black/70'} backdrop-blur-[80px] saturate-[200%]`} />
         
         <nav className="flex flex-col items-center justify-center h-full gap-4 px-6">
           {navItems.map((item, i) => (
