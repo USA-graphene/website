@@ -122,6 +122,9 @@ const nextConfig = {
       { source: '/unlocking-tomorrow-why-graphene-is-the-material-of-the-future-and-why-everyones-talking-about-it', destination: 'https://www.usa-graphene.com/blog/unlocking-tomorrow-why-graphene-is-the-material-of-the-future-and-why-everyones-talking-about-it/', permanent: true },
       { source: '/usa-graphene-unleashing-the-power-of-tomorrows-wonder-material-today', destination: 'https://www.usa-graphene.com/blog/usa-graphene-unleashing-the-power-of-tomorrows-wonder-material-today/', permanent: true },
 
+      { source: '/blog/graphene-textiles-for-smart-clothing/', destination: 'https://www.usa-graphene.com/blog/', permanent: true },
+      { source: '/blog/graphene-textiles-for-smart-clothing', destination: 'https://www.usa-graphene.com/blog/', permanent: true },
+
       // Common WordPress Patterns
       { source: '/category/:path*', destination: '/blog/', permanent: true },
       { source: '/tag/:path*', destination: '/blog/', permanent: true },
