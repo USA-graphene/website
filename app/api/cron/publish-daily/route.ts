@@ -47,46 +47,80 @@ export async function GET(req: Request) {
     const existingArxivIds: string[] = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
     const arxivIdSet = new Set(existingArxivIds);
 
-    // 2. Fetch from ArXiv with Retry & Smart User-Agent
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
-    
-    let arxivXml = '';
-    let retries = 5;
-    while (retries > 0) {
-      const res = await fetch(arxivUrl, {
-        headers: { 'User-Agent': `USA-Graphene-Bot/${Math.random().toString(36).substring(7)} (info@usa-graphene.com)` }
-      });
-      const text = await res.text();
-      if (text.includes('<entry>')) {
-        arxivXml = text;
-        break;
+    // 2. Fetch papers — Semantic Scholar (primary, no rate limits from datacenters)
+    //    ArXiv as fallback
+    let selectedList: any[] = []
+
+    try {
+      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds&limit=50&sort=relevance`
+      const ssRes = await fetch(ssUrl, {
+        headers: { 'User-Agent': 'USA-Graphene-Bot/1.0 (info@usa-graphene.com)' }
+      })
+
+      if (ssRes.ok) {
+        const ssData = await ssRes.json()
+        const papers = ssData.data || []
+        for (const paper of papers) {
+          if (selectedList.length >= limit) break
+          const paperId = paper.externalIds?.ArXiv || paper.paperId
+          if (paperId && !arxivIdSet.has(paperId)) {
+            selectedList.push({
+              arxivId: paperId,
+              title: paper.title?.trim(),
+              abstract: paper.abstract?.trim() || 'No abstract available.',
+              authors: (paper.authors || []).map((a: any) => a.name).join(', ')
+            })
+          }
+        }
+        console.log(`[Cron] Semantic Scholar returned ${selectedList.length} new papers`)
+      } else {
+        console.warn(`[Cron] Semantic Scholar failed (${ssRes.status}), trying ArXiv...`)
       }
-      console.warn(`[Cron] ArXiv rate limited or empty. Retrying in ${6 - retries}s...`);
-      await new Promise(r => setTimeout(r, (6 - retries) * 1000));
-      retries--;
+    } catch (ssErr) {
+      console.warn(`[Cron] Semantic Scholar error: ${ssErr}, trying ArXiv...`)
     }
 
-    if (!arxivXml) throw new Error("ArXiv API failed to return entries after retries (likely rate limited)");
-    
-    const parser = new XMLParser({ ignoreAttributes: false, htmlEntities: true });
-    const parsed = parser.parse(arxivXml);
-    const entries = Array.isArray(parsed.feed?.entry) ? parsed.feed.entry : (parsed.feed?.entry ? [parsed.feed.entry] : []);
-
-    let selectedList: any[] = [];
-    for (const entry of entries) {
-      if (selectedList.length >= limit) break;
-      const arxivId = entry.id?.split('/abs/')?.[1] || entry.id;
-      if (arxivId && !arxivIdSet.has(arxivId)) {
-        selectedList.push({
-          arxivId,
-          title: entry.title?.replace(/\n/g, ' ').trim(),
-          abstract: entry.summary?.replace(/\n/g, ' ').trim(),
-          authors: (Array.isArray(entry.author) ? entry.author : [entry.author]).map((a: any) => a.name).join(', ')
-        });
+    // ArXiv fallback if Semantic Scholar didn't return enough
+    if (selectedList.length < limit) {
+      try {
+        const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`
+        let arxivXml = ''
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const res = await fetch(arxivUrl, {
+            headers: { 'User-Agent': `USA-Graphene-Bot/${Math.random().toString(36).substring(7)}` }
+          })
+          const text = await res.text()
+          if (text.includes('<entry>')) { arxivXml = text; break }
+          await new Promise(r => setTimeout(r, (attempt + 1) * 2000))
+        }
+        if (arxivXml) {
+          const parser = new XMLParser({ ignoreAttributes: false, htmlEntities: true })
+          const parsed = parser.parse(arxivXml)
+          const entries = Array.isArray(parsed.feed?.entry) ? parsed.feed.entry : (parsed.feed?.entry ? [parsed.feed.entry] : [])
+          for (const entry of entries) {
+            if (selectedList.length >= limit) break
+            const arxivId = entry.id?.split('/abs/')?.[1] || entry.id
+            if (arxivId && !arxivIdSet.has(arxivId)) {
+              selectedList.push({
+                arxivId,
+                title: entry.title?.replace(/\n/g, ' ').trim(),
+                abstract: entry.summary?.replace(/\n/g, ' ').trim(),
+                authors: (Array.isArray(entry.author) ? entry.author : [entry.author]).map((a: any) => a.name).join(', ')
+              })
+            }
+          }
+          console.log(`[Cron] ArXiv fallback added papers, total: ${selectedList.length}`)
+        }
+      } catch (arxivErr) {
+        console.warn(`[Cron] ArXiv fallback also failed: ${arxivErr}`)
       }
     }
 
-    console.log(`[Cron] Found ${selectedList.length} new papers.`);
+    if (selectedList.length === 0) {
+      return NextResponse.json({ success: true, results: [], message: 'No new papers found from any source' })
+    }
+
+    console.log(`[Cron] Processing ${selectedList.length} new papers.`)
 
     // 3. Process each paper
     const results = [];
