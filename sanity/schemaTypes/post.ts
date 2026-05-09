@@ -16,7 +16,6 @@ export default defineType({
       title: "ArXiv ID",
       type: "string",
       description: "Original ArXiv ID to prevent duplicates.",
-      readOnly: true,
     }),
     defineField({
       name: "slug",

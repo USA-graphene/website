@@ -20,40 +20,90 @@ function slugify(title) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+function normalizeArxivId(id) {
+  if (!id) return '';
+  return id.split('v')[0].trim();
+}
+
 async function testCron() {
   const geminiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
-  console.log(`[Test] Starting Verified Gemini 3.1 Pro Run...`);
+  const limit = 1;
+
+  console.log(`[Test] Starting Improved Daily Automation Test...`);
 
   try {
-    // Fetch existing slugs to avoid duplicates
-    const allPosts = await sanityClient.fetch(`*[_type == "post"]{ "slug": slug.current, title }`);
-    const existingSlugs = new Set(allPosts.map(p => p.slug));
+    // 1. Fetch existing ArXiv IDs
+    const existingArxivIds = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
+    const arxivIdSet = new Set(existingArxivIds.map(normalizeArxivId));
 
-    const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene&start=0&max_results=15&sortBy=submittedDate&sortOrder=descending`;
-    const arxivRes = await fetch(arxivUrl);
-    const arxivXml = await arxivRes.text();
-    
-    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+    console.log(`[Test] Found ${arxivIdSet.size} existing ArXiv IDs in Sanity.`);
+
+    // 2. Fetch papers from Semantic Scholar (Sorted by Date)
     let selected = null;
-    let match;
-    
-    while ((match = entryRegex.exec(arxivXml)) !== null) {
-      const entry = match[1];
-      const title = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim();
-      const abstract = entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim();
-      const slug = slugify(title);
+    try {
+      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds,publicationDate&limit=50&sort=publicationDate:desc`
+      console.log(`[Test] Fetching from Semantic Scholar (Date Sort)...`);
+      const ssRes = await fetch(ssUrl, {
+        headers: { 'User-Agent': 'USA-Graphene-Bot/1.1' }
+      });
+      
+      if (ssRes.ok) {
+        const ssData = await ssRes.json();
+        const papers = ssData.data || [];
+        for (const paper of papers) {
+          const rawId = paper.externalIds?.ArXiv || paper.paperId;
+          const normalizedId = normalizeArxivId(rawId);
+          if (normalizedId && !arxivIdSet.has(normalizedId)) {
+            selected = {
+              arxivId: rawId,
+              title: paper.title?.trim(),
+              abstract: paper.abstract?.trim() || 'No abstract available.',
+              authors: (paper.authors || []).map(a => a.name).join(', ')
+            };
+            console.log(`[Test] Found NEW paper via Semantic Scholar: ${selected.arxivId}`);
+            break;
+          }
+        }
+      }
+    } catch (ssErr) {
+      console.warn(`[Test] Semantic Scholar failed: ${ssErr.message}`);
+    }
 
-      // Simple duplicate check
-      const isDuplicate = Array.from(existingSlugs).some(s => s && s.includes(slug.substring(0, 20)));
-      if (!isDuplicate) {
-        selected = { title, abstract };
-        break;
+    // 3. Fallback to ArXiv if needed
+    if (!selected) {
+      console.log(`[Test] No new papers in Semantic Scholar top 50. Trying ArXiv...`);
+      const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
+      const arxivRes = await fetch(arxivUrl);
+      const arxivXml = await arxivRes.text();
+      
+      if (arxivXml.includes('Rate exceeded')) {
+        throw new Error("ArXiv Rate Limit Exceeded");
+      }
+
+      const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
+      let match;
+      
+      while ((match = entryRegex.exec(arxivXml)) !== null) {
+        const entry = match[1];
+        const arxivId = entry.match(/<id>.*?\/abs\/(.*?)<\/id>/)?.[1] || entry.match(/<id>(.*?)<\/id>/)?.[1];
+        const normalizedId = normalizeArxivId(arxivId);
+        
+        if (normalizedId && !arxivIdSet.has(normalizedId)) {
+          selected = {
+            arxivId,
+            title: entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim(),
+            abstract: entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim(),
+            authors: 'ArXiv Researchers'
+          };
+          console.log(`[Test] Found NEW paper via ArXiv: ${selected.arxivId}`);
+          break;
+        }
       }
     }
 
-    if (!selected) throw new Error("No new ArXiv papers found (all are already published)");
+    if (!selected) throw new Error("No new Graphene papers found (all top results are already published)");
 
-    console.log(`[Test] Generating 2000+ words for NEW paper: ${selected.title}`);
+    console.log(`[Test] Generating 2000+ words for: ${selected.title}`);
     const prompt = `You are a senior science journalist for usa-graphene.com.
 Write a deeply detailed, 2000+ word technical article based on this paper:
 
@@ -63,12 +113,9 @@ Abstract: ${selected.abstract}
 WRITING RULES:
 1. Length: Minimum 2000 words.
 2. Structure: Introduction → 5-7 sections with ## H2 headings → FAQ (5 Q&A) → Conclusion.
-3. Every paragraph: 4-7 sentences. NO bullet points, NO numbered lists, NO bolding (**).
-4. Tone: expert, technical. Use natural transitions between concepts.
-5. NO bolded labels like '1. **Topic:**' or 'Key Point:'.
-6. NO AI clichés: 'In conclusion', 'Moreover', 'Furthermore', 'It is important to note'.
-
-Return ONLY a JSON object:
+3. **MANDATORY**: Start the body with: "Research conducted by: ${selected.authors}" followed by a paragraph crediting their work.
+4. No bullet points, no bolding (**).
+5. Return ONLY a JSON object:
 {
   "title": "SEO Title",
   "excerpt": "Short summary",
@@ -81,16 +128,16 @@ Return ONLY a JSON object:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.85, maxOutputTokens: 16384, response_mime_type: "application/json" }
+        generationConfig: { temperature: 0.8, maxOutputTokens: 16384, response_mime_type: "application/json" }
       })
     });
 
     const gData = await gRes.json();
     const rawText = gData.candidates[0].content.parts[0].text;
     const p = JSON.parse(rawText);
-    console.log(`[Test] Gemini Article length: ${p.body.split(" ").length} words`);
+    console.log(`[Test] Gemini Article generated. Length: ${p.body.split(" ").length} words`);
 
-    console.log(`[Test] Generating Nano Banana Image...`);
+    console.log(`[Test] Generating Studio Quality Image (Nano Banana Pro)...`);
     const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${geminiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -101,12 +148,12 @@ Return ONLY a JSON object:
     const b64 = iData.candidates?.[0]?.content?.parts?.find(part => part.inlineData)?.inlineData?.data;
 
     let maxNumber = 0;
+    const allPosts = await sanityClient.fetch(`*[_type == "post"]{ title }`);
     allPosts.forEach(post => {
       const m = post.title.match(/^(\d+)\./);
       if (m) maxNumber = Math.max(maxNumber, parseInt(m[1]));
     });
-    const nextNumber = maxNumber + 1;
-    const finalTitle = `${nextNumber}. ${p.title}`;
+    const finalTitle = `${maxNumber + 1}. ${p.title}`;
     const finalSlug = slugify(finalTitle);
 
     let assetId = '';
@@ -118,22 +165,17 @@ Return ONLY a JSON object:
     console.log(`[Test] Publishing: ${finalTitle}`);
     const created = await sanityClient.create({
       _type: 'post',
+      arxivId: selected.arxivId,
       title: finalTitle,
+      seoTitle: p.title,
+      seoDescription: p.excerpt,
       slug: { _type: 'slug', current: finalSlug },
       excerpt: p.excerpt,
-      body: p.body.split('\n\n').filter(para => para.trim() !== '').map(para => {
-        let style = 'normal';
-        let text = para.trim();
-
-        // Clean AI markings
-        text = text.replace(/^\d+\.\s*\*\*(.*?)\*\*[:\-]?\s*/, '$1 ');
-        text = text.replace(/^\*\*(.*?)\*\*[:\-]?\s*/, '$1 ');
-        text = text.replace(/\*\*/g, '');
-
-        if (text.startsWith('## ')) { style = 'h2'; text = text.replace(/^##\s+/, ''); }
+      body: p.body.split(/\n{2,}/).filter(para => para.trim() !== '').map(para => {
+        const text = para.trim().replace(/^##\s+/, '').replace(/\*\*/g, '');
         return {
           _type: 'block', _key: Math.random().toString(36).slice(2, 11),
-          style: style,
+          style: para.startsWith('## ') ? 'h2' : 'normal',
           children: [{ _type: 'span', text: text, marks: [] }]
         };
       }),

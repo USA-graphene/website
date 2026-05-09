@@ -20,6 +20,12 @@ function slugify(title: string) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+// Normalize ArXiv ID by removing version (e.g., 2405.00001v1 -> 2405.00001)
+function normalizeArxivId(id: string) {
+  if (!id) return '';
+  return id.split('v')[0].trim();
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const dryRun = searchParams.get('dryrun') === 'true';
@@ -40,21 +46,22 @@ export async function GET(req: Request) {
                         authHeader === `Bearer ${cronSecret}`;
 
     if (!isAuthorized) {
+       console.error(`[Cron] Unauthorized access attempt.`);
        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // 1. Duplicate detection via ArXiv ID
     const existingArxivIds: string[] = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
-    const arxivIdSet = new Set(existingArxivIds);
+    const arxivIdSet = new Set(existingArxivIds.map(normalizeArxivId));
 
-    // 2. Fetch papers — Semantic Scholar (primary, no rate limits from datacenters)
-    //    ArXiv as fallback
+    // 2. Fetch papers — Semantic Scholar (primary, sorted by date for freshness)
     let selectedList: any[] = []
 
     try {
-      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds&limit=50&sort=relevance`
+      // Changed sort to publicationDate:desc to ensure we always find NEW papers
+      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds,publicationDate&limit=50&sort=publicationDate:desc`
       const ssRes = await fetch(ssUrl, {
-        headers: { 'User-Agent': 'USA-Graphene-Bot/1.0 (info@usa-graphene.com)' }
+        headers: { 'User-Agent': 'USA-Graphene-Bot/1.1 (info@usa-graphene.com)' }
       })
 
       if (ssRes.ok) {
@@ -62,17 +69,18 @@ export async function GET(req: Request) {
         const papers = ssData.data || []
         for (const paper of papers) {
           if (selectedList.length >= limit) break
-          const paperId = paper.externalIds?.ArXiv || paper.paperId
-          if (paperId && !arxivIdSet.has(paperId)) {
+          const rawId = paper.externalIds?.ArXiv || paper.paperId
+          const normalizedId = normalizeArxivId(rawId)
+          if (normalizedId && !arxivIdSet.has(normalizedId)) {
             selectedList.push({
-              arxivId: paperId,
+              arxivId: rawId, // Store original but check against normalized
               title: paper.title?.trim(),
               abstract: paper.abstract?.trim() || 'No abstract available.',
               authors: (paper.authors || []).map((a: any) => a.name).join(', ')
             })
           }
         }
-        console.log(`[Cron] Semantic Scholar returned ${selectedList.length} new papers`)
+        console.log(`[Cron] Semantic Scholar returned ${selectedList.length} new papers (from ${papers.length} checked)`)
       } else {
         console.warn(`[Cron] Semantic Scholar failed (${ssRes.status}), trying ArXiv...`)
       }
@@ -91,7 +99,10 @@ export async function GET(req: Request) {
           })
           const text = await res.text()
           if (text.includes('<entry>')) { arxivXml = text; break }
-          await new Promise(r => setTimeout(r, (attempt + 1) * 2000))
+          if (text.includes('Rate exceeded')) { 
+            console.warn(`[Cron] ArXiv Rate Limit Exceeded on attempt ${attempt + 1}`);
+          }
+          await new Promise(r => setTimeout(r, (attempt + 1) * 3000))
         }
         if (arxivXml) {
           const parser = new XMLParser({ ignoreAttributes: false, htmlEntities: true })
@@ -100,7 +111,8 @@ export async function GET(req: Request) {
           for (const entry of entries) {
             if (selectedList.length >= limit) break
             const arxivId = entry.id?.split('/abs/')?.[1] || entry.id
-            if (arxivId && !arxivIdSet.has(arxivId)) {
+            const normalizedId = normalizeArxivId(arxivId)
+            if (normalizedId && !arxivIdSet.has(normalizedId)) {
               selectedList.push({
                 arxivId,
                 title: entry.title?.replace(/\n/g, ' ').trim(),
@@ -109,55 +121,73 @@ export async function GET(req: Request) {
               })
             }
           }
-          console.log(`[Cron] ArXiv fallback added papers, total: ${selectedList.length}`)
+          console.log(`[Cron] ArXiv fallback finished. Total papers: ${selectedList.length}`)
         }
       } catch (arxivErr) {
-        console.warn(`[Cron] ArXiv fallback also failed: ${arxivErr}`)
+        console.warn(`[Cron] ArXiv fallback failed: ${arxivErr}`)
       }
     }
 
     if (selectedList.length === 0) {
+      console.log(`[Cron] No new graphene papers found today.`);
       return NextResponse.json({ success: true, results: [], message: 'No new papers found from any source' })
     }
 
-    console.log(`[Cron] Processing ${selectedList.length} new papers.`)
+    console.log(`[Cron] Processing ${selectedList.length} new papers.`);
 
     // 3. Process each paper
     const results = [];
     for (const paper of selectedList) {
       try {
-        const prompt = `You are an expert science journalist for usa-graphene.com.
-Write a technical, 1200+ word article based on this research:
+        const prompt = `You are a senior science journalist for usa-graphene.com.
+Write a deeply detailed, 2000+ word technical article based on this research:
 Title: ${paper.title}
 Authors: ${paper.authors}
 Abstract: ${paper.abstract}
 
-RULES:
-- Length: 1200+ words.
-- Credit authors in paragraph 1.
+WRITING RULES:
+- Length: Minimum 2000 words.
+- **MANDATORY**: Start the article with a dedicated line: "Research conducted by: [Authors]" followed by a brief 1-2 sentence introduction of their contribution.
 - No bullet points. No bold text (**).
-- Include FAQ at the end.
+- Include FAQ at the end (5 detailed Q&As).
 - Use ## H2 headings.
-- JSON structure ONLY: { "title": "SEO Title", "excerpt": "Description", "body": "Full text with ## headings", "imagePrompt": "Detailed scientific visual prompt" }`;
+- Tone: Professional, expert, scientific.
 
-        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
+JSON structure ONLY: 
+{ 
+  "title": "SEO Title", 
+  "excerpt": "Description", 
+  "body": "Full text with ## headings", 
+  "imagePrompt": "Detailed futuristic scientific visual prompt for this research" 
+}`;
+
+        // Using verified 3.1 Pro model
+        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${geminiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.75, response_mime_type: "application/json" }
+            generationConfig: { 
+              temperature: 0.8, 
+              maxOutputTokens: 16384, 
+              response_mime_type: "application/json" 
+            }
           })
         });
 
         if (!gRes.ok) throw new Error(`Gemini Text API error: ${gRes.status}`);
         const gData = await gRes.json();
         const rawText = gData.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!rawText) throw new Error('Gemini returned empty response');
+        if (!rawText) throw new Error('Gemini returned empty response (possible safety filter)');
         
         let p;
         try {
-          p = JSON.parse(rawText.replace(/```json\n?/, '').replace(/\n?```/, '').trim());
+          // Robust JSON parsing
+          const cleanJson = rawText.replace(/```json\n?/, '').replace(/\n?```/, '').trim();
+          p = JSON.parse(cleanJson);
         } catch (jsonErr) {
+          // Fallback extraction if JSON is malformed
+          console.warn(`[Cron] JSON Parse failed, attempting regex extraction.`);
           const extract = (field: string) => {
             const re = new RegExp(`"${field}"\\s*:\\s*"([\\s\\S]*?)"(?=[\\s,}]|$)`);
             const match = rawText.match(re);
@@ -166,7 +196,7 @@ RULES:
           p = { title: extract('title'), excerpt: extract('excerpt'), body: extract('body'), imagePrompt: extract('imagePrompt') };
         }
 
-        if (!p.title || !p.body) throw new Error('Could not extract title or body');
+        if (!p.title || !p.body) throw new Error('Could not extract title or body from Gemini response');
 
         // Numbering
         const allPosts: any[] = await sanityClient.fetch(`*[_type == "post"]{ title }`);
@@ -178,11 +208,12 @@ RULES:
         const finalTitle = `${maxNum + 1}. ${p.title}`;
         const finalSlug = slugify(finalTitle);
 
-        // Image
+        // Image Generation
         let assetId = '';
         try {
-          const imgPrompt = `A high-end, futuristic 3D scientific visualization of ${p.title}. No text, 16:9 aspect ratio, cinematic lighting, 8k resolution.`;
-          const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${geminiKey}`, {
+          // Using verified Nano Banana Pro model
+          const imgPrompt = `A high-end, futuristic 3D scientific visualization of ${p.title}. No text, 16:9 aspect ratio, cinematic lighting, 8k resolution, professional studio quality.`;
+          const iRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/nano-banana-pro-preview:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: imgPrompt }] }] })
@@ -192,11 +223,17 @@ RULES:
             const iData = await iRes.json();
             const b64 = iData.candidates?.[0]?.content?.parts?.find((part: any) => part.inlineData)?.inlineData?.data;
             if (b64 && !dryRun) {
-              const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { filename: `arxiv-${paper.arxivId}.png` });
+              const asset = await sanityClient.assets.upload('image', Buffer.from(b64, 'base64'), { 
+                filename: `arxiv-${paper.arxivId}.png`,
+                contentType: 'image/png'
+              });
               assetId = asset._id;
             }
           } 
+          
+          // Pollinations Fallback
           if (!assetId) {
+            console.warn(`[Cron] Gemini Image failed or returned no data, using Pollinations fallback...`);
             const pRes = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(p.imagePrompt || p.title)}?width=1280&height=720&nologo=true`);
             if (pRes.ok && !dryRun) {
               const buffer = Buffer.from(await pRes.arrayBuffer());
@@ -204,7 +241,7 @@ RULES:
               assetId = asset._id;
             }
           }
-        } catch (imgErr) { console.warn(`[Cron] Image failed: ${imgErr}`); }
+        } catch (imgErr) { console.warn(`[Cron] Image generation failed: ${imgErr}`); }
 
         if (!dryRun) {
           await sanityClient.create({
@@ -215,17 +252,18 @@ RULES:
             seoDescription: p.excerpt,
             slug: { _type: 'slug', current: finalSlug },
             excerpt: p.excerpt,
-            body: p.body.split(/\n{2,}/).map((para: string) => ({
+            body: p.body.split(/\n{2,}/).filter((para: string) => para.trim() !== '').map((para: string) => ({
               _type: 'block', _key: crypto.randomUUID(),
               style: para.startsWith('## ') ? 'h2' : 'normal',
               children: [{ _type: 'span', _key: crypto.randomUUID(), text: para.replace(/^##\s+/, '').replace(/\*\*/g, ''), marks: [] }]
             })),
             publishedAt: new Date().toISOString(),
             mainImage: assetId ? { _type: 'image', asset: { _type: 'reference', _ref: assetId } } : undefined,
-            categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju' }],
+            categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju', _key: 'cat1' }],
             author: { _type: 'reference', _ref: '0fbb5f25-9a9b-40ee-a727-0a900e3152f1' },
           });
           results.push({ arxivId: paper.arxivId, status: 'published', title: finalTitle });
+          console.log(`[Cron] Successfully published: ${finalTitle}`);
         } else {
           results.push({ arxivId: paper.arxivId, status: 'dry-run', title: finalTitle });
         }
@@ -241,3 +279,4 @@ RULES:
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
+
