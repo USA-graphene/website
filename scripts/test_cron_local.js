@@ -68,7 +68,7 @@ async function testCron() {
     // 2. Fetch papers from OpenAlex (Highly robust, no IP bans)
     let selected = null;
     try {
-      const oaUrl = `https://api.openalex.org/works?search=graphene&sort=publication_date:desc&per-page=30`
+      const oaUrl = `https://api.openalex.org/works?filter=title.search:graphene&sort=publication_date:desc&per-page=30`
       console.log(`[Test] Fetching from OpenAlex...`);
       const oaRes = await fetch(oaUrl, {
         headers: { 'User-Agent': 'USA-Graphene-Bot/1.2 (mailto:info@usa-graphene.com)' }

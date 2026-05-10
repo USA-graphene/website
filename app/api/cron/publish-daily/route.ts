@@ -85,7 +85,7 @@ export async function GET(req: Request) {
     let selectedList: any[] = []
 
     try {
-      const oaUrl = `https://api.openalex.org/works?search=graphene&sort=publication_date:desc&per-page=30`
+      const oaUrl = `https://api.openalex.org/works?filter=title.search:graphene&sort=publication_date:desc&per-page=30`
       const oaRes = await fetch(oaUrl, {
         headers: { 'User-Agent': 'USA-Graphene-Bot/1.2 (mailto:info@usa-graphene.com)' }
       })
