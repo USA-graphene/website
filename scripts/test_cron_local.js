@@ -20,9 +20,36 @@ function slugify(title) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+// Normalize ArXiv ID by removing version (e.g., 2405.00001v1 -> 2405.00001)
 function normalizeArxivId(id) {
   if (!id) return '';
+  if (id.startsWith('openalex:') || id.startsWith('10.')) {
+    return id.trim().toLowerCase();
+  }
   return id.split('v')[0].trim();
+}
+
+// Helper to reconstruct abstract from OpenAlex inverted index
+function reconstructAbstract(invertedIndex) {
+  if (!invertedIndex) return '';
+  try {
+    const wordEntries = Object.entries(invertedIndex);
+    let maxPos = 0;
+    for (const [word, positions] of wordEntries) {
+      for (const pos of positions) {
+        if (pos > maxPos) maxPos = pos;
+      }
+    }
+    const words = new Array(maxPos + 1).fill('');
+    for (const [word, positions] of wordEntries) {
+      for (const pos of positions) {
+        words[pos] = word;
+      }
+    }
+    return words.join(' ').trim();
+  } catch (e) {
+    return '';
+  }
 }
 
 async function testCron() {
@@ -38,67 +65,42 @@ async function testCron() {
 
     console.log(`[Test] Found ${arxivIdSet.size} existing ArXiv IDs in Sanity.`);
 
-    // 2. Fetch papers from Semantic Scholar (Sorted by Date)
+    // 2. Fetch papers from OpenAlex (Highly robust, no IP bans)
     let selected = null;
     try {
-      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds,publicationDate&limit=50&sort=publicationDate:desc`
-      console.log(`[Test] Fetching from Semantic Scholar (Date Sort)...`);
-      const ssRes = await fetch(ssUrl, {
-        headers: { 'User-Agent': 'USA-Graphene-Bot/1.1' }
+      const oaUrl = `https://api.openalex.org/works?search=graphene&sort=publication_date:desc&per-page=30`
+      console.log(`[Test] Fetching from OpenAlex...`);
+      const oaRes = await fetch(oaUrl, {
+        headers: { 'User-Agent': 'USA-Graphene-Bot/1.2 (mailto:info@usa-graphene.com)' }
       });
       
-      if (ssRes.ok) {
-        const ssData = await ssRes.json();
-        const papers = ssData.data || [];
+      if (oaRes.ok) {
+        const oaData = await oaRes.json();
+        const papers = oaData.results || [];
         for (const paper of papers) {
-          const rawId = paper.externalIds?.ArXiv || paper.paperId;
+          const rawId = paper.id?.replace('https://openalex.org/', 'openalex:') || paper.doi?.replace('https://doi.org/', '');
+          if (!rawId) continue;
+          
           const normalizedId = normalizeArxivId(rawId);
-          if (normalizedId && !arxivIdSet.has(normalizedId)) {
+          const abstractText = reconstructAbstract(paper.abstract_inverted_index);
+          
+          if (normalizedId && !arxivIdSet.has(normalizedId) && abstractText.length > 200) {
+            const authors = (paper.authorships || []).map(a => a.author?.display_name).filter(Boolean).join(', ');
             selected = {
               arxivId: rawId,
-              title: paper.title?.trim(),
-              abstract: paper.abstract?.trim() || 'No abstract available.',
-              authors: (paper.authors || []).map(a => a.name).join(', ')
+              title: paper.title?.trim() || 'Untitled Graphene Research',
+              abstract: abstractText,
+              authors: authors || 'Graphene Research Team'
             };
-            console.log(`[Test] Found NEW paper via Semantic Scholar: ${selected.arxivId}`);
+            console.log(`[Test] Found NEW paper via OpenAlex: ${selected.arxivId}`);
             break;
           }
         }
+      } else {
+        console.warn(`[Test] OpenAlex failed: ${oaRes.status}`);
       }
-    } catch (ssErr) {
-      console.warn(`[Test] Semantic Scholar failed: ${ssErr.message}`);
-    }
-
-    // 3. Fallback to ArXiv if needed
-    if (!selected) {
-      console.log(`[Test] No new papers in Semantic Scholar top 50. Trying ArXiv...`);
-      const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`;
-      const arxivRes = await fetch(arxivUrl);
-      const arxivXml = await arxivRes.text();
-      
-      if (arxivXml.includes('Rate exceeded')) {
-        throw new Error("ArXiv Rate Limit Exceeded");
-      }
-
-      const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
-      let match;
-      
-      while ((match = entryRegex.exec(arxivXml)) !== null) {
-        const entry = match[1];
-        const arxivId = entry.match(/<id>.*?\/abs\/(.*?)<\/id>/)?.[1] || entry.match(/<id>(.*?)<\/id>/)?.[1];
-        const normalizedId = normalizeArxivId(arxivId);
-        
-        if (normalizedId && !arxivIdSet.has(normalizedId)) {
-          selected = {
-            arxivId,
-            title: entry.match(/<title>([\s\S]*?)<\/title>/)?.[1].replace(/\n/g, ' ').trim(),
-            abstract: entry.match(/<summary>([\s\S]*?)<\/summary>/)?.[1].replace(/\n/g, ' ').trim(),
-            authors: 'ArXiv Researchers'
-          };
-          console.log(`[Test] Found NEW paper via ArXiv: ${selected.arxivId}`);
-          break;
-        }
-      }
+    } catch (oaErr) {
+      console.warn(`[Test] OpenAlex error: ${oaErr.message}`);
     }
 
     if (!selected) throw new Error("No new Graphene papers found (all top results are already published)");

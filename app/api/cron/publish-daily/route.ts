@@ -21,9 +21,36 @@ function slugify(title: string) {
 }
 
 // Normalize ArXiv ID by removing version (e.g., 2405.00001v1 -> 2405.00001)
+// Also safely pass through OpenAlex IDs and DOIs.
 function normalizeArxivId(id: string) {
   if (!id) return '';
+  if (id.startsWith('openalex:') || id.startsWith('10.')) {
+    return id.trim().toLowerCase();
+  }
   return id.split('v')[0].trim();
+}
+
+// Helper to reconstruct abstract from OpenAlex inverted index
+function reconstructAbstract(invertedIndex: any): string {
+  if (!invertedIndex) return '';
+  try {
+    const wordEntries = Object.entries(invertedIndex);
+    let maxPos = 0;
+    for (const [word, positions] of wordEntries) {
+      for (const pos of positions as number[]) {
+        if (pos > maxPos) maxPos = pos;
+      }
+    }
+    const words = new Array(maxPos + 1).fill('');
+    for (const [word, positions] of wordEntries) {
+      for (const pos of positions as number[]) {
+        words[pos] = word;
+      }
+    }
+    return words.join(' ').trim();
+  } catch (e) {
+    return '';
+  }
 }
 
 export async function GET(req: Request) {
@@ -54,78 +81,45 @@ export async function GET(req: Request) {
     const existingArxivIds: string[] = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
     const arxivIdSet = new Set(existingArxivIds.map(normalizeArxivId));
 
-    // 2. Fetch papers — Semantic Scholar (primary, sorted by date for freshness)
+    // 2. Fetch papers — OpenAlex (Primary, highly robust, no IP bans)
     let selectedList: any[] = []
 
     try {
-      // Changed sort to publicationDate:desc to ensure we always find NEW papers
-      const ssUrl = `https://api.semanticscholar.org/graph/v1/paper/search?query=graphene&fields=paperId,title,abstract,authors,externalIds,publicationDate&limit=50&sort=publicationDate:desc`
-      const ssRes = await fetch(ssUrl, {
-        headers: { 'User-Agent': 'USA-Graphene-Bot/1.1 (info@usa-graphene.com)' }
+      const oaUrl = `https://api.openalex.org/works?search=graphene&sort=publication_date:desc&per-page=30`
+      const oaRes = await fetch(oaUrl, {
+        headers: { 'User-Agent': 'USA-Graphene-Bot/1.2 (mailto:info@usa-graphene.com)' }
       })
 
-      if (ssRes.ok) {
-        const ssData = await ssRes.json()
-        const papers = ssData.data || []
+      if (oaRes.ok) {
+        const oaData = await oaRes.json()
+        const papers = oaData.results || []
         for (const paper of papers) {
           if (selectedList.length >= limit) break
-          const rawId = paper.externalIds?.ArXiv || paper.paperId
-          const normalizedId = normalizeArxivId(rawId)
-          if (normalizedId && !arxivIdSet.has(normalizedId)) {
+          
+          // Use OpenAlex ID as the arxivId to prevent duplicates, fallback to DOI
+          const rawId = paper.id?.replace('https://openalex.org/', 'openalex:') || paper.doi?.replace('https://doi.org/', '');
+          if (!rawId) continue;
+          
+          const normalizedId = normalizeArxivId(rawId);
+          const abstractText = reconstructAbstract(paper.abstract_inverted_index);
+          
+          // Only process papers with a substantial abstract
+          if (normalizedId && !arxivIdSet.has(normalizedId) && abstractText.length > 200) {
+            const authors = (paper.authorships || []).map((a: any) => a.author?.display_name).filter(Boolean).join(', ');
             selectedList.push({
-              arxivId: rawId, // Store original but check against normalized
-              title: paper.title?.trim(),
-              abstract: paper.abstract?.trim() || 'No abstract available.',
-              authors: (paper.authors || []).map((a: any) => a.name).join(', ')
+              arxivId: rawId,
+              title: paper.title?.trim() || 'Untitled Graphene Research',
+              abstract: abstractText,
+              authors: authors || 'Graphene Research Team'
             })
           }
         }
-        console.log(`[Cron] Semantic Scholar returned ${selectedList.length} new papers (from ${papers.length} checked)`)
+        console.log(`[Cron] OpenAlex returned ${selectedList.length} new papers (from ${papers.length} checked)`)
       } else {
-        console.warn(`[Cron] Semantic Scholar failed (${ssRes.status}), trying ArXiv...`)
+        console.warn(`[Cron] OpenAlex failed (${oaRes.status}).`)
       }
-    } catch (ssErr) {
-      console.warn(`[Cron] Semantic Scholar error: ${ssErr}, trying ArXiv...`)
-    }
-
-    // ArXiv fallback if Semantic Scholar didn't return enough
-    if (selectedList.length < limit) {
-      try {
-        const arxivUrl = `https://export.arxiv.org/api/query?search_query=ti:graphene+OR+abs:graphene&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`
-        let arxivXml = ''
-        for (let attempt = 0; attempt < 3; attempt++) {
-          const res = await fetch(arxivUrl, {
-            headers: { 'User-Agent': `USA-Graphene-Bot/${Math.random().toString(36).substring(7)}` }
-          })
-          const text = await res.text()
-          if (text.includes('<entry>')) { arxivXml = text; break }
-          if (text.includes('Rate exceeded')) { 
-            console.warn(`[Cron] ArXiv Rate Limit Exceeded on attempt ${attempt + 1}`);
-          }
-          await new Promise(r => setTimeout(r, (attempt + 1) * 3000))
-        }
-        if (arxivXml) {
-          const parser = new XMLParser({ ignoreAttributes: false, htmlEntities: true })
-          const parsed = parser.parse(arxivXml)
-          const entries = Array.isArray(parsed.feed?.entry) ? parsed.feed.entry : (parsed.feed?.entry ? [parsed.feed.entry] : [])
-          for (const entry of entries) {
-            if (selectedList.length >= limit) break
-            const arxivId = entry.id?.split('/abs/')?.[1] || entry.id
-            const normalizedId = normalizeArxivId(arxivId)
-            if (normalizedId && !arxivIdSet.has(normalizedId)) {
-              selectedList.push({
-                arxivId,
-                title: entry.title?.replace(/\n/g, ' ').trim(),
-                abstract: entry.summary?.replace(/\n/g, ' ').trim(),
-                authors: (Array.isArray(entry.author) ? entry.author : [entry.author]).map((a: any) => a.name).join(', ')
-              })
-            }
-          }
-          console.log(`[Cron] ArXiv fallback finished. Total papers: ${selectedList.length}`)
-        }
-      } catch (arxivErr) {
-        console.warn(`[Cron] ArXiv fallback failed: ${arxivErr}`)
-      }
+    } catch (err) {
+      console.warn(`[Cron] OpenAlex error: ${err}`)
     }
 
     if (selectedList.length === 0) {
