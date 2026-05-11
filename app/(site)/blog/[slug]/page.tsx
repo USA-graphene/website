@@ -29,12 +29,17 @@ async function getPost(slug: string) {
     return client.fetch(query, { slug }, { next: { revalidate: 60 } })
 }
 
+// Strip leading "N. " numbering prefix added for editorial ordering (e.g. "73. Graphene..." → "Graphene...")
+function cleanTitle(raw: string): string {
+    return raw.replace(/^\d+\.\s+/, '')
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params
     const post = await getPost(slug)
     if (!post) return { title: 'Post Not Found' }
 
-    const title = post.seoTitle || `${post.title} - USA Graphene Blog`
+    const title = post.seoTitle || `${cleanTitle(post.title)} | USA Graphene Blog`
 
     // Clean up excerpt: remove literal [...] and trim
     const cleanExcerpt = post.excerpt ? post.excerpt.replace(/\[\.\.\.\]/g, '').trim() : ''
@@ -84,7 +89,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
-        headline: post.title,
+        headline: cleanTitle(post.title),
         image: post.mainImage ? urlFor(post.mainImage).url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
         datePublished: post.publishedAt,
         dateModified: post._updatedAt || post.publishedAt,
@@ -124,7 +129,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         ))}
                     </div>
                 )}
-                <h1 className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl font-display">{post.title}</h1>
+                <h1 className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl font-display">{cleanTitle(post.title)}</h1>
                 <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm border-b border-white/10 pb-6">
                     <time dateTime={post.publishedAt} className="text-[#8b9ab5] font-medium flex items-center gap-2">
                         <svg className="w-4 h-4 text-[#2d6ef0]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
