@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Fonts loaded via next/font/google in layout.tsx — no @import needed here */
 
 @tailwind base;
 @tailwind components;
@@ -258,6 +258,29 @@
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* Hero speech-bubble float — CSS-only, no Framer loop */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-7px); }
+}
+
+/* Respect system preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Defer below-fold paint cost on mobile */
+@media (max-width: 639px) {
+  .defer-paint {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 400px;
+  }
 }
 
 .animate-fade-in-up   { animation: fadeInUp 0.6s ease-out forwards; }
