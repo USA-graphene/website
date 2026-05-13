@@ -59,11 +59,18 @@ async function testCron() {
   console.log(`[Test] Starting Improved Daily Automation Test...`);
 
   try {
-    // 1. Fetch existing ArXiv IDs
-    const existingArxivIds = await sanityClient.fetch(`*[_type == "post" && defined(arxivId)].arxivId`);
-    const arxivIdSet = new Set(existingArxivIds.map(normalizeArxivId));
+    // 1. Fetch existing ArXiv IDs and Titles
+    const existingPosts = await sanityClient.fetch(`*[_type == "post" && defined(title)]{ arxivId, title }`);
+    const arxivIdSet = new Set(existingPosts.filter(p => p.arxivId).map(p => normalizeArxivId(p.arxivId)));
+    
+    // Create a normalized title set (lowercase, stripped of punctuation and numbers) to catch exact duplicates
+    const titleSet = new Set(existingPosts.map(p => {
+      // Remove the prefix numbering like "461. " and lowercase it
+      const cleanTitle = p.title.replace(/^\d+\.\s*/, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+      return cleanTitle;
+    }));
 
-    console.log(`[Test] Found ${arxivIdSet.size} existing ArXiv IDs in Sanity.`);
+    console.log(`[Test] Found ${arxivIdSet.size} existing ArXiv IDs and ${titleSet.size} titles in Sanity.`);
 
     // 2. Fetch papers from OpenAlex (Highly robust, no IP bans)
     let selected = null;
@@ -83,12 +90,14 @@ async function testCron() {
           
           const normalizedId = normalizeArxivId(rawId);
           const abstractText = reconstructAbstract(paper.abstract_inverted_index);
+          const rawTitle = paper.title?.trim() || 'Untitled Graphene Research';
+          const normalizedTitle = rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
           
-          if (normalizedId && !arxivIdSet.has(normalizedId) && abstractText.length > 200) {
+          if (normalizedId && !arxivIdSet.has(normalizedId) && !titleSet.has(normalizedTitle) && abstractText.length > 200) {
             const authors = (paper.authorships || []).map(a => a.author?.display_name).filter(Boolean).join(', ');
             selected = {
               arxivId: rawId,
-              title: paper.title?.trim() || 'Untitled Graphene Research',
+              title: rawTitle,
               abstract: abstractText,
               authors: authors || 'Graphene Research Team'
             };
