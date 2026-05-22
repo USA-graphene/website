@@ -9,8 +9,8 @@ export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     let shouldRedirect = false;
 
-    // 1. Normalize domain: graphene2026.com OR bare usa-graphene.com → www.usa-graphene.com
-    if (host.includes('graphene2026.com') || host === 'usa-graphene.com') {
+    // 1. Normalize domain: graphene2026.com → www.usa-graphene.com
+    if (host.includes('graphene2026.com')) {
         shouldRedirect = true;
     }
 
