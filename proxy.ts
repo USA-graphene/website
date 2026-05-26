@@ -24,7 +24,7 @@ export function proxy(request: NextRequest) {
     if (match) {
         url.pathname = `/blog/${match[4]}/`
         shouldRedirect = true;
-    } else if (pathname === '/contact-us/' || pathname === '/contact-us' || pathname === '/contact') {
+    } else if (pathname === '/contact') {
         url.pathname = '/contact/'
         shouldRedirect = true;
     } else if (pathname === '/about-us' || pathname === '/about-us/' || pathname === '/about-us-2' || pathname === '/about-us-2/') {
