@@ -300,7 +300,10 @@ export default function AIChatWidget() {
                 className="w-16 h-16 pointer-events-auto relative group focus:outline-none"
                 aria-label={isOpen ? 'Close Carbon chat' : 'Ask Anything'}
             >
-                <div className={`absolute inset-0 rounded-full blur-xl ${isOpen ? 'bg-cyan-500/30 animate-pulse' : 'bg-cyan-400/40 carbon-chat-rgb'}`}></div>
+                <div
+                    className={`absolute inset-0 blur-xl ${isOpen ? 'bg-cyan-500/30 animate-pulse' : 'bg-cyan-400/40 carbon-chat-rgb'}`}
+                    style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
+                ></div>
 
                 <div
                     className={`absolute inset-0 flex items-center justify-center shadow-2xl border transition-colors group-hover:border-cyan-400/50 ${isOpen ? 'border-cyan-500/30 bg-gradient-to-br from-gray-900 via-gray-800 to-black' : 'border-white/40 carbon-chat-rgb-face'}`}
