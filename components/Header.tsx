@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { Menu, X } from 'lucide-react'
+import { samplePurchaseLinks } from '@/lib/sampleLinks'
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -85,6 +86,26 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            <div className="w-full max-w-xs grid grid-cols-2 gap-2 pt-3">
+              <a
+                href={samplePurchaseLinks.ebay}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="text-center py-3 rounded-2xl text-sm font-bold text-white bg-[#2d6ef0] active:scale-[0.94] transition-transform"
+              >
+                eBay sample
+              </a>
+              <a
+                href={samplePurchaseLinks.etsy}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={close}
+                className="text-center py-3 rounded-2xl text-sm font-bold text-white bg-white/10 border border-white/20 active:scale-[0.94] transition-transform"
+              >
+                Etsy sample
+              </a>
+            </div>
           </nav>
         </div>
       )}
@@ -156,6 +177,15 @@ export default function Header() {
                 </Link>
               )
             })}
+            <a
+              href={samplePurchaseLinks.ebay}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative px-4 py-2.5 rounded-full text-[12px] font-bold tracking-tight transition-all duration-300 select-none active:scale-[0.85] active:duration-75 hover:scale-[1.03] flex items-center justify-center overflow-hidden text-white bg-[#2d6ef0] hover:bg-[#205acc] shadow-[0_4px_20px_rgba(45,110,240,0.25)]"
+              style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+            >
+              <span className="relative z-10 whitespace-nowrap">Buy Sample</span>
+            </a>
           </nav>
 
           {/* Mobile hamburger — right-aligned */}

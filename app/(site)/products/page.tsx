@@ -2,6 +2,7 @@ import { client } from '@/lib/sanity'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { samplePurchaseLinks } from '@/lib/sampleLinks'
 
 export const metadata: Metadata = {
     title: 'Products - USA Graphene',
@@ -64,6 +65,24 @@ export default async function ProductsPage() {
                     <p className="mt-4 text-lg leading-8 text-[#8b9ab5]">
                         Industrial-grade graphene materials and production technology.
                     </p>
+                    <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                        <a
+                            href={samplePurchaseLinks.ebay}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center rounded-xl bg-[#2d6ef0] px-5 py-3 text-sm font-semibold text-white hover:bg-[#205acc] transition-colors"
+                        >
+                            Buy Graphene Sample on eBay
+                        </a>
+                        <a
+                            href={samplePurchaseLinks.etsy}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 transition-colors"
+                        >
+                            Buy Sample on Etsy
+                        </a>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

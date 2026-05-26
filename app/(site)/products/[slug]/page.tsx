@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { samplePurchaseLinks } from '@/lib/sampleLinks'
 
 type TechSpec = { label: string; value: string }
 type Download = {
@@ -244,6 +245,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                                 >
                                     {ctaLabel}
                                 </Link>
+                            )}
+                            {product.productType !== 'machine' && (
+                                <>
+                                    <a
+                                        href={samplePurchaseLinks.ebay}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-white bg-white/10 border border-white/15 hover:bg-white/15 hover:border-[#00c8ff]/40 transition-all"
+                                    >
+                                        Buy Sample on eBay
+                                    </a>
+                                    <a
+                                        href={samplePurchaseLinks.etsy}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-[#00c8ff] border border-[#00c8ff]/30 hover:bg-[#00c8ff]/10 transition-all"
+                                    >
+                                        Etsy Sample
+                                    </a>
+                                </>
                             )}
                         </div>
 

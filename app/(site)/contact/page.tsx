@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { getCounts } from '@/lib/visitors'
+import { samplePurchaseLinks } from '@/lib/sampleLinks'
 
 export const dynamic = 'force-dynamic' // always fresh counts — v2
 
@@ -135,6 +136,32 @@ export default async function Contact() {
                     )}
                 </div>
             </form>
+
+            <div className="relative mx-auto mt-10 max-w-xl rounded-3xl border border-[#00c8ff]/20 bg-[#0d1630]/70 p-6 text-center shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+                <p className="text-sm font-semibold tracking-widest uppercase text-[#5b9af5]">Need a small test quantity?</p>
+                <h3 className="mt-2 text-2xl font-bold text-white font-display">Order a graphene sample online</h3>
+                <p className="mt-3 text-sm leading-6 text-[#8b9ab5]">
+                    For 100g sample packs, use Etsy or eBay checkout. For bulk orders, custom specs, or production equipment, contact us directly.
+                </p>
+                <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
+                    <a
+                        href={samplePurchaseLinks.ebay}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center rounded-xl bg-[#2d6ef0] px-5 py-3 text-sm font-semibold text-white hover:bg-[#205acc] transition-colors"
+                    >
+                        Buy on eBay
+                    </a>
+                    <a
+                        href={samplePurchaseLinks.etsy}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white hover:bg-white/15 transition-colors"
+                    >
+                        Buy on Etsy
+                    </a>
+                </div>
+            </div>
         </div>
     )
 }
