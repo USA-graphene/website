@@ -118,6 +118,38 @@ export default function AIChatWidget() {
 
     return (
         <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end pointer-events-none">
+            <style jsx>{`
+                @keyframes carbon-rgb-ring {
+                    0% {
+                        filter: hue-rotate(0deg);
+                        box-shadow: 0 18px 45px rgba(0, 210, 255, 0.32), 0 0 0 1px rgba(0, 210, 255, 0.42);
+                    }
+                    33% {
+                        filter: hue-rotate(115deg);
+                        box-shadow: 0 18px 45px rgba(88, 255, 116, 0.3), 0 0 0 1px rgba(88, 255, 116, 0.4);
+                    }
+                    66% {
+                        filter: hue-rotate(250deg);
+                        box-shadow: 0 18px 45px rgba(255, 68, 214, 0.3), 0 0 0 1px rgba(255, 68, 214, 0.4);
+                    }
+                    100% {
+                        filter: hue-rotate(360deg);
+                        box-shadow: 0 18px 45px rgba(0, 210, 255, 0.32), 0 0 0 1px rgba(0, 210, 255, 0.42);
+                    }
+                }
+
+                .carbon-chat-rgb {
+                    animation: carbon-rgb-ring 7s linear infinite;
+                }
+
+                .carbon-chat-rgb-face {
+                    background:
+                        radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.9), transparent 18%),
+                        linear-gradient(135deg, #00d2ff 0%, #20ff74 36%, #ff44d6 68%, #00d2ff 100%);
+                    background-size: 200% 200%;
+                    animation: carbon-rgb-ring 7s linear infinite;
+                }
+            `}</style>
 
             {/* Chat Window */}
             <AnimatePresence>
@@ -266,14 +298,15 @@ export default function AIChatWidget() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-16 h-16 pointer-events-auto relative group focus:outline-none"
+                aria-label={isOpen ? 'Close Carbon chat' : 'Ask Anything'}
             >
-                <div className="absolute inset-0 bg-cyan-500/30 blur-xl rounded-full animate-pulse"></div>
+                <div className={`absolute inset-0 rounded-full blur-xl ${isOpen ? 'bg-cyan-500/30 animate-pulse' : 'bg-cyan-400/40 carbon-chat-rgb'}`}></div>
 
                 <div
-                    className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center shadow-2xl border border-cyan-500/30 transition-colors group-hover:border-cyan-400/50"
+                    className={`absolute inset-0 flex items-center justify-center shadow-2xl border transition-colors group-hover:border-cyan-400/50 ${isOpen ? 'border-cyan-500/30 bg-gradient-to-br from-gray-900 via-gray-800 to-black' : 'border-white/40 carbon-chat-rgb-face'}`}
                     style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
                 >
-                    <div className="relative z-10 text-cyan-400 group-hover:text-white transition-colors">
+                    <div className={`relative z-10 transition-colors group-hover:text-white ${isOpen ? 'text-cyan-400' : 'text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]'}`}>
                         <AnimatePresence mode="wait">
                             {isOpen ? (
                                 <motion.svg
