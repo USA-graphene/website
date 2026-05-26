@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import { Menu, X } from 'lucide-react'
 import { samplePurchaseLinks } from '@/lib/sampleLinks'
+import Logo from '@/components/Logo'
 
 const navItems = [
   { label: 'Home', href: '/' },
@@ -116,10 +117,22 @@ export default function Header() {
         style={{ paddingTop: 'max(16px, env(safe-area-inset-top))' }}
       >
         <div className="px-4">
-          {/* Desktop pill nav */}
-          <nav
+          <div className="hidden lg:flex mx-auto max-w-[calc(100vw-2rem)] w-full items-center justify-between gap-8 pointer-events-auto">
+            <Link
+              href="/"
+              aria-label="USA Graphene home"
+              className={`
+                flex items-center px-2 py-2
+                drop-shadow-[0_2px_10px_rgba(45,110,240,0.12)]
+              `}
+            >
+              <Logo className={isLightPage ? 'text-[#2d6ef0]' : 'text-white'} />
+            </Link>
+
+            {/* Desktop pill nav */}
+            <nav
             className={`
-              hidden lg:flex max-w-fit mx-auto items-center gap-0.5 p-1
+              flex items-center gap-0.5 p-1
               rounded-full pointer-events-auto relative overflow-hidden group
               ${glassBg}
               border border-white/20
@@ -186,10 +199,21 @@ export default function Header() {
             >
               <span className="relative z-10 whitespace-nowrap">Buy Sample</span>
             </a>
-          </nav>
+            </nav>
+          </div>
 
-          {/* Mobile hamburger — right-aligned */}
-          <div className="lg:hidden flex justify-end pointer-events-auto">
+          {/* Mobile logo + hamburger */}
+          <div className="lg:hidden flex items-center justify-between pointer-events-auto">
+            <Link
+              href="/"
+              aria-label="USA Graphene home"
+              className={`
+                flex items-center px-1 py-2
+                drop-shadow-[0_2px_10px_rgba(45,110,240,0.12)]
+              `}
+            >
+              <Logo className={isLightPage ? 'text-[#2d6ef0]' : 'text-white'} />
+            </Link>
             <button
               onClick={() => setIsOpen(true)}
               aria-label="Open menu"

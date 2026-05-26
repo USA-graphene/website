@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, ChevronRight, Zap, Shield, Factory, Atom } from 'lucide-react'
+import { ArrowRight, ChevronRight, Zap, Shield, Factory, Atom, Gauge, Cog, TrendingUp, FlaskConical, SlidersHorizontal, Headphones, ClipboardCheck, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -13,10 +13,52 @@ const features = [
 ]
 
 const stats = [
-  { value: '200×',  label: 'Stronger than steel' },
-  { value: '99.9%', label: 'Purity grade' },
-  { value: '5,300', label: 'W/m·K thermal' },
-  { value: '<100ms', label: 'Per gram production' },
+  { icon: Gauge, value: '70 g / 30 sec', label: 'High-yield production per cycle' },
+  { icon: Cog, value: 'Automated Process', label: 'Engineered for consistency and efficiency' },
+  { icon: Shield, value: 'US-Made Equipment', label: 'Designed and built in the USA' },
+  { icon: TrendingUp, value: 'Factory Scale Path', label: 'From pilot to full-scale production' },
+]
+
+const processSteps = [
+  {
+    title: 'Feedstock Testing',
+    body: 'We validate your carbon materials for performance, resistance, and moisture to ensure ideal results.',
+    image: '/hero-c4-powder.png',
+    icon: FlaskConical,
+    detail: 'Material analysis',
+    subdetail: 'Electrical & moisture testing',
+  },
+  {
+    title: 'Reactor Selection',
+    body: 'We engineer the right system for your goals, including batch size, output targets, and automation level.',
+    image: '/flash-graphene-machine.jpg',
+    icon: Cog,
+    detail: 'System sizing',
+    subdetail: 'Process matching',
+  },
+  {
+    title: 'Process Setup',
+    body: 'Our team configures pulse settings, electrodes, pressure, and controls for maximum yield and stability.',
+    image: '/hero-machine-new.png',
+    icon: SlidersHorizontal,
+    detail: 'Pulse tuning',
+    subdetail: 'Automation & safety',
+  },
+  {
+    title: 'Production Scale-Up',
+    body: 'We support installation, operator training, and ongoing optimization as you scale to full production.',
+    image: '/hero-c1-factory.png',
+    icon: TrendingUp,
+    detail: 'Training & support',
+    subdetail: 'Sustained performance',
+  },
+]
+
+const processProof = [
+  { icon: Shield, title: 'US-Made Equipment', body: 'Built in the USA with quality you can trust.' },
+  { icon: Wrench, title: 'Engineered for Reliability', body: 'Designed for long-term industrial performance.' },
+  { icon: Headphones, title: 'Expert Support', body: 'Hands-on support from lab to full-scale.' },
+  { icon: ClipboardCheck, title: 'Proven Process', body: 'Repeatable results. Scalable systems.' },
 ]
 
 /* Shared motion presets — disabled when OS prefers reduced motion */
@@ -63,95 +105,78 @@ export default function Hero() {
       />
 
       {/* ── HERO SECTION ─────────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen pt-24 sm:pt-32 pb-36 sm:pb-48 z-10 flex flex-col justify-center">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 w-full grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <section className="relative z-10 px-5 pb-16 pt-24 sm:px-6 sm:pt-32 lg:px-8">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] border border-white/80 bg-white/72 shadow-[0_24px_80px_rgba(45,76,120,0.18),inset_0_1px_0_rgba(255,255,255,0.9)]">
+          <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(30deg, transparent 48%, rgba(45,110,240,0.5) 49%, rgba(45,110,240,0.5) 51%, transparent 52%)', backgroundSize: '34px 34px' }} />
 
-          {/* LEFT — Text */}
-          <motion.div {...(prefersReduced ? {} : fadeLeft)}>
-
-            {/* Eyebrow pill */}
-            <div className="inline-flex items-center gap-2 bg-white/40 backdrop-blur-md border border-white/60 shadow-[inset_0_1px_4px_rgba(255,255,255,0.8),0_2px_8px_rgba(0,0,0,0.05)] text-slate-800 text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wide">
-              <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.8)]" />
-              Industrial Graphene — Made in USA
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight mb-6 sm:mb-8">
-              Graphene<br />
-              production<br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500">
-                machines.
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-md mb-8 sm:mb-10 font-medium">
-              Machines, materials, and full factories for serious manufacturers. High-purity turbostratic graphene at industrial scale —{' '}
-              <strong className="text-slate-900">ready to deploy.</strong>
-            </p>
-
-            {/* CTA buttons */}
-            <div className="flex flex-col xs:flex-row flex-wrap gap-3 sm:gap-4">
-              <Link
-                href="/equipment/"
-                className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-[#2d6ef0] to-[#00c8ff] hover:from-[#1a55d0] hover:to-[#00b0ff] text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-colors duration-200 shadow-[0_6px_20px_rgba(45,110,240,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] text-sm sm:text-base active:scale-95"
-              >
-                View Our Machines <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-              </Link>
-              <Link
-                href="/contact/"
-                className="inline-flex items-center justify-center gap-2 sm:gap-3 bg-white/40 backdrop-blur-sm border border-white/60 hover:bg-white/60 text-slate-900 font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-full transition-colors duration-200 text-sm sm:text-base shadow-[0_2px_12px_rgba(0,0,0,0.05),inset_0_1px_4px_rgba(255,255,255,0.8)] active:scale-95"
-              >
-                Contact Sales <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 flex-shrink-0" />
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* RIGHT — Machine card */}
-          <motion.div
-            {...(prefersReduced ? {} : fadeUp(0.25))}
-            className="relative"
-          >
-            {/* Crystal card */}
-            <div className="relative p-6 sm:p-10 lg:p-12 rounded-[2rem] sm:rounded-[3rem] bg-white/20 border border-white/50 shadow-[inset_0_2px_8px_rgba(255,255,255,0.8),inset_0_-2px_6px_rgba(0,0,0,0.04),0_16px_40px_rgba(0,0,0,0.12)] flex justify-center items-center mt-4 lg:mt-0"
-              style={{ backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
+          <div className="relative grid min-h-[680px] lg:grid-cols-[0.95fr_1.15fr]">
+            <motion.div
+              {...(prefersReduced ? {} : fadeLeft)}
+              className="relative z-20 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-12 xl:px-14"
             >
-              {/* Speech bubble — CSS animation instead of Framer loop */}
-              <div
-                className="absolute -top-5 -left-2 sm:-left-5 z-20 bg-gradient-to-br from-blue-500 to-cyan-500 text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-3xl rounded-bl-sm shadow-[0_8px_20px_rgba(45,110,240,0.3),inset_0_1px_2px_rgba(255,255,255,0.3)] border border-white/20 max-w-[190px] sm:max-w-[220px]"
-                style={{ animation: 'heroFloat 4s ease-in-out infinite' }}
-              >
-                1 gram of graphene<br />produced in &lt;100ms ⚡
+              <div className="mb-8 flex items-center gap-5">
+                <p className="text-xs font-black uppercase tracking-[0.24em] text-blue-700 sm:text-sm">
+                  Graphene production equipment
+                </p>
+                <div className="hidden h-px w-20 bg-blue-700/40 sm:block" />
               </div>
 
-              <Image
-                src="/hero-illustration.png"
-                alt="Graphene production machine"
-                width={600}
-                height={600}
-                className="w-full max-w-[320px] sm:max-w-[400px] rounded-[1.5rem] sm:rounded-[2rem] shadow-[0_12px_30px_rgba(0,0,0,0.18)] transition-transform duration-500 hover:scale-[1.03]"
-                priority
-                sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 400px"
-              />
-            </div>
-          </motion.div>
-        </div>
+              <h1 className="max-w-2xl text-4xl font-black leading-[1.08] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl xl:text-[4.25rem]">
+                Industrial graphene reactors built for{' '}
+                <span className="text-blue-700">repeatable output.</span>
+              </h1>
 
-        {/* Stats row */}
-        <div className="relative left-0 right-0 z-20 mt-10 sm:mt-0 sm:absolute sm:bottom-10">
-          <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-              {stats.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  {...(prefersReduced ? {} : fadeUp(0.5 + i * 0.08))}
-                  className="bg-white/30 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-5 lg:p-6 shadow-[inset_0_2px_8px_rgba(255,255,255,0.9),inset_0_-1px_4px_rgba(0,0,0,0.04),0_8px_20px_rgba(0,0,0,0.08)] border border-white/60 hover:-translate-y-0.5 transition-transform duration-300"
-                  style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+              <p className="mt-7 max-w-xl text-base font-medium leading-relaxed text-slate-600 sm:text-lg">
+                From lab validation to factory-scale production, USA Graphene designs and builds pulsed electrical carbon-conversion systems for serious manufacturing teams.
+              </p>
+
+              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+                <Link
+                  href="/contact/"
+                  className="inline-flex items-center justify-center gap-3 rounded-md bg-blue-700 px-7 py-4 text-sm font-black uppercase tracking-wide text-white shadow-[0_12px_30px_rgba(29,78,216,0.24)] transition-colors hover:bg-blue-800 active:scale-95"
                 >
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-800">{s.value}</div>
-                  <div className="text-[10px] sm:text-xs lg:text-sm text-slate-600 mt-1 font-semibold tracking-wide leading-tight">{s.label}</div>
-                </motion.div>
-              ))}
-            </div>
+                  Request Quote <ArrowRight className="h-4 w-4 flex-shrink-0" />
+                </Link>
+                <Link
+                  href="/equipment/"
+                  className="inline-flex items-center justify-center gap-3 rounded-md border border-slate-800/50 bg-white/70 px-7 py-4 text-sm font-black uppercase tracking-wide text-slate-950 transition-colors hover:bg-white active:scale-95"
+                >
+                  View Equipment <ArrowRight className="h-4 w-4 flex-shrink-0" />
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              {...(prefersReduced ? {} : fadeUp(0.2))}
+              className="relative min-h-[360px] lg:min-h-full"
+            >
+              <div className="absolute inset-y-0 -left-20 z-10 hidden w-40 skew-x-[-14deg] bg-white lg:block" />
+              <Image
+                src="/flash-graphene-machine.jpg"
+                alt="Industrial graphene production reactor"
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 1024px) 100vw, 58vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent lg:hidden" />
+            </motion.div>
+          </div>
+
+          <div className="relative z-30 mx-4 -mt-8 mb-6 grid gap-0 overflow-hidden rounded-2xl bg-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.3)] sm:mx-8 lg:mx-10 lg:-mt-12 lg:grid-cols-4">
+            {stats.map(({ icon: Icon, value, label }, i) => (
+              <motion.div
+                key={value}
+                {...(prefersReduced ? {} : fadeUp(0.45 + i * 0.08))}
+                className="flex gap-4 border-b border-white/10 p-5 last:border-b-0 sm:p-6 lg:border-b-0 lg:border-r lg:last:border-r-0"
+              >
+                <Icon className="mt-1 h-9 w-9 flex-shrink-0 text-blue-500 sm:h-11 sm:w-11" />
+                <div>
+                  <div className="text-lg font-black leading-tight text-white sm:text-xl">{value}</div>
+                  <div className="mt-2 text-xs font-medium leading-relaxed text-slate-300 sm:text-sm">{label}</div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -206,52 +231,19 @@ export default function Hero() {
         </div>
       </section>
 
-      {/* ── BOLD CTA BAND ────────────────────────────────────────────────────── */}
+      {/* ── ENGINEERED PROCESS IMAGE ─────────────────────────────────────── */}
       <section className="relative z-10 px-5 sm:px-6 lg:px-8 pb-20 sm:pb-28 lg:pb-32">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.65 }}
-            className="relative overflow-hidden rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] bg-[#0f172a]/70 border border-white/20 shadow-[inset_0_2px_16px_rgba(255,255,255,0.12),0_16px_40px_rgba(0,0,0,0.35)] p-8 sm:p-12 lg:p-16 xl:p-24 text-center"
-            style={{ backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)' }}
-          >
-            {/* Blobs — hidden on mobile, lighter blur on tablet */}
-            <div className="hidden sm:block absolute top-[-50%] left-[-10%] w-[60%] h-[150%] bg-blue-500/30 rounded-full blur-[60px] pointer-events-none" />
-            <div className="hidden sm:block absolute bottom-[-50%] right-[-10%] w-[60%] h-[150%] bg-cyan-400/20 rounded-full blur-[60px] pointer-events-none" />
-
-            {/* Mobile-only simple gradient */}
-            <div className="sm:hidden absolute inset-0 bg-gradient-to-br from-blue-900/40 to-cyan-900/20 pointer-events-none" />
-
-            <div className="relative z-10">
-              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-5 sm:mb-8 drop-shadow-lg">
-                Ready to build your<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                  graphene operation?
-                </span>
-              </h2>
-              <p className="text-sm sm:text-lg md:text-xl text-white/80 mb-8 sm:mb-12 max-w-2xl mx-auto font-medium">
-                From a single machine to a complete factory — we engineer, manufacture, and deploy everything you need.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link
-                  href="/contact/"
-                  className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#00c8ff] to-[#2d6ef0] hover:opacity-90 text-white font-black px-8 py-4 rounded-full text-sm sm:text-base transition-opacity duration-200 shadow-[0_6px_24px_rgba(0,200,255,0.35),inset_0_1px_2px_rgba(255,255,255,0.3)] w-full sm:w-auto active:scale-95"
-                >
-                  Get a Quote <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                </Link>
-                <Link
-                  href="/products/"
-                  className="inline-flex items-center justify-center gap-2 bg-white/10 border border-white/20 hover:bg-white/20 text-white font-bold px-8 py-4 rounded-full text-sm sm:text-base transition-colors duration-200 shadow-[inset_0_1px_4px_rgba(255,255,255,0.08)] w-full sm:w-auto active:scale-95"
-                  style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
-                >
-                  Browse Products <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-white/60 flex-shrink-0" />
-                </Link>
-              </div>
-            </div>
-          </motion.div>
+        <div className="mx-auto max-w-7xl">
+          <div className="relative overflow-hidden rounded-[1.5rem] bg-white shadow-[0_22px_65px_rgba(45,76,120,0.16)]">
+            <Image
+              src="/engineered-process-banner.jpg"
+              alt="USA Graphene engineered process from carbon feedstock to graphene production capacity"
+              width={1536}
+              height={1024}
+              className="h-auto w-full"
+              sizes="(max-width: 1280px) 100vw, 1280px"
+            />
+          </div>
         </div>
       </section>
 
