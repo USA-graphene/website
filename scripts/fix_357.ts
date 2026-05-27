@@ -4,7 +4,7 @@ const sanity = createClient({
   projectId: 't9t7is4j',
   dataset: 'production',
   apiVersion: '2023-05-03',
-  token: 'sk2xXoAc8mZArN3wBhEHt1k06l5HBQNOixYOvYuNwOg20aWlZDfQKVzrKzC2T8vGyJ74zG0Bv0ytYMgAl2Zd30YiXKBge2oKzlIW79rsdB2o0WMBbTFffPN9wOmwc2zyfKMzBmD72Wfpvhz9xxfn7imI7g6oYjGcwubpOOfRsa8k0C8nFii4',
+  token: process.env.SANITY_API_TOKEN,
   useCdn: false
 });
 
@@ -19,7 +19,7 @@ FORMATTING RULES:
 2. [BODY] Full article with ## headings. [/BODY]`;
 
   console.log('Generating content for 357...');
-  const gRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=AIzaSyC5n4GiKdaglnPdHC_G4cC72Z7uxzIifaA', {
+  const gRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 8192 } })

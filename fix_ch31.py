@@ -2,7 +2,7 @@ import urllib.request, json, os, sys, hashlib, re
 sys.path.insert(0, '/Users/raimis/aa/scripts')
 import publish_vol2_posts as pub
 
-SANITY_TOKEN = os.environ.get('SANITY_API_TOKEN', 'sk2xXoAc8mZArN3wBhEHt1k06l5HBQNOixYOvYuNwOg20aWlZDfQKVzrKzC2T8vGyJ74zG0Bv0ytYMgAl2Zd30YiXKBge2oKzlIW79rsdB2o0WMBbTFffPN9wOmwc2zyfKMzBmD72Wfpvhz9xxfn7imI7g6oYjGcwubpOOfRsa8k0C8nFii4')
+SANITY_TOKEN = os.environ.get("SANITY_API_TOKEN")
 SANITY_PROJECT = 't9t7is4j'
 
 query = urllib.parse.quote('*[_type == "post" && title match "Designing Advanced Carbon-Based*"][0]')

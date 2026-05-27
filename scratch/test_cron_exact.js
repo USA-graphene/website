@@ -5,7 +5,7 @@ const sanityClient = createClient({
   projectId: 't9t7is4j',
   dataset: 'production',
   apiVersion: '2023-05-03',
-  token: 'sk2xXoAc8mZArN3wBhEHt1k06l5HBQNOixYOvYuNwOg20aWlZDfQKVzrKzC2T8vGyJ74zG0Bv0ytYMgAl2Zd30YiXKBge2oKzlIW79rsdB2o0WMBbTFffPN9wOmwc2zyfKMzBmD72Wfpvhz9xxfn7imI7g6oYjGcwubpOOfRsa8k0C8nFii4',
+  token: process.env.SANITY_API_TOKEN,
   useCdn: false,
 });
 
@@ -30,7 +30,7 @@ async function test() {
       break;
     }
 
-    const geminiKey = 'AIzaSyC5n4GiKdaglnPdHC_G4cC72Z7uxzIifaA';
+    const geminiKey = process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_API_KEY;
     const prompt = `Write a TECHNICAL science article (2000 words) about: ${selected.title}. 
 Context: ${selected.abstract}
 
