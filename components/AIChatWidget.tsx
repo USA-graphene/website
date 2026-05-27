@@ -331,23 +331,31 @@ export default function AIChatWidget() {
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </motion.svg>
                             ) : (
-                                <motion.svg
+                                <motion.div
                                     key="chat"
                                     initial={{ scale: 0, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0, opacity: 0 }}
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="28"
-                                    height="28"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
+                                    className="relative flex h-11 w-11 items-center justify-center"
                                 >
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </motion.svg>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="42"
+                                        height="42"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2.25"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M21 15a2 2 0 0 1-2 2H8.5L4 20.75V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"></path>
+                                    </svg>
+                                    <span className="absolute left-1/2 top-[44%] -translate-x-1/2 -translate-y-1/2 text-[11px] font-black leading-none text-black drop-shadow-none">
+                                        AI
+                                    </span>
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
