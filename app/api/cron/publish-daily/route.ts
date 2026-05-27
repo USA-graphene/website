@@ -246,11 +246,31 @@ JSON structure ONLY:
             seoDescription: p.excerpt,
             slug: { _type: 'slug', current: finalSlug },
             excerpt: p.excerpt,
-            body: p.body.split(/\n{2,}/).filter((para: string) => para.trim() !== '').map((para: string) => ({
-              _type: 'block', _key: crypto.randomUUID(),
-              style: para.startsWith('## ') ? 'h2' : 'normal',
-              children: [{ _type: 'span', _key: crypto.randomUUID(), text: para.replace(/^##\s+/, '').replace(/\*\*/g, ''), marks: [] }]
-            })),
+            body: p.body.split(/\n{2,}/).filter((para: string) => para.trim() !== '').flatMap((para: string) => {
+              const trimmed = para.trim().replace(/\*\*/g, '');
+              const headingMatch = trimmed.match(/^##\s+([^\n]+)(?:\n+([\s\S]+))?$/);
+              if (headingMatch) {
+                const blocks = [{
+                  _type: 'block', _key: crypto.randomUUID(),
+                  style: 'h2',
+                  children: [{ _type: 'span', _key: crypto.randomUUID(), text: headingMatch[1].trim(), marks: [] }]
+                }];
+                const followingText = headingMatch[2]?.trim();
+                if (followingText) {
+                  blocks.push({
+                    _type: 'block', _key: crypto.randomUUID(),
+                    style: 'normal',
+                    children: [{ _type: 'span', _key: crypto.randomUUID(), text: followingText, marks: [] }]
+                  });
+                }
+                return blocks;
+              }
+              return [{
+                _type: 'block', _key: crypto.randomUUID(),
+                style: 'normal',
+                children: [{ _type: 'span', _key: crypto.randomUUID(), text: trimmed, marks: [] }]
+              }];
+            }),
             publishedAt: new Date().toISOString(),
             mainImage: assetId ? { _type: 'image', asset: { _type: 'reference', _ref: assetId } } : undefined,
             categories: [{ _type: 'reference', _ref: '7QyVE6fI6HWfwHJOF8VGju', _key: 'cat1' }],
@@ -273,4 +293,3 @@ JSON structure ONLY:
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-

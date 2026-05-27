@@ -115,23 +115,38 @@ async function testCron() {
     if (!selected) throw new Error("No new Graphene papers found (all top results are already published)");
 
     console.log(`[Test] Generating 2000+ words for: ${selected.title}`);
-    const prompt = `You are a senior science journalist for usa-graphene.com.
-Write a deeply detailed, 2000+ word technical article based on this paper:
+    const prompt = `You are a senior science journalist and patient technical teacher for usa-graphene.com.
+Write a deeply detailed, educational 2000+ word technical article based on this paper:
 
 Title: ${selected.title}
 Abstract: ${selected.abstract}
 
 WRITING RULES:
-1. Length: Minimum 2000 words.
-2. Structure: Introduction → 5-7 sections with ## H2 headings → FAQ (5 Q&A) → Conclusion.
-3. **MANDATORY**: Start the body with: "Research conducted by: ${selected.authors}" followed by a paragraph crediting their work.
-4. No bullet points, no bolding (**).
-5. Return ONLY a JSON object:
+1. Length: Minimum 2000 words, but prioritize clear teaching over filler.
+2. No bullet points, no numbered lists, no bolding (**). Use paragraphs and ## H2 headings only.
+3. Explain cause and effect. Do not just say graphene improves performance; explain how conductivity, surface area, interfaces, defects, chemistry, or structure affect the result.
+4. Begin with a plain-English hook explaining why this research matters to a smart non-specialist.
+5. MANDATORY: In the first section, naturally credit the researchers by name: ${selected.authors}. Do not use the label "Research conducted by:".
+6. Use this exact body structure with ## headings:
+   Opening plain-English hook before the first heading.
+   ## The Problem This Research Is Solving
+   ## The Key Idea in Plain English
+   ## How the Graphene-Based System Works
+   ## What the Researchers Found
+   ## Why the Result Matters
+   ## Limitations and What Still Needs Testing
+   ## Real-World Applications
+   ## If You Remember One Thing
+   ## FAQ
+   ## Conclusion
+7. The FAQ must include 5 beginner-friendly Q&A pairs written in paragraph form.
+8. Be honest about limitations. Do not imply the work is commercially ready unless the abstract clearly says so.
+9. Return ONLY a JSON object:
 {
   "title": "SEO Title",
-  "excerpt": "Short summary",
+  "excerpt": "Short educational SEO summary",
   "body": "Full article text with ## headings",
-  "imagePrompt": "A high-end 3D render of ${selected.title}..."
+  "imagePrompt": "A high-end 16:9 scientific cover image prompt for this research. No text, no labels, no watermark."
 }`;
 
     const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${geminiKey}`, {
@@ -182,13 +197,30 @@ WRITING RULES:
       seoDescription: p.excerpt,
       slug: { _type: 'slug', current: finalSlug },
       excerpt: p.excerpt,
-      body: p.body.split(/\n{2,}/).filter(para => para.trim() !== '').map(para => {
-        const text = para.trim().replace(/^##\s+/, '').replace(/\*\*/g, '');
-        return {
+      body: p.body.split(/\n{2,}/).filter(para => para.trim() !== '').flatMap(para => {
+        const trimmed = para.trim().replace(/\*\*/g, '');
+        const headingMatch = trimmed.match(/^##\s+([^\n]+)(?:\n+([\s\S]+))?$/);
+        if (headingMatch) {
+          const blocks = [{
+            _type: 'block', _key: Math.random().toString(36).slice(2, 11),
+            style: 'h2',
+            children: [{ _type: 'span', text: headingMatch[1].trim(), marks: [] }]
+          }];
+          const followingText = headingMatch[2]?.trim();
+          if (followingText) {
+            blocks.push({
+              _type: 'block', _key: Math.random().toString(36).slice(2, 11),
+              style: 'normal',
+              children: [{ _type: 'span', text: followingText, marks: [] }]
+            });
+          }
+          return blocks;
+        }
+        return [{
           _type: 'block', _key: Math.random().toString(36).slice(2, 11),
-          style: para.startsWith('## ') ? 'h2' : 'normal',
-          children: [{ _type: 'span', text: text, marks: [] }]
-        };
+          style: 'normal',
+          children: [{ _type: 'span', text: trimmed, marks: [] }]
+        }];
       }),
       publishedAt: new Date().toISOString(),
       mainImage: assetId ? { _type: 'image', asset: { _ref: assetId } } : undefined,
