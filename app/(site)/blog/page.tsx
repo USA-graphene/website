@@ -11,10 +11,12 @@ export const metadata: Metadata = {
     },
 }
 
-export const revalidate = 0
+export const revalidate = 300
+
+const POST_LIMIT = 24
 
 async function getPosts() {
-    const query = `*[_type == "post"] | order(publishedAt desc) {
+    const query = `*[_type == "post"] | order(publishedAt desc)[0...${POST_LIMIT}] {
     _id,
     title,
     slug,
@@ -34,7 +36,7 @@ async function getPosts() {
     "author": author->name,
     "categories": categories[]->title
   }`
-    return client.fetch(query)
+    return client.fetch(query, {}, { next: { revalidate } })
 }
 
 export default async function Blog() {
@@ -65,10 +67,10 @@ export default async function Blog() {
                             <div className="relative w-full overflow-hidden rounded-2xl bg-[#070d1a]">
                                 {post.mainImage ? (
                                     <Image
-                                        src={urlFor(post.mainImage).url()}
+                                        src={urlFor(post.mainImage).width(640).quality(72).auto('format').url()}
                                         alt={post.title}
-                                        width={post.mainImage.asset?.metadata?.dimensions?.width || 800}
-                                        height={post.mainImage.asset?.metadata?.dimensions?.height || 600}
+                                        width={640}
+                                        height={360}
                                         className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
@@ -118,6 +120,9 @@ export default async function Blog() {
                         </article>
                     ))}
                 </div>
+                <p className="mt-10 text-center text-sm font-medium text-[#8b9ab5]">
+                    Showing the latest {POST_LIMIT} articles.
+                </p>
             </div>
         </div>
     )

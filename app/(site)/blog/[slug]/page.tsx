@@ -2,9 +2,12 @@ import { client, urlFor } from '@/lib/sanity'
 import { PortableText } from '@portabletext/react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import B2BSampleCTA from '@/components/B2BSampleCTA'
 
 export const revalidate = 60
 export const dynamicParams = true
+
+const PRE_RENDERED_POSTS = 60
 
 async function getPost(slug: string) {
     const query = `*[_type == "post" && slug.current == $slug][0] {
@@ -29,6 +32,14 @@ async function getPost(slug: string) {
     return client.fetch(query, { slug }, { next: { revalidate: 60 } })
 }
 
+export async function generateStaticParams() {
+    const query = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc)[0...${PRE_RENDERED_POSTS}] {
+        "slug": slug.current
+    }`
+    const posts = await client.fetch(query, {}, { next: { revalidate } })
+    return posts.map((post: { slug: string }) => ({ slug: post.slug }))
+}
+
 // Strip leading "N. " numbering prefix added for editorial ordering (e.g. "73. Graphene..." → "Graphene...")
 function cleanTitle(raw: string): string {
     return raw.replace(/^\d+\.\s+/, '')
@@ -44,7 +55,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     // Clean up excerpt: remove literal [...] and trim
     const cleanExcerpt = post.excerpt ? post.excerpt.replace(/\[\.\.\.\]/g, '').trim() : ''
     const description = post.seoDescription || cleanExcerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
-    const imageUrl = post.mainImage ? urlFor(post.mainImage).url() : '/hero-graphene.jpg'
+    const imageUrl = post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').quality(78).auto('format').url() : '/hero-graphene.jpg'
     const canonicalUrl = `https://www.usa-graphene.com/blog/${slug}/`
 
     return {
@@ -90,7 +101,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: cleanTitle(post.title),
-        image: post.mainImage ? urlFor(post.mainImage).url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
+        image: post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').quality(78).auto('format').url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
         datePublished: post.publishedAt,
         dateModified: post._updatedAt || post.publishedAt,
         author: {
@@ -146,10 +157,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     <div className="mt-10 relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
                         <div className="absolute inset-0 bg-[#2d6ef0]/20 blur-xl mix-blend-overlay" />
                         <Image
-                            src={urlFor(post.mainImage).url()}
+                            src={urlFor(post.mainImage).width(960).height(540).fit('crop').quality(78).auto('format').url()}
                             alt={post.title}
-                            width={800}
-                            height={500}
+                            width={960}
+                            height={540}
+                            priority
+                            sizes="(max-width: 768px) 100vw, 768px"
                             className="aspect-[16/9] w-full bg-[#0d1630] object-cover relative z-10"
                         />
                     </div>
@@ -161,7 +174,11 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                             components={{
                                 types: {
                                     image: ({ value }: { value: { asset?: { url?: string }; alt?: string } }) => {
-                                        const src = value?.asset?.url || (value?.asset ? urlFor(value).url() : null)
+                                        const src = value?.asset?.url
+                                            ? `${value.asset.url}?w=960&auto=format&q=78`
+                                            : value?.asset
+                                                ? urlFor(value).width(960).quality(78).auto('format').url()
+                                                : null
                                         if (!src) return null
                                         return (
                                             <figure className="my-10 relative">
@@ -183,6 +200,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                             ? post.body.split('\n\n').map((p: string, i: number) => <p key={i}>{p}</p>)
                             : null}
                 </div>
+                
+                <B2BSampleCTA />
             </div>
         </div >
     )
