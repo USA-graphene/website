@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity'
+import { seoClusters } from '@/lib/seoKeywords'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.usa-graphene.com'
@@ -56,5 +57,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '/' ? 1 : 0.8,
   }))
 
-  return [...staticRoutes, ...productUrls, ...blogUrls]
+  const categoryUrls = seoClusters.map((cluster) => ({
+    url: `${baseUrl}/blog/category/${cluster.slug}/`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.75,
+  }))
+
+  return [...staticRoutes, ...categoryUrls, ...productUrls, ...blogUrls]
 }

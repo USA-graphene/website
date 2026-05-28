@@ -2,12 +2,20 @@ import { client, urlFor } from '@/lib/sanity'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+import { seoClusters } from '@/lib/seoKeywords'
 
 export const metadata: Metadata = {
-    title: 'Graphene Production News & Industry Insights | USA Graphene Blog',
-    description: 'Explore the latest breakthroughs in graphene technology, industrial applications in concrete and plastics, and graphene price trends for 2025 and beyond.',
+    title: 'Graphene News, Research & Industrial Applications | USA Graphene Blog',
+    description: 'Follow graphene research, production equipment, batteries, sensors, coatings, aerospace, biomedical, and industrial graphene applications from USA Graphene.',
+    keywords: ['graphene news', 'graphene research', 'graphene applications', 'graphene production', 'graphene batteries', 'graphene sensors', 'turbostratic graphene'],
     alternates: {
         canonical: '/blog/',
+    },
+    openGraph: {
+        title: 'Graphene News, Research & Industrial Applications',
+        description: 'Daily graphene research and industrial application briefs from USA Graphene.',
+        url: 'https://www.usa-graphene.com/blog/',
+        type: 'website',
     },
 }
 
@@ -41,9 +49,28 @@ async function getPosts() {
 
 export default async function Blog() {
     const posts = await getPosts()
+    const jsonLd = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: 'Graphene News, Research and Industrial Applications',
+            description: metadata.description,
+            url: 'https://www.usa-graphene.com/blog/',
+            about: seoClusters.map((cluster) => cluster.title),
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.usa-graphene.com/' },
+                { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.usa-graphene.com/blog/' },
+            ],
+        },
+    ]
 
     return (
         <div className="relative isolate min-h-screen bg-[#070d1a] py-24 sm:py-32 overflow-hidden">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             {/* Background layers */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(45,110,240,0.1)_0%,transparent_70%)]" />
             <div className="absolute inset-0 opacity-[0.03]"
@@ -53,10 +80,22 @@ export default async function Blog() {
             <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:mx-0 mb-16">
                     <p className="text-sm font-semibold tracking-widest uppercase text-[#5b9af5] mb-2">Knowledge Base</p>
-                    <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl font-display">From the Blog</h2>
+                    <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl font-display">Graphene News, Research and Industrial Applications</h1>
                     <p className="mt-4 text-lg leading-8 text-[#8b9ab5]">
-                        Insights, updates, and breakthroughs from the world of graphene.
+                        Daily technical briefs on graphene production, batteries, sensors, coatings, aerospace, biomedical research, and industrial manufacturing.
                     </p>
+                </div>
+                <div className="mb-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {seoClusters.map((cluster) => (
+                        <Link
+                            key={cluster.slug}
+                            href={`/blog/category/${cluster.slug}/`}
+                            className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition-colors hover:border-[#00c8ff]/40 hover:bg-white/[0.07]"
+                        >
+                            <h2 className="text-sm font-bold text-white">{cluster.title}</h2>
+                            <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#8b9ab5]">{cluster.description}</p>
+                        </Link>
+                    ))}
                 </div>
                 <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
                     {posts.map((post: any) => (

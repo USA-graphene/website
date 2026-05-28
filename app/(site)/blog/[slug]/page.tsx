@@ -3,6 +3,7 @@ import { PortableText } from '@portabletext/react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import B2BSampleCTA from '@/components/B2BSampleCTA'
+import { keywordStringForCategories } from '@/lib/seoKeywords'
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -57,10 +58,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const description = post.seoDescription || cleanExcerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
     const imageUrl = post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').quality(78).auto('format').url() : '/hero-graphene.jpg'
     const canonicalUrl = `https://www.usa-graphene.com/blog/${slug}/`
+    const keywords = keywordStringForCategories(post.categories || [])
 
     return {
         title,
         description,
+        keywords,
         alternates: {
             canonical: canonicalUrl,
         },
@@ -100,10 +103,17 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://www.usa-graphene.com/blog/${slug}/`,
+        },
         headline: cleanTitle(post.title),
+        description: post.seoDescription || post.excerpt,
         image: post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').quality(78).auto('format').url() : 'https://www.usa-graphene.com/hero-graphene.jpg',
         datePublished: post.publishedAt,
         dateModified: post._updatedAt || post.publishedAt,
+        articleSection: post.categories || ['Graphene Research'],
+        keywords: keywordStringForCategories(post.categories || []).join(', '),
         author: {
             '@type': 'Person',
             name: post.author || 'USA Graphene Team',
@@ -117,6 +127,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             }
         },
     }
+    const breadcrumbJsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.usa-graphene.com/' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.usa-graphene.com/blog/' },
+            { '@type': 'ListItem', position: 3, name: cleanTitle(post.title), item: `https://www.usa-graphene.com/blog/${slug}/` },
+        ],
+    }
 
     const filteredCategories = post.categories?.filter((cat: string) => cat.toLowerCase() !== 'p') || []
     const heroImageUrl = post.mainImage
@@ -126,6 +145,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     return (
         <div className="relative isolate min-h-screen bg-[#070d1a] px-6 py-32 lg:px-8 overflow-hidden">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
             
             {/* Background layers */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(45,110,240,0.1)_0%,transparent_70%)]" />

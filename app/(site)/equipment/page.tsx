@@ -78,7 +78,6 @@ export default function Equipment() {
         'offers': {
             '@type': 'Offer',
             'availability': 'https://schema.org/InStock',
-            'price': '0',
             'priceCurrency': 'USD',
             'priceValidUntil': `${new Date().getFullYear() + 1}-12-31`,
             'url': 'https://www.usa-graphene.com/equipment/',
@@ -115,11 +114,6 @@ export default function Equipment() {
                     }
                 }
             }
-        },
-        'aggregateRating': {
-            '@type': 'AggregateRating',
-            'ratingValue': '5',
-            'ratingCount': '24'
         }
     }
 

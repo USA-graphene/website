@@ -154,7 +154,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             '@type': 'Offer',
             url: `https://www.usa-graphene.com/products/${product.slug.current}/`,
             priceCurrency: 'USD',
-            price: product.price || '0',
+            ...(hasPrice ? { price: product.price } : {}),
             priceValidUntil: `${new Date().getFullYear() + 1}-12-31`,
             availability: 'https://schema.org/InStock',
             hasMerchantReturnPolicy: {
@@ -190,11 +190,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     },
                 },
             },
-        },
-        aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: '5',
-            ratingCount: '18',
         }
     }
 

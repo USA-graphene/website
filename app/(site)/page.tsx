@@ -22,7 +22,6 @@ export default function Home() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+1-555-555-5555',
       contactType: 'sales',
       areaServed: 'US',
       availableLanguage: 'en'
