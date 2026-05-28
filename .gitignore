@@ -54,3 +54,6 @@ uploader/.env
 publish_all.sh
 publish_log.txt
 *.log
+
+__pycache__/
+*.py[cod]
