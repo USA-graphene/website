@@ -119,6 +119,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     }
 
     const filteredCategories = post.categories?.filter((cat: string) => cat.toLowerCase() !== 'p') || []
+    const heroImageUrl = post.mainImage
+        ? urlFor(post.mainImage).width(960).height(540).fit('crop').quality(72).auto('format').url()
+        : null
 
     return (
         <div className="relative isolate min-h-screen bg-[#070d1a] px-6 py-32 lg:px-8 overflow-hidden">
@@ -153,15 +156,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         {post.author}
                     </div>
                 </div>
-                {post.mainImage && (
+                {heroImageUrl && (
                     <div className="mt-10 relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
                         <div className="absolute inset-0 bg-[#2d6ef0]/20 blur-xl mix-blend-overlay" />
                         <Image
-                            src={urlFor(post.mainImage).width(960).height(540).fit('crop').quality(78).auto('format').url()}
+                            src={heroImageUrl}
                             alt={post.title}
                             width={960}
                             height={540}
                             priority
+                            unoptimized
                             sizes="(max-width: 768px) 100vw, 768px"
                             className="aspect-[16/9] w-full bg-[#0d1630] object-cover relative z-10"
                         />

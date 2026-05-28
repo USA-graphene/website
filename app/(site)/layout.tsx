@@ -1,6 +1,6 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import AIChatWidget from '@/components/AIChatWidget'
+import DeferredAIChatWidget from '@/components/DeferredAIChatWidget'
 
 export default function SiteLayout({
     children,
@@ -12,7 +12,7 @@ export default function SiteLayout({
             <Header />
             {children}
             <Footer />
-            <AIChatWidget />
+            <DeferredAIChatWidget />
         </>
     )
 }
