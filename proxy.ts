@@ -9,8 +9,10 @@ export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     let shouldRedirect = false;
 
-    // 1. Normalize domain: graphene2026.com → www.usa-graphene.com
-    if (host.includes('graphene2026.com')) {
+    // 1. Normalize every non-canonical host to www.usa-graphene.com.
+    // Google Search Console was seeing usa-graphene.com variants as temporary
+    // redirects. Emit one permanent hop to the canonical host instead.
+    if (host && host !== CANONICAL_HOST) {
         shouldRedirect = true;
     }
 
