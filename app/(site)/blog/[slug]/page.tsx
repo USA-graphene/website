@@ -139,7 +139,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
     const filteredCategories = post.categories?.filter((cat: string) => cat.toLowerCase() !== 'p') || []
     const heroImageUrl = post.mainImage
-        ? urlFor(post.mainImage).width(960).height(540).fit('crop').quality(72).auto('format').url()
+        ? urlFor(post.mainImage).width(800).height(450).fit('crop').quality(68).auto('format').url()
         : null
 
     return (
@@ -177,17 +177,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                     </div>
                 </div>
                 {heroImageUrl && (
-                    <div className="mt-10 relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.6)]">
-                        <div className="absolute inset-0 bg-[#2d6ef0]/20 blur-xl mix-blend-overlay" />
+                    <div className="mt-10 relative overflow-hidden rounded-2xl border border-white/10 bg-[#0d1630]">
                         <Image
                             src={heroImageUrl}
                             alt={post.title}
-                            width={960}
-                            height={540}
-                            priority
+                            width={800}
+                            height={450}
                             unoptimized
                             sizes="(max-width: 768px) 100vw, 768px"
-                            className="aspect-[16/9] w-full bg-[#0d1630] object-cover relative z-10"
+                            className="aspect-[16/9] w-full bg-[#0d1630] object-cover"
                         />
                     </div>
                 )}
