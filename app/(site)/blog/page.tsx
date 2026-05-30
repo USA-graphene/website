@@ -101,7 +101,7 @@ export default async function Blog() {
                     {posts.map((post: any) => (
                         <article
                             key={post._id}
-                            className="break-inside-avoid rounded-3xl bg-[#0d1630]/60 backdrop-blur-md p-6 border border-white/10 transition-all duration-500 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:border-[#2d6ef0]/50 hover:-translate-y-1 mb-8 group"
+                            className="break-inside-avoid rounded-3xl bg-[#0d1630]/60 backdrop-blur-md p-6 border border-white/10 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:border-[#2d6ef0]/50 mb-8 group"
                         >
                             <div className="relative w-full overflow-hidden rounded-2xl bg-[#070d1a]">
                                 {post.mainImage ? (
@@ -110,7 +110,7 @@ export default async function Blog() {
                                         alt={post.title}
                                         width={640}
                                         height={360}
-                                        className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
+                                        className="w-full h-auto object-cover"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     />
                                 ) : (
