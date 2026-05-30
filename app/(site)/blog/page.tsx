@@ -97,11 +97,11 @@ export default async function Blog() {
                         </Link>
                     ))}
                 </div>
-                <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {posts.map((post: any) => (
                         <article
                             key={post._id}
-                            className="break-inside-avoid rounded-3xl bg-[#0d1630]/60 backdrop-blur-md p-6 border border-white/10 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:border-[#2d6ef0]/50 mb-8 group"
+                            className="rounded-3xl bg-[#0d1630]/60 backdrop-blur-md p-6 border border-white/10 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:border-[#2d6ef0]/50 group"
                         >
                             <div className="relative w-full overflow-hidden rounded-2xl bg-[#070d1a]">
                                 {post.mainImage ? (
