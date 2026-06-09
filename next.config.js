@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  outputFileTracingRoot: __dirname,
+  turbopack: {
+    root: __dirname,
+  },
 
   images: {
     remotePatterns: [

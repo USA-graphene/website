@@ -2,6 +2,7 @@ import { client } from '@/lib/sanity'
 import { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { samplePurchaseLinks } from '@/lib/sampleLinks'
 
 export const metadata: Metadata = {
@@ -45,9 +46,88 @@ async function getProducts() {
   `)
 }
 
-export default async function ProductsPage() {
+async function ProductsGrid() {
     const products = await getProducts()
 
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map((product: any) => (
+                <Link
+                    key={product._id}
+                    href={`/products/${product.slug.current}/`}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl bg-[#0d1630]/80 backdrop-blur-md border border-white/10 hover:border-[#2d6ef0]/50 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:-translate-y-1"
+                >
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#070d1a]">
+                        {product.heroImage?.asset?.url ? (
+                            <Image
+                                src={product.heroImage.asset.url}
+                                alt={product.title}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                        ) : (
+                            <div className="flex h-full items-center justify-center text-[#8b9ab5]">
+                                No Image
+                            </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1630] via-transparent to-transparent opacity-80" />
+                        <div className="absolute top-4 left-4">
+                            <span className="inline-flex items-center rounded-full bg-[#070d1a]/90 px-3 py-1 text-xs font-semibold text-[#00c8ff] border border-[#00c8ff]/30 backdrop-blur-sm">
+                                {product.productType === 'machine' ? 'Machine' : 'Material'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-1 flex-col p-6">
+                        <h3 className="text-xl font-bold text-white group-hover:text-[#00c8ff] transition-colors font-display">
+                            {product.title}
+                        </h3>
+                        {product.shortDescription && (
+                            <p className="mt-3 text-sm leading-6 text-[#8b9ab5] line-clamp-3">
+                                {product.shortDescription}
+                            </p>
+                        )}
+
+                        <div className="mt-auto pt-6 flex items-center justify-between">
+                            <p className="text-sm font-semibold text-white">
+                                {product.price
+                                    ? `$${product.price.toLocaleString()}${product.unit ? ` / ${product.unit}` : ''}`
+                                    : 'Request Quote'
+                                }
+                            </p>
+                            <span className="text-sm font-semibold text-[#2d6ef0] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                View Details <span aria-hidden="true">&rarr;</span>
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+            ))}
+        </div>
+    )
+}
+
+function ProductsGridSkeleton() {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" aria-label="Loading products">
+            {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                    key={index}
+                    className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d1630]/70"
+                >
+                    <div className="aspect-[4/3] bg-white/5" />
+                    <div className="space-y-4 p-6">
+                        <div className="h-6 w-3/4 rounded bg-white/10" />
+                        <div className="h-4 w-full rounded bg-white/10" />
+                        <div className="h-4 w-2/3 rounded bg-white/10" />
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+export default function ProductsPage() {
     return (
         <main className="relative isolate min-h-screen bg-[#070d1a] py-24 sm:py-32">
             {/* Background layers */}
@@ -85,60 +165,9 @@ export default async function ProductsPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {products.map((product: any) => (
-                        <Link
-                            key={product._id}
-                            href={`/products/${product.slug.current}/`}
-                            className="group relative flex flex-col overflow-hidden rounded-2xl bg-[#0d1630]/80 backdrop-blur-md border border-white/10 hover:border-[#2d6ef0]/50 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(45,110,240,0.15)] hover:-translate-y-1"
-                        >
-                            <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#070d1a]">
-                                {product.heroImage?.asset?.url ? (
-                                    <Image
-                                        src={product.heroImage.asset.url}
-                                        alt={product.title}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                    />
-                                ) : (
-                                    <div className="flex h-full items-center justify-center text-[#8b9ab5]">
-                                        No Image
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0d1630] via-transparent to-transparent opacity-80" />
-                                <div className="absolute top-4 left-4">
-                                    <span className="inline-flex items-center rounded-full bg-[#070d1a]/90 px-3 py-1 text-xs font-semibold text-[#00c8ff] border border-[#00c8ff]/30 backdrop-blur-sm">
-                                        {product.productType === 'machine' ? 'Machine' : 'Material'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-1 flex-col p-6">
-                                <h3 className="text-xl font-bold text-white group-hover:text-[#00c8ff] transition-colors font-display">
-                                    {product.title}
-                                </h3>
-                                {product.shortDescription && (
-                                    <p className="mt-3 text-sm leading-6 text-[#8b9ab5] line-clamp-3">
-                                        {product.shortDescription}
-                                    </p>
-                                )}
-
-                                <div className="mt-auto pt-6 flex items-center justify-between">
-                                    <p className="text-sm font-semibold text-white">
-                                        {product.price
-                                            ? `$${product.price.toLocaleString()}${product.unit ? ` / ${product.unit}` : ''}`
-                                            : 'Request Quote'
-                                        }
-                                    </p>
-                                    <span className="text-sm font-semibold text-[#2d6ef0] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                        View Details <span aria-hidden="true">&rarr;</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+                <Suspense fallback={<ProductsGridSkeleton />}>
+                    <ProductsGrid />
+                </Suspense>
             </div>
         </main>
     )

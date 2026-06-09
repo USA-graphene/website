@@ -16,6 +16,27 @@ const stats = [
   { value: '2,630', label: 'm²/g surface area' },
 ]
 
+const researchLinks = [
+  {
+    category: 'Energy Storage',
+    title: 'Graphene electrophoretic deposition for energy applications',
+    description: 'How EPD creates controlled graphene films for photovoltaics, supercapacitors, batteries, and fuel-cell electrodes.',
+    href: '/blog/graphene-electrophoretic-deposition-energy-applications/',
+  },
+  {
+    category: 'Graphene Sensors',
+    title: 'Printed graphene sensors for disposable diagnostics',
+    description: 'A practical look at low-cost printed graphene electrodes for flexible electrochemical detection and point-of-care devices.',
+    href: '/blog/printed-graphene-sensors-disposable-diagnostics/',
+  },
+  {
+    category: 'Quantum Electronics',
+    title: 'High-Chern-number graphene superlattices',
+    description: 'Technical analysis of tunable Chern insulators in rhombohedral tetralayer graphene for low-power and quantum devices.',
+    href: '/blog/431-tunable-high-chern-number-insulators-discovered-in-rhombohedral-tetralayer-graphene-superlattices/',
+  },
+]
+
 const categories = ['All', 'Energy', 'Electronics', 'Construction', 'Biomedical', 'Defense & Aerospace', 'Environment']
 
 const applications = [
@@ -165,6 +186,41 @@ export default function ApplicationsClient() {
           })}
         </div>
       </div>
+
+      {/* Related research links for application pages */}
+      <section className="border-t border-white/10 bg-[#070d1a] py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="text-sm font-semibold uppercase tracking-widest text-blue-400">Application research</div>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Deeper technical reads by use case
+            </h2>
+            <p className="mt-4 text-base leading-7 text-gray-400">
+              Selected USA Graphene articles connect the application map above to specific research areas in energy,
+              diagnostics, and advanced electronics.
+            </p>
+          </div>
+          <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {researchLinks.map((article) => (
+              <Link
+                key={article.href}
+                href={article.href}
+                className="group rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400/50 hover:bg-white/[0.07]"
+              >
+                <div className="text-xs font-semibold uppercase tracking-widest text-blue-400">{article.category}</div>
+                <h3 className="mt-4 text-xl font-bold leading-snug text-white transition-colors group-hover:text-[#00c8ff]">
+                  {article.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-gray-400">{article.description}</p>
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-[#00c8ff]">
+                  Read article
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Video Evidence */}
       <div className="border-t border-white/10 py-24">

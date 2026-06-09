@@ -1,8 +1,5 @@
 import { Metadata } from 'next'
-import { getCounts } from '@/lib/visitors'
 import { samplePurchaseLinks } from '@/lib/sampleLinks'
-
-export const dynamic = 'force-dynamic' // always fresh counts — v2
 
 export const metadata: Metadata = {
     title: 'Contact USA Graphene - Get in Touch for Graphene Solutions',
@@ -34,9 +31,7 @@ const jsonLd = {
     },
 }
 
-export default async function Contact() {
-    const { daily, monthly } = await getCounts()
-
+export default function Contact() {
     return (
         <div className="relative isolate min-h-screen bg-[#070d1a] px-6 py-24 sm:py-32 lg:px-8 overflow-hidden">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -127,13 +122,6 @@ export default async function Contact() {
                             Send message
                         </button>
                     </div>
-
-                    {/* Visitor counter — no labels, just numbers. Hidden until first real visit. */}
-                    {(monthly > 0 || daily > 0) && (
-                        <p className="mt-6 text-center font-mono text-xs text-[#8b9ab5]/50 tracking-widest select-none">
-                            M{monthly} D{daily}
-                        </p>
-                    )}
                 </div>
             </form>
 

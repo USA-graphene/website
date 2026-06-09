@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { ArrowRight, ChevronRight, Zap, Shield, Factory, Atom, Gauge, Cog, TrendingUp, FlaskConical, SlidersHorizontal, Headphones, ClipboardCheck, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -61,22 +61,14 @@ const processProof = [
   { icon: ClipboardCheck, title: 'Proven Process', body: 'Repeatable results. Scalable systems.' },
 ]
 
-/* Shared motion presets — disabled when OS prefers reduced motion */
+/* Shared motion presets for below-fold sections. Above-fold content paints immediately for FCP. */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.65, delay, ease: 'easeOut' as const },
 })
 
-const fadeLeft = {
-  initial: { opacity: 0, x: -32 },
-  animate: { opacity: 1, x: 0 },
-  transition: { duration: 0.75, ease: 'easeOut' as const },
-}
-
 export default function Hero() {
-  const prefersReduced = useReducedMotion()
-
   return (
     <div className="bg-[#eef1f6] min-h-screen overflow-x-hidden font-sans relative selection:bg-blue-500/30">
 
@@ -110,8 +102,7 @@ export default function Hero() {
           <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'linear-gradient(30deg, transparent 48%, rgba(45,110,240,0.5) 49%, rgba(45,110,240,0.5) 51%, transparent 52%)', backgroundSize: '34px 34px' }} />
 
           <div className="relative grid min-h-[680px] lg:grid-cols-[0.95fr_1.15fr]">
-            <motion.div
-              {...(prefersReduced ? {} : fadeLeft)}
+            <div
               className="relative z-20 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-12 xl:px-14"
             >
               <div className="mb-8 flex items-center gap-5">
@@ -144,10 +135,9 @@ export default function Hero() {
                   View Equipment <ArrowRight className="h-4 w-4 flex-shrink-0" />
                 </Link>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              {...(prefersReduced ? {} : fadeUp(0.2))}
+            <div
               className="relative min-h-[360px] lg:min-h-full"
             >
               <div className="absolute inset-y-0 -left-20 z-10 hidden w-40 skew-x-[-14deg] bg-white lg:block" />
@@ -160,14 +150,13 @@ export default function Hero() {
                 sizes="(max-width: 1024px) 100vw, 58vw"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent lg:hidden" />
-            </motion.div>
+            </div>
           </div>
 
           <div className="relative z-30 mx-4 -mt-8 mb-6 grid gap-0 overflow-hidden rounded-2xl bg-slate-950 shadow-[0_18px_45px_rgba(15,23,42,0.3)] sm:mx-8 lg:mx-10 lg:-mt-12 lg:grid-cols-4">
             {stats.map(({ icon: Icon, value, label }, i) => (
-              <motion.div
+              <div
                 key={value}
-                {...(prefersReduced ? {} : fadeUp(0.45 + i * 0.08))}
                 className="flex gap-4 border-b border-white/10 p-5 last:border-b-0 sm:p-6 lg:border-b-0 lg:border-r lg:last:border-r-0"
               >
                 <Icon className="mt-1 h-9 w-9 flex-shrink-0 text-blue-500 sm:h-11 sm:w-11" />
@@ -175,7 +164,7 @@ export default function Hero() {
                   <div className="text-lg font-black leading-tight text-white sm:text-xl">{value}</div>
                   <div className="mt-2 text-xs font-medium leading-relaxed text-slate-300 sm:text-sm">{label}</div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
