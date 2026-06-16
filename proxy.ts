@@ -29,6 +29,9 @@ export function proxy(request: NextRequest) {
     } else if (pathname === '/contact') {
         url.pathname = '/contact/'
         shouldRedirect = true;
+    } else if (pathname === '/contact-us' || pathname === '/contact-us/') {
+        url.pathname = '/contact/'
+        shouldRedirect = true;
     } else if (pathname === '/about-us' || pathname === '/about-us/' || pathname === '/about-us-2' || pathname === '/about-us-2/') {
         url.pathname = '/about/'
         shouldRedirect = true;

@@ -1,16 +1,23 @@
 import { MetadataRoute } from 'next'
 import { client } from '@/lib/sanity'
 import { seoClusters } from '@/lib/seoKeywords'
+import { getSlugValue, selectIndexableBlogPosts } from '@/lib/blogSeo'
+
+const SITEMAP_POST_LIMIT = Number(process.env.SITEMAP_POST_LIMIT || 240)
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.usa-graphene.com'
 
-  // Fetch all blog posts
+  // Fetch only clean, indexable blog candidates. Older legacy posts remain
+  // accessible, but we do not keep pushing them to Google as primary URLs.
   const posts = await client.fetch(`
-    *[_type == "post" && defined(slug.current)] {
+    *[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
+      title,
       "slug": slug.current,
       _updatedAt,
-      publishedAt
+      publishedAt,
+      seoNoIndex,
+      canonicalSlug
     }
   `)
 
@@ -26,8 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // enforced by proxy.ts. Without trailing slashes, Google would see the sitemap
   // URL, get a 301 redirect to the trailing-slash version, and flag it as
   // "Page with redirect" in Google Search Console.
-  const blogUrls = posts.map((post: any) => ({
-    url: `${baseUrl}/blog/${post.slug}/`,
+  const blogUrls = selectIndexableBlogPosts(posts, SITEMAP_POST_LIMIT).map((post: any) => ({
+    url: `${baseUrl}/blog/${getSlugValue(post.slug)}/`,
     lastModified: post._updatedAt ? new Date(post._updatedAt) : (post.publishedAt ? new Date(post.publishedAt) : new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.7,

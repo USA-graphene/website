@@ -1,0 +1,14 @@
+.git
+.next
+node_modules
+scratch
+Video
+database
+dist
+out
+.squad
+blog_posts_gemma
+blog_posts_claude
+cron_log.txt
+*.log
+*.local

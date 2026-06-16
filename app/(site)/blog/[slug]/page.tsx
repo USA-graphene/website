@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import B2BSampleCTA from '@/components/B2BSampleCTA'
 import { keywordStringForCategories } from '@/lib/seoKeywords'
+import { getSlugValue, selectIndexableBlogPosts, shouldNoIndexBlogPost } from '@/lib/blogSeo'
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -28,17 +29,24 @@ async function getPost(slug: string) {
     "author": coalesce(author->name, authors[0]->name),
     "categories": categories[]->title,
     seoTitle,
-    seoDescription
+    seoDescription,
+    seoNoIndex,
+    canonicalSlug
   }`
     return client.fetch(query, { slug }, { next: { revalidate: 60 } })
 }
 
 export async function generateStaticParams() {
-    const query = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc)[0...${PRE_RENDERED_POSTS}] {
-        "slug": slug.current
+    const query = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc)[0...240] {
+        title,
+        "slug": slug.current,
+        publishedAt,
+        _updatedAt,
+        seoNoIndex,
+        canonicalSlug
     }`
     const posts = await client.fetch(query, {}, { next: { revalidate } })
-    return posts.map((post: { slug: string }) => ({ slug: post.slug }))
+    return selectIndexableBlogPosts(posts, PRE_RENDERED_POSTS).map((post) => ({ slug: getSlugValue(post.slug) }))
 }
 
 // Strip leading "N. " numbering prefix added for editorial ordering (e.g. "73. Graphene..." → "Graphene...")
@@ -57,13 +65,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const cleanExcerpt = post.excerpt ? post.excerpt.replace(/\[\.\.\.\]/g, '').trim() : ''
     const description = post.seoDescription || cleanExcerpt || (post.body ? 'Read our latest article on graphene technology and applications.' : 'USA Graphene Blog')
     const imageUrl = post.mainImage ? urlFor(post.mainImage).width(1200).height(630).fit('crop').quality(78).auto('format').url() : '/hero-graphene.jpg'
-    const canonicalUrl = `https://www.usa-graphene.com/blog/${slug}/`
+    const canonicalSlug = post.canonicalSlug || slug
+    const canonicalUrl = `https://www.usa-graphene.com/blog/${canonicalSlug}/`
     const keywords = keywordStringForCategories(post.categories || [])
+    const noIndex = shouldNoIndexBlogPost(post)
 
     return {
         title,
         description,
         keywords,
+        robots: noIndex ? {
+            index: false,
+            follow: true,
+        } : {
+            index: true,
+            follow: true,
+        },
         alternates: {
             canonical: canonicalUrl,
         },

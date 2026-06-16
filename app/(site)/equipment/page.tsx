@@ -66,55 +66,33 @@ const equipment = [
 export default function Equipment() {
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'Product',
-        'name': 'Pulsed Electrical Reactor Machine',
-        'description': 'Fully automated Advanced Pulsed Electrical Reactor capable of producing 20g of turbostratic graphene in 20 seconds.',
-        'brand': {
-            '@type': 'Brand',
-            'name': 'USA Graphene'
+        '@type': 'WebPage',
+        name: 'Industrial Graphene Production Equipment',
+        description: 'Industrial graphene production equipment, including pulsed electrical carbon conversion systems and graphene processing tools from USA Graphene.',
+        url: 'https://www.usa-graphene.com/equipment/',
+        primaryImageOfPage: {
+            '@type': 'ImageObject',
+            url: 'https://www.usa-graphene.com/flash-graphene-machine.jpg',
         },
-        'image': 'https://www.usa-graphene.com/flash-graphene-machine.jpg',
-        'category': 'Industrial Machinery',
-        'offers': {
-            '@type': 'Offer',
-            'availability': 'https://schema.org/InStock',
-            'priceCurrency': 'USD',
-            'priceValidUntil': `${new Date().getFullYear() + 1}-12-31`,
-            'url': 'https://www.usa-graphene.com/equipment/',
-            'hasMerchantReturnPolicy': {
-                '@type': 'MerchantReturnPolicy',
-                'applicableCountry': 'US',
-                'returnPolicyCategory': 'https://schema.org/MerchantReturnNotPermitted',
-                'merchantReturnDays': 0
-            },
-            'shippingDetails': {
-                '@type': 'OfferShippingDetails',
-                'shippingDestination': {
-                    '@type': 'DefinedRegion',
-                    'addressCountry': 'US'
+        publisher: {
+            '@type': 'Organization',
+            name: 'USA Graphene',
+            url: 'https://www.usa-graphene.com/',
+        },
+        mainEntity: {
+            '@type': 'ItemList',
+            name: 'Graphene production equipment',
+            itemListElement: equipment.map((item, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'Thing',
+                    name: item.name,
+                    description: item.description,
+                    category: 'Industrial graphene production equipment',
                 },
-                'shippingRate': {
-                    '@type': 'MonetaryAmount',
-                    'value': '0',
-                    'currency': 'USD'
-                },
-                'deliveryTime': {
-                    '@type': 'ShippingDeliveryTime',
-                    'handlingTime': {
-                        '@type': 'QuantitativeValue',
-                        'minValue': 1,
-                        'maxValue': 5,
-                        'unitCode': 'DAY'
-                    },
-                    'transitTime': {
-                        '@type': 'QuantitativeValue',
-                        'minValue': 5,
-                        'maxValue': 14,
-                        'unitCode': 'DAY'
-                    }
-                }
-            }
-        }
+            })),
+        },
     }
 
     return (

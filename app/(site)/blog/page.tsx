@@ -19,7 +19,8 @@ export const metadata: Metadata = {
     },
 }
 
-export const revalidate = 300
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 const POST_LIMIT = 24
 
@@ -44,7 +45,7 @@ async function getPosts() {
     "author": author->name,
     "categories": categories[]->title
   }`
-    return client.fetch(query, {}, { next: { revalidate } })
+    return client.fetch(query, {}, { cache: 'no-store' })
 }
 
 export default async function Blog() {
