@@ -76,6 +76,27 @@ const nextConfig = {
         destination: '/',
         permanent: true
       },
+      // Google Search Console 404 examples from legacy/no-slash URLs.
+      {
+        source: '/blog/graphene-nanoplatelet-prices-in-2025-a-market-snapshot-usa-vs-india',
+        destination: '/blog/graphene-nanoplatelet-prices-in-2025-a-market-snapshot-usa-vs-india/',
+        permanent: true
+      },
+      {
+        source: '/about-us-2/',
+        destination: '/about/',
+        permanent: true
+      },
+      {
+        source: '/2025/09/08/graphene-nanoplatelets-the-tiny-tech-with-a-big-price-story-2025-edition/',
+        destination: '/blog/graphene-nanoplatelets-the-tiny-tech-with-a-big-price-story-2025-edition/',
+        permanent: true
+      },
+      {
+        source: '/2025/08/07/graphene-batteries-the-future-is-now-kind-of-in-2025/',
+        destination: '/blog/graphene-batteries-the-future-is-now-kind-of-in-2025/',
+        permanent: true
+      },
       // Deleted blog post
       {
         source: '/blog/graphene-activities-in-2023-your-chemistry-could-change-from-today/',
