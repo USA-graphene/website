@@ -3,16 +3,20 @@ import type { NextRequest } from 'next/server'
 
 const CANONICAL_HOST = 'www.usa-graphene.com'
 const CANONICAL_ORIGIN = `https://${CANONICAL_HOST}`
+const LEGACY_HOSTS = new Set(['graphene2026.com', 'www.graphene2026.com'])
 
 export function proxy(request: NextRequest) {
     const host = request.headers.get('host') || ''
     const url = request.nextUrl.clone()
     let shouldRedirect = false;
+    const isLocalDevHost =
+        process.env.NODE_ENV === 'development' &&
+        (/^localhost(?::\d+)?$/.test(host) || /^127\.0\.0\.1(?::\d+)?$/.test(host))
 
-    // 1. Normalize every non-canonical host to www.usa-graphene.com.
-    // Google Search Console was seeing usa-graphene.com variants as temporary
-    // redirects. Emit one permanent hop to the canonical host instead.
-    if (host && host !== CANONICAL_HOST) {
+    // 1. Only normalize retired domains. The apex usa-graphene.com host is
+    // crawlable; canonical tags point Google to the preferred www URLs.
+    const hostWithoutPort = host.split(':')[0]
+    if (LEGACY_HOSTS.has(hostWithoutPort) && !isLocalDevHost) {
         shouldRedirect = true;
     }
 
@@ -29,9 +33,6 @@ export function proxy(request: NextRequest) {
     } else if (pathname === '/contact') {
         url.pathname = '/contact/'
         shouldRedirect = true;
-    } else if (pathname === '/contact-us' || pathname === '/contact-us/') {
-        url.pathname = '/contact/'
-        shouldRedirect = true;
     } else if (pathname === '/about-us' || pathname === '/about-us/' || pathname === '/about-us-2' || pathname === '/about-us-2/') {
         url.pathname = '/about/'
         shouldRedirect = true;
@@ -42,8 +43,7 @@ export function proxy(request: NextRequest) {
     // Doing it in the proxy too caused infinite redirect loops.
 
     if (shouldRedirect) {
-        // ALWAYS redirect to canonical origin so every redirect is a single hop.
-        // This prevents chains like: usa-graphene.com/contact-us/ → www/contact-us/ → www/contact/
+        // Retired domains and legacy paths still land on the preferred www host.
         const dest = `${CANONICAL_ORIGIN}${url.pathname}${url.search}`
         return NextResponse.redirect(dest, 301)
     }
